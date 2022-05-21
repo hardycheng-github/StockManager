@@ -36,4 +36,6 @@ public interface ITransApi {
      * @return 設定成功or失敗
      */
     boolean removeTrans(long trans_id);
+
+
 }

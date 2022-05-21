@@ -9,6 +9,7 @@ public class Transaction {
     int stock_amount = 0; //正負值, unit: 零股, 正數表示股數增加, 負數表示股數減少
     double cash_amount = 0; //正負值, unit: 新台幣, 正數表示現金轉入, 負數表示現金轉出
     double fee = 0; //手續費
+    double tax = 0; //證交稅
     double discount = 0; //折扣
     String remark = "";
 }
