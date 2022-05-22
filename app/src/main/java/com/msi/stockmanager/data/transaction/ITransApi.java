@@ -1,4 +1,4 @@
-package com.msi.stockmanager.data;
+package com.msi.stockmanager.data.transaction;
 
 import java.util.List;
 
@@ -36,6 +36,5 @@ public interface ITransApi {
      * @return 設定成功or失敗
      */
     boolean removeTrans(long trans_id);
-
 
 }

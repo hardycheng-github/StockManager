@@ -1,4 +1,4 @@
-package com.msi.stockmanager.data;
+package com.msi.stockmanager.data.transaction;
 
 public interface TransType {
     int TRANS_TYPE_STOCK_BUY = 0; //股票買入

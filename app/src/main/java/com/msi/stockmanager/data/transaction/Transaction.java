@@ -1,4 +1,8 @@
-package com.msi.stockmanager.data;
+package com.msi.stockmanager.data.transaction;
+
+import com.msi.stockmanager.data.DateUtil;
+
+import java.text.SimpleDateFormat;
 
 public class Transaction {
     long trans_id = -1;
@@ -10,6 +14,13 @@ public class Transaction {
     double cash_amount = 0; //正負值, unit: 新台幣, 正數表示現金轉入, 負數表示現金轉出
     double fee = 0; //手續費
     double tax = 0; //證交稅
-    double discount = 0; //折扣
     String remark = "";
+
+    @Override
+    public String toString(){
+        return String.format("trans_id %d, trans_time %s, trans_type %d, trans_type_other_desc %s, "
+                + "stock_id %s, stock_amount %d, cash_amount %.2f, fee %.2f, tax %.2f, remark %s"
+        , trans_id, DateUtil.timeToStr(trans_time), trans_type, trans_type_other_desc
+        , stock_id, stock_amount, cash_amount, fee, tax, remark);
+    }
 }
