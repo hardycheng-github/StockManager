@@ -1,8 +1,11 @@
 package com.msi.stockmanager.data.transaction;
 
+import android.content.Context;
+
 import java.util.List;
 
 public interface ITransApi {
+
     /**
      * 取得目前持有的股票代碼列表
      * @return 股票代碼列表

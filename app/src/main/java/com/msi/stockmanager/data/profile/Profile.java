@@ -1,6 +1,6 @@
-package com.msi.stockmanager.data;
+package com.msi.stockmanager.data.profile;
 
-public class Param {
+public class Profile {
     public static double fee_discount = 0.6;
     public static double fee_rate = 0.001425;
     public static double fee_minimum = 20;
