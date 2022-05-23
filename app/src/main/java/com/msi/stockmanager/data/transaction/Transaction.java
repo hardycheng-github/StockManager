@@ -2,8 +2,6 @@ package com.msi.stockmanager.data.transaction;
 
 import com.msi.stockmanager.data.DateUtil;
 
-import java.text.SimpleDateFormat;
-
 public class Transaction {
     long trans_id = -1;
     long trans_time = 0; //timestamp
@@ -20,7 +18,7 @@ public class Transaction {
     public String toString(){
         return String.format("trans_id %d, trans_time %s, trans_type %d, trans_type_other_desc %s, "
                 + "stock_id %s, stock_amount %d, cash_amount %.2f, fee %.2f, tax %.2f, remark %s"
-        , trans_id, DateUtil.timeToStr(trans_time), trans_type, trans_type_other_desc
+        , trans_id, DateUtil.toDateTimeString(trans_time), trans_type, trans_type_other_desc
         , stock_id, stock_amount, cash_amount, fee, tax, remark);
     }
 }
