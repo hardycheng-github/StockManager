@@ -10,7 +10,6 @@ public class StockInfo {
     public String stock_name = "";
     public double last_price = 0;
     public long last_update_time = 0;
-    public List<StockHistory> stock_history_list = new ArrayList<>();
 
     public String getStockNameWithId(){
         return String.format("(%s) %s", stock_id, stock_name);
@@ -19,6 +18,6 @@ public class StockInfo {
     @Override
     public String toString(){
         return String.format("stock_id %s, stock_name %s, last_price %.2f, last_update_time %s"
-                , stock_id, stock_name, last_price, DateUtil.timeToStr(last_update_time));
+                , stock_id, stock_name, last_price, DateUtil.toDateTimeString(last_update_time));
     }
 }
