@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StockManager">
         <activity
-            android:name=".OverviewActivity"
+            android:name=".ui.main.overview.OverviewActivity"
             android:exported="true"
             android:theme="@style/Theme.StockManager.NoActionBar">
             <intent-filter>
@@ -20,15 +20,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HostActivity"
+            android:name=".ui.main.pager.PagerActivity"
             android:exported="true"
-            android:label="@string/title_activity_host"
+            android:label="@string/title_activity_pager"
             android:theme="@style/Theme.StockManager.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".MainActivity"

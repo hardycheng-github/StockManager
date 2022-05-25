@@ -4,23 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.main.overview.OverviewActivity">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <Button
-            android:id="@+id/btn_pager"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="enter"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    tools:context=".ui.main.pager.PagerActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -28,21 +12,72 @@
         android:theme="@style/Theme.StockManager.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/overview_toolbar"
+            android:id="@+id/pager_toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/Theme.StockManager.PopupOverlay" />
 
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fab_overview_add"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
+
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/fab_cash_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="@dimen/fab_margin"
+        app:fab_showAnimation="@anim/fab_scale_up"
+        app:fab_hideAnimation="@anim/fab_scale_down"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:fab_colorNormal="@color/color_2_1"
+        app:fab_colorPressed="@color/color_2_2"
+        app:fab_colorRipple="@color/color_ripple_1"
+        app:fab_size="normal"
+        android:src="@drawable/ic_baseline_add_36">
+
+    </com.github.clans.fab.FloatingActionButton>
+
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/fab_holding_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:fab_showAnimation="@anim/fab_scale_up"
+        app:fab_hideAnimation="@anim/fab_scale_down"
+        app:fab_colorNormal="@color/color_2_1"
+        app:fab_colorPressed="@color/color_2_2"
+        app:fab_colorRipple="@color/color_ripple_1"
+        app:fab_size="normal"
+        android:src="@drawable/ic_baseline_add_36">
+
+    </com.github.clans.fab.FloatingActionButton>
+
+    <com.github.clans.fab.FloatingActionMenu
+        android:id="@+id/fab_other_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="@dimen/fab_margin"
+        app:menu_fab_show_animation="@anim/fab_scale_up"
+        app:menu_fab_hide_animation="@anim/fab_scale_down"
         app:menu_colorNormal="@color/color_2_1"
         app:menu_colorPressed="@color/color_2_2"
         app:menu_colorRipple="@color/color_ripple_1"

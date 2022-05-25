@@ -1,23 +1,17 @@
 <resources>
     <string name="app_name">台股管理助手</string>
-    <string name="title_activity_host">HostActivity</string>
+    <string name="title_activity_pager">PagerActivity</string>
     <string name="tab_text_cash">轉帳紀錄</string>
     <string name="tab_text_stock_holding">庫存損益</string>
     <string name="tab_text_stock_history">已實現損益</string>
     <string name="tab_text_other">股利與減資</string>
     <string name="title_activity_overview">帳戶總覽</string>
-    <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
-
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <string name="add_trans">新增交易</string>
     <string name="add_trans_cash">轉帳紀錄</string>
     <string name="add_trans_stock">股票買賣</string>
     <string name="add_trans_other">股利或減資</string>
+    <string name="add_trans_dividend">股利</string>
+    <string name="add_trans_reduction">減資</string>
 
 </resources>
