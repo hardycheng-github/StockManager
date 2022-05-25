@@ -127,7 +127,9 @@ public class TransApi implements ITransApi{
 
         // Insert the new row, returning the primary key value of the new row
         long trans_id = db.insert(DBDefine.TB_TransactionRecord.TABLE_NAME, null, values);
-
+        if(trans_id < 1) {
+            return -1;
+        }
         return trans_id;
     }
 
@@ -154,12 +156,14 @@ public class TransApi implements ITransApi{
         String selection = DBDefine.TB_TransactionRecord._ID + " = ?";
         String[] selectionArgs = { String.valueOf(trans_id) };
 
-        db.update(
-                DBDefine.TB_TransactionRecord.TABLE_NAME,
-                values,
-                selection,
-                selectionArgs);
-
+        int result = db.update(
+                        DBDefine.TB_TransactionRecord.TABLE_NAME,
+                        values,
+                        selection,
+                        selectionArgs);
+        if (result == 0){
+            return false;
+        }
         return true;
     }
 
@@ -172,7 +176,9 @@ public class TransApi implements ITransApi{
         String[] selectionArgs = { String.valueOf(trans_id) };
         // Issue SQL statement.
         int deletedRows = db.delete(DBDefine.TB_TransactionRecord.TABLE_NAME, selection, selectionArgs);
-
+        if (deletedRows == 0){
+            return false;
+        }
         return true;
     }
 }

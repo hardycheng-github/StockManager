@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".DemoActivity"
+    >
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:textSize="25dp"
+            android:text="交易紀錄ID"/>
+        <EditText
+            android:id="@+id/trans_id"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:digits="1234567890"
+            android:hint="1" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:textSize="25dp"
+            android:text="股票代碼"/>
+        <EditText
+            android:id="@+id/stock_code"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:digits="1234567890"
+            android:hint="2330" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:textSize="25dp"
+            android:text="現金轉入/轉出"/>
+        <EditText
+            android:id="@+id/cash_mount"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:digits="1234567890."
+            android:hint="10000" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:textSize="25dp"
+            android:text="交易日期"/>
+        <EditText
+            android:id="@+id/transation_time"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:inputType="date"
+            android:hint="YYYY/MM/DD"
+            android:focusable="false"
+            android:layout_marginTop="10dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <Button
+            android:id="@+id/add_trans"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:text="add_trans"
+            android:textSize="12dp"
+            android:paddingTop="0dp"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/load_trans"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:text="load_trans"
+            android:textSize="12dp"
+            android:paddingTop="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1" />
+        <Button
+            android:id="@+id/update_trans"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:text="update_trans"
+            android:textSize="12dp"
+            android:paddingTop="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+        <Button
+            android:id="@+id/remove_trans"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:text="remove_trans"
+            android:textSize="12dp"
+            android:paddingTop="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:layout_weight="1" />
+        <Button
+            android:id="@+id/load_holding"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:text="load_holding"
+            android:textSize="12dp"
+            android:paddingTop="0dp"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1" />
+        <Button
+            android:id="@+id/clear"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:text="clear"
+            android:textSize="12dp"
+            android:paddingTop="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="30dp"
+        android:text="RESULT"
+        android:textSize="25dp"
+        android:background="#DDD"/>
+    <TextView
+        android:id="@+id/show_panel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#EEE"
+        android:hint="Test Result here"
+        android:textSize="20dp"
+        android:scrollbars="vertical"/>
+</LinearLayout>

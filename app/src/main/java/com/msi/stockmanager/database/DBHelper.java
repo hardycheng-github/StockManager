@@ -1,10 +1,17 @@
 package com.msi.stockmanager.database;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
+
+import com.msi.stockmanager.data.transaction.Transaction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     private final static int _DBVersion = 1;
@@ -34,10 +41,7 @@ public class DBHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
-        //For version 2
-        if (newVersion > 1){
-            //do something for version 2 and later.
-        }
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion){
+
     }
 }
