@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_1_1">#C5CAE9</color>
-    <color name="color_1_2">#3F51B5</color>
-    <color name="color_1_3">#303F9F</color>
-    <color name="color_2_1">#FFAA00</color>
-    <color name="color_2_2">#E56C00</color>
-    <color name="color_ripple_1">#33FFFFFF</color>
+    <color name="main_s">#BBDEFB</color>
+    <color name="main_m">#1976D2</color>
+    <color name="main_l">#303F9F</color>
+    <color name="sub_m">#FFAA00</color>
+    <color name="sub_l">#E56C00</color>
+    <color name="ripple">#33FFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="error">#FFFF0000</color>
 
 </resources>
