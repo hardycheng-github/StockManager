@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,17 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.github.k0shk0sh.compose.easyforms.BuildEasyForms
-import com.github.k0shk0sh.compose.easyforms.EasyForms
-import com.github.k0shk0sh.compose.easyforms.EasyFormsErrorState
-import com.github.k0shk0sh.compose.easyforms.EmailValidationType
+import com.github.k0shk0sh.compose.easyforms.*
 import com.msi.stockmanager.R
+import com.msi.stockmanager.data.stock.StockInfo
 import com.msi.stockmanager.ui.main.pager.PagerActivity
 import com.msi.stockmanager.ui.theme.StockManagerTheme
 import javax.annotation.Nullable
@@ -78,6 +76,7 @@ fun Space(padding: Dp = 16.dp) {
     Spacer(modifier = Modifier.padding(padding))
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun BuildForm(@Nullable activity: Activity? = null){
     Scaffold(
@@ -114,6 +113,13 @@ fun BuildForm(@Nullable activity: Activity? = null){
                             width = Dimension.matchParent
                         }
                 ) {
+                    val stocks = listOf(
+                        StockInfo("2330", "台積電"),
+                        StockInfo("0050", "元大台灣50"),
+                        StockInfo("0056", "台灣龍頭"),
+                    )
+                    StockIdSelector(stocks = stocks)
+                    Space()
                     EmailTextField(easyForm)
                     Space()
                 }
