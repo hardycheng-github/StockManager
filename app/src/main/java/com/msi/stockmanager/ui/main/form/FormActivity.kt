@@ -114,9 +114,9 @@ fun BuildForm(@Nullable activity: Activity? = null){
                         }
                 ) {
                     val stocks = listOf(
-                        StockInfo("2330", "台積電"),
-                        StockInfo("0050", "元大台灣50"),
-                        StockInfo("0056", "台灣龍頭"),
+                            StockInfo("2330", "台積電"),
+                            StockInfo("0050", "元大台灣50"),
+                            StockInfo("0056", "台灣龍頭"),
                     )
                     StockIdSelector(stocks = stocks)
                     Space()
@@ -129,13 +129,13 @@ fun BuildForm(@Nullable activity: Activity? = null){
                         activity?.startActivity(Intent(activity, PagerActivity::class.java))
                     },
                     modifier = Modifier
-                        .height(64.dp)
+                        .height(48.dp)
                         .constrainAs(button) {
                             bottom.linkTo(parent.bottom)
                             width = Dimension.matchParent
                         },
                 ) {
-                    Text(stringResource(id = R.string.btn_check), fontSize = 24.sp)
+                    Text(stringResource(id = R.string.btn_check), fontSize = 20.sp)
                 }
             }
         }

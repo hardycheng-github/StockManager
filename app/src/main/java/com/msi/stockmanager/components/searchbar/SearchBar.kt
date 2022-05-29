@@ -44,7 +44,7 @@ fun TextSearchBar(
 ) {
     OutlinedTextField(
         modifier = modifier
-            .fillMaxWidth(.9f)
+            .fillMaxWidth()
             .onFocusChanged { onFocusChanged(it) },
         value = value,
         onValueChange = { query ->

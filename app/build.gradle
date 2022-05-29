@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdk 32
@@ -69,4 +70,6 @@ dependencies {
     debugImplementation 'com.facebook.stetho:stetho:1.6.0'
     debugImplementation 'com.facebook.stetho:stetho-js-rhino:1.6.0'
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
