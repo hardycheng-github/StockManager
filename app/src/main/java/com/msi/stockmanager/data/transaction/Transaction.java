@@ -2,7 +2,9 @@ package com.msi.stockmanager.data.transaction;
 
 import com.msi.stockmanager.data.DateUtil;
 
-public class Transaction {
+import java.io.Serializable;
+
+public class Transaction implements Serializable {
     public long trans_id = -1;
     public long trans_time = 0; //timestamp
     public int trans_type = TransType.TRANS_TYPE_OTHER; //interface TransactionType
@@ -23,4 +25,9 @@ public class Transaction {
         , trans_id, DateUtil.toDateTimeString(trans_time), trans_type, trans_type_other_desc
         , stock_id, stock_name, stock_amount, cash_amount, fee, tax, remark);
     }
+
+    public boolean isIdValid(){
+        return trans_id >= 0;
+    }
+
 }
