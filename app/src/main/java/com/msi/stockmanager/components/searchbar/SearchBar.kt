@@ -26,6 +26,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
@@ -37,14 +38,15 @@ fun TextSearchBar(
     modifier: Modifier = Modifier,
     value: String,
     label: String,
-    onDoneActionClick: () -> Unit = {},
+    onImeActionClick: () -> Unit = {},
     onClearClick: () -> Unit = {},
     onFocusChanged: (FocusState) -> Unit = {},
-    onValueChanged: (String) -> Unit
+    onValueChanged: (String) -> Unit,
+    isError: () -> Boolean,
 ) {
     OutlinedTextField(
         modifier = modifier
-            .fillMaxWidth(.9f)
+            .fillMaxWidth()
             .onFocusChanged { onFocusChanged(it) },
         value = value,
         onValueChange = { query ->
@@ -58,10 +60,11 @@ fun TextSearchBar(
                 Icon(imageVector = Icons.Filled.Clear, contentDescription = "Clear")
             }
         },
-        keyboardActions = KeyboardActions(onDone = { onDoneActionClick() }),
+        keyboardActions = KeyboardActions(onNext = { onImeActionClick() }),
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
             keyboardType = KeyboardType.Text
-        )
+        ),
+        isError = isError(),
     )
 }

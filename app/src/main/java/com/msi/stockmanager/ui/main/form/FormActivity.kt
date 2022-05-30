@@ -3,6 +3,7 @@ package com.msi.stockmanager.ui.main.form
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -30,6 +31,8 @@ import com.msi.stockmanager.data.stock.StockInfo
 import com.msi.stockmanager.ui.main.pager.PagerActivity
 import com.msi.stockmanager.ui.theme.StockManagerTheme
 import javax.annotation.Nullable
+
+val TAG = "FormActivity"
 
 class FormActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,12 +116,7 @@ fun BuildForm(@Nullable activity: Activity? = null){
                             width = Dimension.matchParent
                         }
                 ) {
-                    val stocks = listOf(
-                        StockInfo("2330", "台積電"),
-                        StockInfo("0050", "元大台灣50"),
-                        StockInfo("0056", "台灣龍頭"),
-                    )
-                    StockIdSelector(stocks = stocks)
+                    StockIdSelector(selected = "2330", easyForm = easyForm)
                     Space()
                     EmailTextField(easyForm)
                     Space()
