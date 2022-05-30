@@ -127,9 +127,7 @@ public class TransApi implements ITransApi{
 
         // Insert the new row, returning the primary key value of the new row
         long trans_id = db.insert(DBDefine.TB_TransactionRecord.TABLE_NAME, null, values);
-        if(trans_id < 1) {
-            return -1;
-        }
+        // if insert failed, will return -1
         return trans_id;
     }
 
@@ -152,7 +150,7 @@ public class TransApi implements ITransApi{
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_CREATE_TIME, System.currentTimeMillis());
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_REMARK, trans.remark);
 
-        // Which row to update, based on the title
+        // Which row to update, based on the id
         String selection = DBDefine.TB_TransactionRecord._ID + " = ?";
         String[] selectionArgs = { String.valueOf(trans_id) };
 
