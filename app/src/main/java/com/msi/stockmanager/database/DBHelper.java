@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
-    private final static int _DBVersion = 1;
+    private static final String TAG = DBHelper.class.getSimpleName();
+    private final static int _DBVersion = 2;
     private final static String _DBName = "stockAccounting.db";
 
     public DBHelper(@Nullable Context context) {
@@ -23,6 +24,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
+        Log.d(TAG, "+++ onCreate +++");
         final String SQL = "CREATE TABLE IF NOT EXISTS " + DBDefine.TB_TransactionRecord.TABLE_NAME + "( " +
                 DBDefine.TB_TransactionRecord._ID +" INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_NAME + " TEXT , " +
@@ -42,6 +44,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion){
-
+        Log.d(TAG, "!!! onUpgrade: " + oldVersion + " -> " + newVersion + " !!!");
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + DBDefine.TB_TransactionRecord.TABLE_NAME);
+        onCreate(sqLiteDatabase);
     }
 }

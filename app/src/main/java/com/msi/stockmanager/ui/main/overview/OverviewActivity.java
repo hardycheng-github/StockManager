@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.msi.stockmanager.DemoActivity;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 
@@ -40,10 +41,8 @@ public class OverviewActivity extends AppCompatActivity {
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.overviewToolbar);
 
-                binding.btnPager.setOnClickListener(v->{
-                    Intent intent = new Intent(OverviewActivity.this, PagerActivity.class);
-                    startActivity(intent);
-                });
+                binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DemoActivity.class)));
+                binding.btnPager.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
                 binding.fabOverviewAddCash.setOnClickListener(v -> {
                     //TODO add cash transaction
                 });
