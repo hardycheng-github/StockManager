@@ -17,6 +17,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
@@ -113,13 +116,13 @@ fun BuildForm(@Nullable activity: Activity? = null){
                         activity?.startActivity(Intent(activity, PagerActivity::class.java))
                     },
                     modifier = Modifier
-                        .height(64.dp)
+                        .height(48.dp)
                         .constrainAs(button) {
                             bottom.linkTo(parent.bottom)
                             width = Dimension.matchParent
                         },
                 ) {
-                    Text(stringResource(id = R.string.btn_check), fontSize = 24.sp)
+                    Text(stringResource(id = R.string.btn_check), style=MaterialTheme.typography.h6)
                 }
             }
         }

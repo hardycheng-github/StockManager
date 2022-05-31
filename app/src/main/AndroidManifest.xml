@@ -14,20 +14,19 @@
             android:name=".ui.main.form.FormActivity"
             android:exported="true"
             android:label="@string/title_activity_compose"
-            android:theme="@style/Theme.StockManager">
+            android:theme="@style/Theme.StockManager"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:screenOrientation="portrait"
             android:name=".ui.main.overview.OverviewActivity"
             android:exported="true"
             android:theme="@style/Theme.StockManager.NoActionBar">
-
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:screenOrientation="portrait"

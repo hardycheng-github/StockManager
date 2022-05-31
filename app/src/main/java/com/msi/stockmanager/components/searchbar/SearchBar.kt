@@ -39,7 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 fun TextSearchBar(
     modifier: Modifier = Modifier,
     value: String,
-    label: String,
+    label: String? = null,
     onImeActionClick: () -> Unit = {},
     onClearClick: () -> Unit = {},
     onFocusChanged: (FocusState) -> Unit = {},
@@ -54,7 +54,11 @@ fun TextSearchBar(
         onValueChange = { query ->
             onValueChanged(query)
         },
-        label = { Text(text = label) },
+        label = {
+            if (label != null) {
+                Text(text = label)
+            }
+        },
         textStyle = MaterialTheme.typography.subtitle1,
         singleLine = true,
         trailingIcon = {
