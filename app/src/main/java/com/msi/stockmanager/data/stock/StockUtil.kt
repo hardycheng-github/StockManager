@@ -5,7 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.Stable
 import java.util.*
 
-val StockUtil = MyStockUtil()
+var StockUtil = MyStockUtil()
 
 class MyStockUtil {
     private val TAG = "StockUtil"

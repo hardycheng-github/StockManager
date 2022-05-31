@@ -30,4 +30,7 @@
     <string name="btn_check">確　認</string>
     <string name="title_activity_compose">ComposeActivity</string>
 
+    <string name="trans_stock_selector">股票選擇</string>
+    <string name="trans_stock_amount">交易數量(股)</string>
+
 </resources>

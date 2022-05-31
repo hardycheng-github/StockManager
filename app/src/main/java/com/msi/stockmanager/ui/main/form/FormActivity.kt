@@ -19,6 +19,7 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +28,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.github.k0shk0sh.compose.easyforms.*
 import com.msi.stockmanager.R
+import com.msi.stockmanager.data.Constants
 import com.msi.stockmanager.data.stock.StockInfo
+import com.msi.stockmanager.data.transaction.TransType
+import com.msi.stockmanager.data.transaction.Transaction
 import com.msi.stockmanager.ui.main.pager.PagerActivity
 import com.msi.stockmanager.ui.theme.StockManagerTheme
 import javax.annotation.Nullable
@@ -37,6 +41,11 @@ val TAG = "FormActivity"
 class FormActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var transObj: Transaction? = null
+        val transType = intent.getIntExtra(Constants.EXTRA_TRANS_TYPE, TransType.TRANS_TYPE_OTHER)
+        try {
+            transObj = intent.getSerializableExtra(Constants.EXTRA_TRANS_OBJECT) as Transaction
+        } catch(e: Exception){}
         setContent {
             StockManagerTheme {
                 // A surface container using the 'background' color from the theme
@@ -51,32 +60,9 @@ class FormActivity : ComponentActivity() {
     }
 }
 
-
-@Composable
-fun EmailTextField(easyForm: EasyForms) {
-    val emailTextFieldState = easyForm.getTextFieldState("email", EmailValidationType)
-    val emailState = emailTextFieldState.state
-    TextField(
-        value = emailState.value,
-        onValueChange = emailTextFieldState.onValueChangedCallback,
-        isError = emailTextFieldState.errorState.value == EasyFormsErrorState.INVALID,
-        label = { Text("Email") },
-        placeholder = { Text("email@example.com") },
-        leadingIcon = {
-            Icon(
-                Icons.Outlined.Email,
-                "Email",
-            )
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        modifier = Modifier.fillMaxWidth(),
-        singleLine = true
-    )
-}
-
 @Composable
 fun Space(padding: Dp = 16.dp) {
-    Spacer(modifier = Modifier.padding(padding))
+    Spacer(modifier = Modifier.size(padding))
 }
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -118,7 +104,7 @@ fun BuildForm(@Nullable activity: Activity? = null){
                 ) {
                     StockIdSelector(selected = "2330", easyForm = easyForm)
                     Space()
-                    EmailTextField(easyForm)
+                    StockAmountSelector(easyForm)
                     Space()
                 }
                 Button(

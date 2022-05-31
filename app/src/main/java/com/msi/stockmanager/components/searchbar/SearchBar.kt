@@ -28,8 +28,10 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 
@@ -43,7 +45,7 @@ fun TextSearchBar(
     onFocusChanged: (FocusState) -> Unit = {},
     onValueChanged: (String) -> Unit,
     isError: () -> Boolean,
-) {
+){
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
@@ -60,7 +62,9 @@ fun TextSearchBar(
                 Icon(imageVector = Icons.Filled.Clear, contentDescription = "Clear")
             }
         },
-        keyboardActions = KeyboardActions(onNext = { onImeActionClick() }),
+        keyboardActions = KeyboardActions(onDone = {
+            onImeActionClick()
+        }),
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Done,
             keyboardType = KeyboardType.Text
