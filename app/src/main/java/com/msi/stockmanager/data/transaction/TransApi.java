@@ -174,7 +174,7 @@ public class TransApi implements ITransApi{
         String[] selectionArgs = { String.valueOf(trans_id) };
         // Issue SQL statement.
         int deletedRows = db.delete(DBDefine.TB_TransactionRecord.TABLE_NAME, selection, selectionArgs);
-        if (deletedRows == 0){
+        if (deletedRows <= 0){
             return false;
         }
         return true;

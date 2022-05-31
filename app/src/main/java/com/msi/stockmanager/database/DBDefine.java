@@ -10,11 +10,11 @@ public final class DBDefine {
         public static final String COLUMN_NAME_TRANSACTION_TYPE = "tr_transaction_type"; //交易類別
         public static final String COLUMN_NAME_TRANSACTION_TYPE_OTHER_DESCRIPTION = "tr_transaction_type_other_desc";
         public static final String COLUMN_NAME_TRANSACTION_TIME = "tr_transaction_time"; //交易時間
-        public static final String COLUMN_NAME_STOCK_AMOUNT = "stock_amount"; //股數
-        public static final String COLUMN_NAME_CASH_AMOUNT = "cash_amount"; //現金轉入(正值), 轉出(負值)
+        public static final String COLUMN_NAME_STOCK_AMOUNT = "tr_stock_amount"; //股數
+        public static final String COLUMN_NAME_CASH_AMOUNT = "tr_cash_amount"; //現金轉入(正值), 轉出(負值)
         public static final String COLUMN_NAME_FEE = "tr_fee"; //手續費
         public static final String COLUMN_NAME_TAX = "tr_tax"; //證交稅
-        public static final String COLUMN_NAME_CREATE_TIME = "create_time"; //此筆資料創建時間
+        public static final String COLUMN_NAME_CREATE_TIME = "tr_create_time"; //此筆資料創建時間
         public static final String COLUMN_NAME_REMARK = "tr_remark"; //備註
     }
 
