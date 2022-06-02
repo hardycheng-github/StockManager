@@ -3,28 +3,20 @@ package com.msi.stockmanager.ui.main.form
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -32,7 +24,6 @@ import androidx.constraintlayout.compose.Dimension
 import com.github.k0shk0sh.compose.easyforms.*
 import com.msi.stockmanager.R
 import com.msi.stockmanager.data.Constants
-import com.msi.stockmanager.data.stock.StockInfo
 import com.msi.stockmanager.data.transaction.TransType
 import com.msi.stockmanager.data.transaction.Transaction
 import com.msi.stockmanager.ui.main.pager.PagerActivity
@@ -107,7 +98,9 @@ fun BuildForm(@Nullable activity: Activity? = null){
                 ) {
                     StockIdSelector(selected = "2330", easyForm = easyForm)
                     Space()
-                    StockAmountSelector(easyForm)
+                    IntegerSelector(easyForm, default = 1000, range=1..999999, step=1000, key=FormKeys.STOCK_AMOUNT)
+                    Space()
+                    DatePicker(easyForm)
                     Space()
                 }
                 Button(

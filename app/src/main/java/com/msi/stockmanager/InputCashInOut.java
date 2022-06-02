@@ -15,6 +15,7 @@ import android.widget.RadioGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransApi;
 import com.msi.stockmanager.data.transaction.TransType;
@@ -26,13 +27,13 @@ import java.util.Date;
 
 public class InputCashInOut extends AppCompatActivity {
     private final static String TAG = "InputCashInOut";
-    private RadioButton radioInCash,radioOutcash;
+    private RadioButton radioInCash, radioOutcash;
     private EditText editTextDate,editTextNumber;
     private Button transfer_btn;
     private RadioGroup radioGroup1;
-    private  Date date;
+    private Date date;
     private Intent intent;
-    private Bundle bundle;
+    private int transId = -1;
     ITransApi transApi = new TransApi(this);
     private Transaction trans = new Transaction();
 
@@ -43,14 +44,12 @@ public class InputCashInOut extends AppCompatActivity {
         Log.d(TAG,"onCreate");
 
         intent = this.getIntent();
-        bundle = intent.getExtras();
+        transId = intent.getIntExtra("transId", -1);
+        trans = transApi.getTransaction(transId);
+        date = new Date();
         initView();
         setListener();
-
-
-
-
-
+        initData();
     }
 
     void initView(){
@@ -60,8 +59,26 @@ public class InputCashInOut extends AppCompatActivity {
         editTextNumber =  findViewById(R.id.editTextNumber);
         transfer_btn =  findViewById(R.id.transfer_btn);
         radioGroup1 =  findViewById(R.id.radioGroup1);
+        radioInCash.toggle();
     }
 
+    void initData(){
+        if(trans != null && trans.trans_id >= 0){
+            try {
+                if (trans.trans_type == TransType.TRANS_TYPE_CASH_IN) {
+                    radioInCash.toggle();
+                } else {
+                    radioOutcash.toggle();
+                }
+                String dateStr = DateUtil.toDateString(trans.trans_time);
+                editTextDate.setText(dateStr);
+                date = new SimpleDateFormat("yyyy-MM-dd").parse(dateStr);
+                editTextNumber.setText(Math.abs(trans.cash_amount) + "");
+            } catch (Exception e){
+                Log.e(TAG, "initData fail: " + e.getMessage());
+            }
+        }
+    }
 
     void setListener(){
         editTextDate.setOnClickListener(new View.OnClickListener() {
@@ -81,7 +98,6 @@ public class InputCashInOut extends AppCompatActivity {
 
                         try {
                              date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(editTextDate.getText().toString() +" 00:00:00");
-
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
@@ -94,12 +110,12 @@ public class InputCashInOut extends AppCompatActivity {
         });
 
         transfer_btn.setOnClickListener(v -> {
-            if (bundle.getString("title").equals("Add_Data")) {
+            if (transId < 0) {
                 Log.d(TAG,"Add_Data");
                 addTrans();
-            }else {
+            } else {
                 Log.d(TAG,"Edit_Data");
-                editData(bundle.getInt("transId"));
+                editData(transId);
             }
         });
     }

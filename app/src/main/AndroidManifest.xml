@@ -43,18 +43,8 @@
             android:name=".DemoActivity"
             android:exported="true"
             android:label="TransApi Demo page" />
-        <activity
-            android:name=".AccountOverview"
-            android:label="Account list"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity android:name=".InputCashInOut"
-            android:parentActivityName = ".AccountOverview"
-            >
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

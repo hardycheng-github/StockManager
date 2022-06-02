@@ -10,6 +10,7 @@ import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.database.DBDefine;
 import com.msi.stockmanager.database.DBHelper;
+import com.msi.stockmanager.ui.main.pager.PagerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +104,61 @@ public class TransApi implements ITransApi{
         cursor.close();
 
         return transList;
+    }
+
+    @Override
+    public Transaction getTransaction(int trans_id) {
+        try {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+            // How you want the results sorted in the resulting Cursor
+            String sortOrder =
+                    DBDefine.TB_TransactionRecord._ID + " ASC";
+            String selection = DBDefine.TB_TransactionRecord._ID + " = ?";
+            String[] selectionArgs = {String.valueOf(trans_id)};
+
+            Cursor cursor = db.query(
+                    DBDefine.TB_TransactionRecord.TABLE_NAME,   // The table to query
+                    null,             // The array of columns to return (pass null to get all)
+                    selection,              // The columns for the WHERE clause
+                    selectionArgs,          // The values for the WHERE clause
+                    null,                   // don't group the rows
+                    null,                   // don't filter by row groups
+                    sortOrder               // The sort order
+            );
+            cursor.moveToFirst();
+
+            Transaction trans = new Transaction();
+            trans.trans_id = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord._ID));
+            trans.stock_name = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_NAME));
+            trans.stock_id = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_CODE));
+            trans.trans_type = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TYPE));
+            trans.trans_type_other_desc = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TYPE_OTHER_DESCRIPTION));
+            trans.trans_time = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME));
+            trans.stock_amount = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT));
+            trans.cash_amount = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT));
+            trans.fee = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE));
+            trans.tax = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX));
+            trans.create_time = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CREATE_TIME));
+            trans.remark = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_REMARK));
+
+            return trans;
+        } catch (Exception e) {
+            Log.e(TAG, "getTransaction fail: " + e.getMessage());
+        }
+        return new Transaction();
     }
 
     @Override

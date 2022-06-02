@@ -19,6 +19,12 @@ public interface ITransApi {
     List<Transaction> getHistoryTransList();
 
     /**
+     * 取得指定交易紀錄
+     * @return 指定交易紀錄
+     */
+    Transaction getTransaction(int transId);
+
+    /**
      * 新增一筆交易紀錄
      * @param trans 交易內容
      * @return 交易編號, -1: 新增失敗

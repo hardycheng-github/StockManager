@@ -12,8 +12,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.msi.stockmanager.DemoActivity;
-import com.msi.stockmanager.ui.main.pager.PagerActivity;
+import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
+import com.msi.stockmanager.ui.main.pager.PagerActivity;
 
 public class OverviewActivity extends AppCompatActivity {
     private static final String TAG = OverviewActivity.class.getSimpleName();
@@ -44,7 +45,7 @@ public class OverviewActivity extends AppCompatActivity {
                 binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DemoActivity.class)));
                 binding.btnPager.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
                 binding.fabOverviewAddCash.setOnClickListener(v -> {
-                    //TODO add cash transaction
+                    startActivity(new Intent(OverviewActivity.this, InputCashInOut.class));
                 });
                 binding.fabOverviewAddStock.setOnClickListener(v -> {
                     //TODO add stock transaction

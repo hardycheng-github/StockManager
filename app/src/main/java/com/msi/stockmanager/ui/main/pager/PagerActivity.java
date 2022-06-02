@@ -6,8 +6,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
+import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 import com.msi.stockmanager.databinding.ActivityPagerBinding;
@@ -97,6 +99,16 @@ public class PagerActivity extends AppCompatActivity {
                 binding.tabs.setupWithViewPager(binding.viewPager);
                 binding.tabs.addOnTabSelectedListener(onTabSelectedListener);
 
+                binding.fabCashAdd.setOnClickListener(v -> {
+                    startActivity(new Intent(PagerActivity.this, InputCashInOut.class));
+                });
+                binding.fabHoldingAdd.setOnClickListener(v->{
+                    //TODO add stock transaction
+                });
+                binding.fabOtherAdd.setOnClickListener(v -> {
+                    //TODO add dividend or reduction transaction
+                });
+
                 getSupportActionBar().setTitle(pagerAdapter.getPageTitleId(currentPagePosition));
                 showFab();
             } else if(event.equals(Lifecycle.Event.ON_DESTROY)){
@@ -126,10 +138,21 @@ public class PagerActivity extends AppCompatActivity {
     private void hideFab(boolean animation){
         mHandler.removeMessages(MSG_FAB_SHOW);
         isFabShowing = false;
-        if(!binding.fabCashAdd.isHidden()) binding.fabCashAdd.hide(animation);
-        if(!binding.fabHoldingAdd.isHidden()) binding.fabHoldingAdd.hide(animation);
-        if(binding.fabOtherAdd.isOpened()) binding.fabOtherAdd.close(animation);
-        if(!binding.fabOtherAdd.isMenuButtonHidden()) binding.fabOtherAdd.hideMenuButton(animation);
+        if(!binding.fabCashAdd.isHidden()){
+            binding.fabCashAdd.setVisibility(View.GONE);
+            binding.fabCashAdd.hide(animation);
+        }
+        if(!binding.fabHoldingAdd.isHidden()){
+            binding.fabHoldingAdd.setVisibility(View.GONE);
+            binding.fabHoldingAdd.hide(animation);
+        }
+        if(binding.fabOtherAdd.isOpened()){
+            binding.fabOtherAdd.close(animation);
+        }
+        if(!binding.fabOtherAdd.isMenuButtonHidden()){
+            binding.fabOtherAdd.setVisibility(View.GONE);
+            binding.fabOtherAdd.hideMenuButton(animation);
+        }
     }
 
     private void showFab(){
@@ -148,12 +171,15 @@ public class PagerActivity extends AppCompatActivity {
             isFabShowing = true;
             switch (pagerAdapter.getPageTitleId(currentPagePosition)) {
                 case R.string.tab_text_cash:
+                    binding.fabCashAdd.setVisibility(View.VISIBLE);
                     binding.fabCashAdd.show(true);
                     break;
                 case R.string.tab_text_stock_holding:
+                    binding.fabHoldingAdd.setVisibility(View.VISIBLE);
                     binding.fabHoldingAdd.show(true);
                     break;
                 case R.string.tab_text_other:
+                    binding.fabOtherAdd.setVisibility(View.VISIBLE);
                     binding.fabOtherAdd.showMenuButton(true);
                     break;
                 default:
