@@ -4,12 +4,18 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Stable
 import java.util.*
+import kotlin.collections.HashMap
 
-var StockUtil = MyStockUtil()
+val StockUtil = MyStockUtil()
+
+fun getStockInfoOrNull(stockId: String): StockInfo? {
+    return StockUtil.stockMap.getOrDefault(stockId, null)
+}
 
 class MyStockUtil {
     private val TAG = "StockUtil"
     val stockList: MutableList<StockInfo> = ArrayList()
+    val stockMap: MutableMap<String, StockInfo> = HashMap()
 
     constructor() {
         loadStockList()
@@ -985,6 +991,11 @@ class MyStockUtil {
         stockList.add(StockInfo(id="9946", name="三發地產", isin="TW0009946004", listed="2013/9/17", mType="上市", cType="建材營造業", cfi="ESVUFR"))
         stockList.add(StockInfo(id="9955", name="佳龍", isin="TW0009955005", listed="2008/1/21", mType="上市", cType="其他業", cfi="ESVUFR"))
         stockList.add(StockInfo(id="9958", name="世紀鋼", isin="TW0009958009", listed="2008/3/12", mType="上市", cType="鋼鐵工業", cfi="ESVUFR"))
+
+        stockMap.clear()
+        for(info in stockList){
+            stockMap.put(info.stockId, info)
+        }
 
         Log.i(TAG, "loadStockList complete: item size " + stockList.size)
     }

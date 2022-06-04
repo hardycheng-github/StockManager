@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.DateUtil;
@@ -25,7 +23,6 @@ import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransApi;
 import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.database.DBDefine;
-import com.msi.stockmanager.database.DBHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -140,7 +137,7 @@ public class CashFragment extends Fragment {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        inflater.inflate(R.menu.item_edit, menu);
     }
 
     private int transId = 0;

@@ -4,7 +4,7 @@ import android.app.DatePickerDialog
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -30,7 +31,10 @@ import com.msi.stockmanager.components.searchbar.TextSearchBar
 import com.msi.stockmanager.data.DateUtil
 import com.msi.stockmanager.data.stock.StockInfo
 import com.msi.stockmanager.data.stock.StockUtil
+import com.msi.stockmanager.data.transaction.TransType
 import java.util.*
+
+val itemHeight = 70.dp
 
 @ExperimentalAnimationApi
 @Composable
@@ -51,7 +55,7 @@ fun StockIdSelector(
         }
     }
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
         TextTitle(stringResource(id = R.string.trans_stock_selector))
         AutoCompleteBox(
             items = StockUtil.stockList,
@@ -113,30 +117,25 @@ fun StockIdSelector(
 
 }
 
-object IntegerValidationType : EasyFormsValidationType(
-    regex = "^(\\d+)\$",
-    minLength = 1,
-    maxLength = 6
-)
-
+@ExperimentalFoundationApi
 @Composable
-fun IntegerSelector(easyForm: EasyForms, default: Int = 0, range: IntRange = 0..999999, step: Int = 1, key:Any){
-    val state = easyForm.addAndGetCustomState(key, EasyFormsIntSelectorState(range, default))
+fun IntegerSelector(easyForm: EasyForms, title:String, default: Int = 0, range: IntRange = 0..999999, step: Int = 1, key:Any){
+    val state = easyForm.addAndGetCustomState(key, IntSelectorState(range, default))
     val numStr = state.state
     val btnSize = 32.dp
     val view = LocalView.current
 
-    Row(verticalAlignment = Alignment.CenterVertically){
-        TextTitle(stringResource(id = R.string.trans_stock_amount))
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)){
+        TextTitle(title)
         ConstraintLayout (modifier = Modifier.fillMaxWidth()){
             val (sub, text, add) = createRefs()
             IconButton(onClick = {
                 try {
                     var n = numStr.value.toInt()-step
-                    if(n < range.first) n = range.first
+                    if(n < range.start) n = range.start
                     numStr.value = n.toString()
                 } catch (e: Exception){
-                    numStr.value = "0"
+                    numStr.value = range.start.toString()
                 }
                 state.onValueChangedCallback(numStr.value)
             }, modifier = Modifier.constrainAs(sub){
@@ -144,13 +143,13 @@ fun IntegerSelector(easyForm: EasyForms, default: Int = 0, range: IntRange = 0..
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 height = Dimension.fillToConstraints
-            }) {
+            }, enabled = numStr.value.toIntOrNull() != null && numStr.value.toInt() > range.start){
                 Icon(imageVector = Icons.Filled.RemoveCircle, contentDescription = "Minus", Modifier.size(btnSize))
             }
             OutlinedTextField(
                 value = numStr.value,
                 onValueChange = {
-                    val maxLength = range.last.toString().length
+                    val maxLength = range.endInclusive.toString().length
                     if(it.length > maxLength) numStr.value = it.substring(0, maxLength)
                     else state.onValueChangedCallback(it)
                 },
@@ -176,10 +175,10 @@ fun IntegerSelector(easyForm: EasyForms, default: Int = 0, range: IntRange = 0..
             IconButton(onClick = {
                 try {
                     var n = numStr.value.toInt()+step
-                    if(n > range.last) n = range.last
+                    if(n > range.endInclusive) n = range.endInclusive
                     numStr.value = n.toString()
                 }catch (e: Exception){
-                    numStr.value = "0"
+                    numStr.value = range.start.toString()
                 }
                 state.onValueChangedCallback(numStr.value)
             }, modifier = Modifier.constrainAs(add){
@@ -187,7 +186,7 @@ fun IntegerSelector(easyForm: EasyForms, default: Int = 0, range: IntRange = 0..
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 height = Dimension.fillToConstraints
-            }) {
+            }, enabled = numStr.value.toIntOrNull() != null && numStr.value.toInt() < range.endInclusive){
                 Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "Add", Modifier.size(btnSize))
             }
         }
@@ -195,37 +194,7 @@ fun IntegerSelector(easyForm: EasyForms, default: Int = 0, range: IntRange = 0..
 
 }
 
-@Composable
-fun DatePicker(easyForm: EasyForms, default: Long = Date().time){
-    val defaultDate = Date(default)
-    var dateVal by remember { mutableStateOf(DateUtil.toDateString(default)) }
-    val mDatePickerDialog = DatePickerDialog(
-        LocalContext.current,
-        { picker: DatePicker, y: Int, _m: Int, d: Int ->
-            val m = _m+1
-            Log.d(TAG, "date selected: $y-$m-$d")
-            val selected = Date(y-1900, m-1, d)
-            Log.d(TAG, String.format("date selected2: %04d-%02d-%02d",selected.year, selected.month, selected.date))
-            dateVal = DateUtil.toDateString(selected.time)
-        }, defaultDate.year+1900, defaultDate.month, defaultDate.date
-    )
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        TextTitle(stringResource(id = R.string.trans_stock_date))
-        OutlinedTextField(
-            value = dateVal,
-            onValueChange = {
-                Log.d(TAG, "date text change: $it")
-            },
-            readOnly = true,
-            singleLine = true,
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            enabled = false,
-            modifier = Modifier.clickable { mDatePickerDialog.show() }
-        )
-    }
-}
-
-class EasyFormsIntSelectorState(var range: IntRange, var default: Int):
+class IntSelectorState(var range: IntRange, val default: Int):
     EasyFormsState<MutableState<String>, String>() {
 
     override val state: MutableState<String> = mutableStateOf(default.toString())
@@ -240,7 +209,7 @@ class EasyFormsIntSelectorState(var range: IntRange, var default: Int):
     }
 
     override fun mapToResult(key: Any): EasyFormsResult {
-        return EasyFormsIntSelectorResult(
+        return IntSelectorResult(
             key = key,
             easyFormsErrorState = errorState.value,
             value = state.value,
@@ -249,11 +218,253 @@ class EasyFormsIntSelectorState(var range: IntRange, var default: Int):
 
 }
 
-data class EasyFormsIntSelectorResult(
+data class IntSelectorResult(
     override val key: Any,
     override val easyFormsErrorState: EasyFormsErrorState,
     override val value: String,
 ) : EasyFormsResult.GenericStateResult<String>(
+    key = key,
+    easyFormsErrorState = easyFormsErrorState,
+    value = value,
+)
+
+@ExperimentalFoundationApi
+@Composable
+fun DoubleSelector(easyForm: EasyForms, title:String, default: Double = 0.0, range: ClosedFloatingPointRange<Double> = 0.0..999999.0, step: Double = 1.0, precision:Int = 2, key:Any){
+    val state = easyForm.addAndGetCustomState(key, DoubleSelectorState(range, default, precision))
+    val numStr = state.state
+    val btnSize = 32.dp
+    val view = LocalView.current
+
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)){
+        TextTitle(title)
+        ConstraintLayout (modifier = Modifier.fillMaxWidth()){
+            val (sub, text, add) = createRefs()
+            IconButton(onClick = {
+                try {
+                    var n = numStr.value.toDouble()-step
+                    if(n < range.start) n = range.start
+                    numStr.value = String.format("%."+precision+"f", n);
+                } catch (e: Exception){
+                    numStr.value = String.format("%."+precision+"f", range.start);
+                }
+                state.onValueChangedCallback(numStr.value)
+            }, modifier = Modifier.constrainAs(sub){
+                start.linkTo(parent.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
+            }, enabled = numStr.value.toDoubleOrNull() != null && numStr.value.toDouble() > range.start) {
+                Icon(imageVector = Icons.Filled.RemoveCircle, contentDescription = "Minus", Modifier.size(btnSize))
+            }
+            OutlinedTextField(
+                value = numStr.value,
+                onValueChange = {
+                    val maxLength = String.format("%."+precision+"f", range.endInclusive).length
+                    if(it.length > maxLength) numStr.value = it.substring(0, maxLength)
+                    else state.onValueChangedCallback(it)
+                },
+//                trailingIcon = {
+//                    IconButton(onClick = {
+//                        numStr.value = String.format("%."+precision+"f", 0.0);
+//                        view.clearFocus()
+//                    }) {
+//                        Icon(imageVector = Icons.Filled.Clear, contentDescription = "Clear")
+//                    }
+//                },
+                isError = state.errorState.value == EasyFormsErrorState.INVALID,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.constrainAs(text){
+                    start.linkTo(sub.end)
+                    end.linkTo(add.start)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.wrapContent
+                },
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+            )
+            IconButton(onClick = {
+                try {
+                    var n = numStr.value.toDouble()+step
+                    if(n > range.endInclusive) n = range.endInclusive
+                    numStr.value = String.format("%."+precision+"f", n)
+                } catch (e: Exception){
+                    numStr.value = String.format("%."+precision+"f", range.start);
+                }
+                state.onValueChangedCallback(numStr.value)
+            }, modifier = Modifier.constrainAs(add){
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                height = Dimension.fillToConstraints
+            }, enabled = numStr.value.toDoubleOrNull() != null && numStr.value.toDouble() < range.endInclusive) {
+                Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "Add", Modifier.size(btnSize))
+            }
+        }
+    }
+
+}
+
+class DoubleSelectorState(var range: ClosedFloatingPointRange<Double>, val default: Double, val precision: Int):
+    EasyFormsState<MutableState<String>, String>() {
+
+    override val state: MutableState<String> = mutableStateOf(String.format("%."+precision+"f", default))
+
+    override val onValueChangedCallback: (String) -> Unit = {
+        state.value = it
+        var n = it.toDoubleOrNull()
+        errorState.value = when(n != null && n in range){
+            true -> EasyFormsErrorState.VALID
+            false -> EasyFormsErrorState.INVALID
+        }
+    }
+
+    override fun mapToResult(key: Any): EasyFormsResult {
+        return DoubleSelectorResult(
+            key = key,
+            easyFormsErrorState = errorState.value,
+            value = state.value,
+        )
+    }
+
+}
+
+data class DoubleSelectorResult(
+    override val key: Any,
+    override val easyFormsErrorState: EasyFormsErrorState,
+    override val value: String,
+) : EasyFormsResult.GenericStateResult<String>(
+    key = key,
+    easyFormsErrorState = easyFormsErrorState,
+    value = value,
+)
+
+
+@Composable
+fun DatePicker(easyForm: EasyForms, title: String, default: Long = Date().time, key:Any){
+    val state = easyForm.addAndGetCustomState(key, DatePickerState(DateUtil.toDateString(default))).state
+    val defaultDate = Date(default)
+    val mDatePickerDialog = DatePickerDialog(
+        LocalContext.current,
+        { picker: DatePicker, y: Int, _m: Int, d: Int ->
+            val m = _m+1
+            Log.d(TAG, "date selected: $y-$m-$d")
+            val selected = Date(y-1900, m-1, d)
+            state.value = DateUtil.toDateString(selected.time)
+        }, defaultDate.year+1900, defaultDate.month, defaultDate.date
+    )
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
+        TextTitle(title)
+        OutlinedTextField(
+            value = state.value,
+            onValueChange = {
+                Log.d(TAG, "date text change: $it")
+            },
+            readOnly = true,
+            singleLine = true,
+            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+            modifier = Modifier.clickable { mDatePickerDialog.show() },
+            enabled = false,
+            colors =  TextFieldDefaults.textFieldColors(
+                disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+            )
+
+        )
+    }
+}
+
+class DatePickerState(val default: String): EasyFormsState<MutableState<String>, String>(){
+    override val state: MutableState<String> = mutableStateOf(default)
+
+    override val onValueChangedCallback: (String) -> Unit = {
+        state.value = it
+        errorState.value = when(DateUtil.parseDate(it) > 0){
+            true -> EasyFormsErrorState.VALID
+            false -> EasyFormsErrorState.INVALID
+        }
+    }
+
+    override fun mapToResult(key: Any): EasyFormsResult {
+        return DatePickerResult(
+            key = key,
+            easyFormsErrorState = errorState.value,
+            value = state.value,
+        )
+    }
+}
+
+data class DatePickerResult(
+    override val key: Any,
+    override val easyFormsErrorState: EasyFormsErrorState,
+    override val value: String,
+) : EasyFormsResult.GenericStateResult<String>(
+    key = key,
+    easyFormsErrorState = easyFormsErrorState,
+    value = value,
+)
+
+@Composable
+fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, default: Int = items[0], key:Any){
+    val state = easyForm.addAndGetCustomState(key, TransTypeSelectorState(default)).state
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
+        TextTitle(title)
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.horizontalScroll(rememberScrollState())){
+            for(type in items){
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
+                    .clickable { state.value = type }){
+                    RadioButton(
+                        selected = state.value == type,
+                        onClick = {},
+                        enabled = false,
+                        colors = RadioButtonDefaults.colors(
+                            disabledColor = MaterialTheme.colors.secondary
+                        ),
+                        modifier = Modifier.padding(8.dp)
+                    )
+                    Text(text = transTypeToString(type), modifier = Modifier.padding(end=8.dp))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun transTypeToString(type: Int): String {
+    return when(type){
+        TransType.TRANS_TYPE_STOCK_BUY -> stringResource(id = R.string.TRANS_TYPE_STOCK_BUY)
+        TransType.TRANS_TYPE_STOCK_SELL -> stringResource(id = R.string.TRANS_TYPE_STOCK_SELL)
+        TransType.TRANS_TYPE_CASH_IN -> stringResource(id = R.string.TRANS_TYPE_CASH_IN)
+        TransType.TRANS_TYPE_CASH_OUT -> stringResource(id = R.string.TRANS_TYPE_CASH_OUT)
+        TransType.TRANS_TYPE_CASH_DIVIDEND -> stringResource(id = R.string.TRANS_TYPE_CASH_DIVIDEND)
+        TransType.TRANS_TYPE_STOCK_DIVIDEND -> stringResource(id = R.string.TRANS_TYPE_STOCK_DIVIDEND)
+        TransType.TRANS_TYPE_CASH_REDUCTION -> stringResource(id = R.string.TRANS_TYPE_CASH_REDUCTION)
+        TransType.TRANS_TYPE_STOCK_REDUCTION -> stringResource(id = R.string.TRANS_TYPE_STOCK_REDUCTION)
+        else -> ""
+    }
+}
+
+class TransTypeSelectorState(val default: Int): EasyFormsState<MutableState<Int>, Int>(){
+    override val state: MutableState<Int> = mutableStateOf(default)
+
+    override val onValueChangedCallback: (Int) -> Unit = {
+        state.value = it
+        errorState.value = EasyFormsErrorState.VALID
+    }
+
+    override fun mapToResult(key: Any): EasyFormsResult {
+        return TransTypeSelectorResult(
+            key = key,
+            easyFormsErrorState = errorState.value,
+            value = state.value,
+        )
+    }
+}
+
+data class TransTypeSelectorResult(
+    override val key: Any,
+    override val easyFormsErrorState: EasyFormsErrorState,
+    override val value: Int,
+) : EasyFormsResult.GenericStateResult<Int>(
     key = key,
     easyFormsErrorState = easyFormsErrorState,
     value = value,

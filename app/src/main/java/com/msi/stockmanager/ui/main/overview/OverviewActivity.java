@@ -9,12 +9,16 @@ import androidx.lifecycle.LifecycleEventObserver;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 
 import com.msi.stockmanager.DemoActivity;
 import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
+import com.msi.stockmanager.R;
+import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
 public class OverviewActivity extends AppCompatActivity {
     private static final String TAG = OverviewActivity.class.getSimpleName();
@@ -80,5 +84,28 @@ public class OverviewActivity extends AppCompatActivity {
     public boolean dispatchTouchEvent(MotionEvent ev) {
         if(!isTouchEnable) return true;
         return super.dispatchTouchEvent(ev);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_overview, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.menu_setting) {
+            startActivity(new Intent(OverviewActivity.this, SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

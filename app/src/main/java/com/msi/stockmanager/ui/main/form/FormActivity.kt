@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,8 +25,10 @@ import androidx.constraintlayout.compose.Dimension
 import com.github.k0shk0sh.compose.easyforms.*
 import com.msi.stockmanager.R
 import com.msi.stockmanager.data.Constants
+import com.msi.stockmanager.data.profile.Profile
 import com.msi.stockmanager.data.transaction.TransType
 import com.msi.stockmanager.data.transaction.Transaction
+import com.msi.stockmanager.ui.main.overview.OverviewActivity
 import com.msi.stockmanager.ui.main.pager.PagerActivity
 import com.msi.stockmanager.ui.theme.StockManagerTheme
 import javax.annotation.Nullable
@@ -33,6 +36,7 @@ import javax.annotation.Nullable
 val TAG = "FormActivity"
 
 class FormActivity : ComponentActivity() {
+    @ExperimentalFoundationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         var transObj: Transaction? = null
@@ -54,11 +58,12 @@ class FormActivity : ComponentActivity() {
     }
 }
 
-@Composable
-fun Space(padding: Dp = 16.dp) {
-    Spacer(modifier = Modifier.size(padding))
-}
+//@Composable
+//fun Space(padding: Dp = 16.dp) {
+//    Spacer(modifier = Modifier.size(padding))
+//}
 
+@ExperimentalFoundationApi
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun BuildForm(@Nullable activity: Activity? = null){
@@ -96,17 +101,17 @@ fun BuildForm(@Nullable activity: Activity? = null){
                             width = Dimension.matchParent
                         }
                 ) {
-                    StockIdSelector(selected = "2330", easyForm = easyForm)
-                    Space()
-                    IntegerSelector(easyForm, default = 1000, range=1..999999, step=1000, key=FormKeys.STOCK_AMOUNT)
-                    Space()
-                    DatePicker(easyForm)
-                    Space()
+                    TransTypeSelector(easyForm, key = FormKeys.TRANS_TYPE, title = stringResource(id = R.string.trans_type), items = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_STOCK_SELL))
+                    StockIdSelector(easyForm)
+                    DatePicker(easyForm,title = stringResource(id = R.string.trans_date), key=FormKeys.TRANS_DATE)
+                    DoubleSelector(easyForm, title = stringResource(id = R.string.trans_stock_price), default = 0.0, key=FormKeys.STOCK_PRICE)
+                    IntegerSelector(easyForm, title= stringResource(id = R.string.trans_stock_amount), default = 1000, range=1..999999, step=1000, key=FormKeys.STOCK_AMOUNT)
+                    IntegerSelector(easyForm, title= stringResource(id = R.string.trans_stock_fee), default = Profile.fee_minimum, range= Profile.fee_minimum..999999, step=1, key=FormKeys.FEE)
                 }
                 Button(
                     shape = RoundedCornerShape(0.dp),
                     onClick = {
-                        activity?.startActivity(Intent(activity, PagerActivity::class.java))
+                        activity?.startActivity(Intent(activity, OverviewActivity::class.java))
                     },
                     modifier = Modifier
                         .height(48.dp)
@@ -122,11 +127,13 @@ fun BuildForm(@Nullable activity: Activity? = null){
     }
 }
 
+@ExperimentalFoundationApi
 @Composable
 fun PreviewTest(){
     BuildForm()
 }
 
+@ExperimentalFoundationApi
 @Preview(showBackground = true)
 @Composable
 fun Preview() {
