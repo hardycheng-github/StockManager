@@ -88,11 +88,13 @@ public class TransApi implements ITransApi{
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME));
             trans.stock_amount = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT));
-            trans.cash_amount = cursor.getDouble(
+            trans.stock_price = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE));
+            trans.cash_amount = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT));
-            trans.fee = cursor.getDouble(
+            trans.fee = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE));
-            trans.tax = cursor.getDouble(
+            trans.tax = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX));
             trans.create_time = cursor.getLong(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CREATE_TIME));
@@ -143,11 +145,13 @@ public class TransApi implements ITransApi{
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME));
             trans.stock_amount = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT));
-            trans.cash_amount = cursor.getDouble(
+            trans.stock_price = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE));
+            trans.cash_amount = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT));
-            trans.fee = cursor.getDouble(
+            trans.fee = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE));
-            trans.tax = cursor.getDouble(
+            trans.tax = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX));
             trans.create_time = cursor.getLong(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CREATE_TIME));
@@ -175,6 +179,7 @@ public class TransApi implements ITransApi{
                 trans.trans_type_other_desc);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME, trans.trans_time);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT, trans.stock_amount);
+        values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE, trans.stock_price);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT, trans.cash_amount);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE, trans.fee);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX, trans.tax);
@@ -200,6 +205,7 @@ public class TransApi implements ITransApi{
                 trans.trans_type_other_desc);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME, trans.trans_time);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT, trans.stock_amount);
+        values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE, trans.stock_price);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT, trans.cash_amount);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE, trans.fee);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX, trans.tax);

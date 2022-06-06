@@ -34,6 +34,7 @@
     <string name="trans_stock_amount">成交股數</string>
     <string name="trans_stock_price">成交價格</string>
     <string name="trans_stock_fee">手續費</string>
+    <string name="trans_stock_tax">證交稅</string>
     <string name="trans_date">交易日期</string>
     <string name="trans_type">交易類型</string>
 
@@ -48,6 +49,6 @@
     <string name="title_activity_settings">帳戶設定</string>
     <string name="setting_fee_discount">手續費優惠</string>
     <string name="setting_fee_minimum">最低手續費</string>
-    <string name="title_activity_http_request_demo">HttpRequestDemo</string>
+    <string name="hint_stock_search">請輸入股票代碼或名稱</string>
 
 </resources>

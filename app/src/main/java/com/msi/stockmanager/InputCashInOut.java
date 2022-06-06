@@ -128,7 +128,7 @@ public class InputCashInOut extends AppCompatActivity {
         trans.stock_id = "";
         trans.stock_name = "";
         trans.stock_amount = 0;
-        trans.cash_amount = Double.parseDouble(editTextNumber.getText().toString());
+        trans.cash_amount = Integer.parseInt(editTextNumber.getText().toString());
         trans.fee = 0;
         trans.tax = 0;
         trans.remark = "";
@@ -145,7 +145,7 @@ public class InputCashInOut extends AppCompatActivity {
         trans.stock_id = "";
         trans.stock_name = "";
         trans.stock_amount = 0;
-        trans.cash_amount = Double.parseDouble(editTextNumber.getText().toString());
+        trans.cash_amount = Integer.parseInt(editTextNumber.getText().toString());
         trans.fee = 0;
         trans.tax = 0;
         trans.remark = "";
