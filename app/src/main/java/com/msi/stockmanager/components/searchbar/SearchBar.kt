@@ -39,6 +39,7 @@ import androidx.compose.ui.text.input.KeyboardType
 fun TextSearchBar(
     modifier: Modifier = Modifier,
     value: String,
+    placeholder: String? = null,
     label: String? = null,
     onImeActionClick: () -> Unit = {},
     onClearClick: () -> Unit = {},
@@ -46,18 +47,18 @@ fun TextSearchBar(
     onValueChanged: (String) -> Unit,
     isError: () -> Boolean,
 ){
+    var placeholderFun:@Composable (() -> Unit)? = null
+    if(placeholder != null) placeholderFun = {Text(text = placeholder)}
+    var labelFun:@Composable (() -> Unit)? = null
+    if(label != null) labelFun = {Text(text = label)}
+
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
             .onFocusChanged { onFocusChanged(it) },
         value = value,
-        onValueChange = { query ->
-            onValueChanged(query)
-        },
-        label = {
-            if (label != null) {
-                Text(text = label)
-            }
+        onValueChange = {
+            onValueChanged(it)
         },
         textStyle = MaterialTheme.typography.subtitle1,
         singleLine = true,
@@ -74,5 +75,7 @@ fun TextSearchBar(
             keyboardType = KeyboardType.Text
         ),
         isError = isError(),
+        placeholder = placeholderFun,
+        label = labelFun,
     )
 }

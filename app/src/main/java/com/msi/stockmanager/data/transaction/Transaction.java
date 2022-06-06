@@ -1,20 +1,22 @@
 package com.msi.stockmanager.data.transaction;
 
 import com.msi.stockmanager.data.DateUtil;
+import com.msi.stockmanager.data.profile.Profile;
 
 import java.io.Serializable;
 
 public class Transaction implements Serializable {
     public long trans_id = -1;
-    public long trans_time = 0; //timestamp
+    public long trans_time = System.currentTimeMillis(); //timestamp
     public int trans_type = TransType.TRANS_TYPE_OTHER; //interface TransactionType
     public String trans_type_other_desc = "";
     public String stock_id = "";
     public String stock_name = "";
-    public int stock_amount = 0; //正負值, unit: 零股, 正數表示股數增加, 負數表示股數減少
-    public double cash_amount = 0; //正負值, unit: 新台幣, 正數表示現金轉入, 負數表示現金轉出
-    public double fee = 0; //手續費
-    public double tax = 0; //證交稅
+    public int stock_amount = 1000; //正負值, unit: 零股, 正數表示股數增加, 負數表示股數減少
+    public double stock_price = 0; //正值, unit: 新台幣, 股票價格
+    public int cash_amount = 0; //正負值, unit: 新台幣, 正數表示現金轉入, 負數表示現金轉出
+    public int fee = Profile.fee_minimum; //手續費
+    public int tax = 0; //證交稅
     public String remark = "";
     public long create_time = 0; //timestamp
 
