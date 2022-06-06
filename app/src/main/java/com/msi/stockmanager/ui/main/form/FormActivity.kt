@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +31,9 @@ import com.msi.stockmanager.data.Constants
 import com.msi.stockmanager.data.profile.Profile
 import com.msi.stockmanager.data.stock.IStockApi
 import com.msi.stockmanager.data.stock.StockApi
+import com.msi.stockmanager.data.stock.StockUtil
+import com.msi.stockmanager.data.transaction.ITransApi
+import com.msi.stockmanager.data.transaction.TransApi
 import com.msi.stockmanager.data.transaction.TransType
 import com.msi.stockmanager.data.transaction.Transaction
 import com.msi.stockmanager.ui.main.overview.OverviewActivity
@@ -42,17 +46,22 @@ import kotlin.math.roundToInt
 val TAG = "FormActivity"
 val transTypelist = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_STOCK_SELL)
 var transObj: Transaction = Transaction()
+var transApi: ITransApi? = null
+var easyFormObj: EasyForms? = null
+var activity: Activity? = null
 
 class FormActivity : ComponentActivity() {
     @OptIn(ExperimentalFoundationApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activity = this
         try {
             transObj = intent.getSerializableExtra(Constants.EXTRA_TRANS_OBJECT) as Transaction
         } catch(e: Exception){
             transObj = Transaction()
             transObj.trans_type = transTypelist[0]
         }
+        transApi = TransApi(activity)
         setContent {
             StockManagerTheme {
                 // A surface container using the 'background' color from the theme
@@ -60,7 +69,7 @@ class FormActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    BuildForm(this)
+                    BuildForm()
                 }
             }
         }
@@ -75,8 +84,9 @@ class FormActivity : ComponentActivity() {
 @ExperimentalFoundationApi
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun BuildForm(@Nullable activity: Activity? = null){
+fun BuildForm(){
     val stockApi: IStockApi = StockApi(LocalContext.current)
+    var easyFormAllValid by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,14 +99,22 @@ fun BuildForm(@Nullable activity: Activity? = null){
                     Icon(Icons.Filled.ArrowBack, "back")
                 }},
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        Icon(Icons.Filled.Check, "check", tint = Color.White)
+                    IconButton(onClick = {
+                        submitForm()
+                    }, enabled = easyFormAllValid) {
+                        Icon(Icons.Filled.Check, "check", tint = when(easyFormAllValid){
+                            true -> MaterialTheme.colors.onPrimary
+                            false -> MaterialTheme.colors.onPrimary
+                                .copy(alpha = 0.3f)
+                                .compositeOver(MaterialTheme.colors.primary)
+                        })
                     }
                 }
             )
         },
     ){
         BuildEasyForms { easyForm ->
+            easyFormObj = easyForm
             ConstraintLayout(modifier = Modifier.fillMaxSize()) {
                 // Create references for the composables to constrain
                 val (form, button) = createRefs()
@@ -194,7 +212,6 @@ fun BuildForm(@Nullable activity: Activity? = null){
                         key =FormKeys.FEE,
                         showButtons = false,
                     )
-                    //auto count fee
                     if(stockPriceValue != null && stockAmountValue != null) {
                         val feeStr = Integer.max(floor(stockPriceValue
                                 * Profile.fee_rate
@@ -225,7 +242,7 @@ fun BuildForm(@Nullable activity: Activity? = null){
                 Button(
                     shape = RoundedCornerShape(0.dp),
                     onClick = {
-                        activity?.startActivity(Intent(activity, OverviewActivity::class.java))
+                        submitForm()
                     },
                     modifier = Modifier
                         .constrainAs(button) {
@@ -233,12 +250,49 @@ fun BuildForm(@Nullable activity: Activity? = null){
                             width = Dimension.matchParent
                             height = Dimension.value(48.dp)
                         },
+                    enabled = easyFormAllValid
                 ) {
                     Text(stringResource(id = R.string.btn_check), style=MaterialTheme.typography.h6)
+                }
+                easyFormAllValid = easyForm.observeFormStates().value.all {
+                    it.value == EasyFormsErrorState.VALID
                 }
             }
         }
     }
+}
+
+fun submitForm(){
+    if(easyFormObj != null){
+        easyFormObj!!.formData().forEach {
+            if(it.key == FormKeys.STOCK_SELECTOR){
+                transObj.stock_id = (it as EasyFormsStockSelectorResult).value
+                val info = StockUtil.stockMap.getOrDefault(transObj.stock_id, null)
+                if (info != null) {
+                    transObj.stock_name = info.stockName
+                }
+            } else if(it.key == FormKeys.TRANS_TYPE){
+                transObj.trans_type = (it as TransTypeSelectorResult).value
+            } else if(it.key == FormKeys.TRANS_DATE){
+                transObj.trans_time = (it as DatePickerResult).value
+            } else if(it.key == FormKeys.STOCK_PRICE){
+                transObj.stock_price = (it as DoubleSelectorResult).value.toDoubleOrNull()!!
+            } else if(it.key == FormKeys.STOCK_AMOUNT){
+                transObj.stock_amount = (it as IntSelectorResult).value.toIntOrNull()!!
+            } else if(it.key == FormKeys.FEE){
+                transObj.fee = (it as IntSelectorResult).value.toIntOrNull()!!
+            } else if(it.key == FormKeys.TAX){
+                transObj.tax = (it as IntSelectorResult).value.toIntOrNull()!!
+            }
+        }
+        if(transObj.isIdValid){
+            transApi?.updateTrans(transObj.trans_id, transObj)
+        } else {
+            transApi?.addTrans(transObj)
+        }
+    }
+
+    activity?.finish()
 }
 
 @ExperimentalFoundationApi

@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import com.msi.stockmanager.DemoActivity;
 import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
+import com.msi.stockmanager.ui.main.form.FormActivity;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.ui.main.setting.SettingsActivity;
@@ -52,7 +53,7 @@ public class OverviewActivity extends AppCompatActivity {
                     startActivity(new Intent(OverviewActivity.this, InputCashInOut.class));
                 });
                 binding.fabOverviewAddStock.setOnClickListener(v -> {
-                    //TODO add stock transaction
+                    startActivity(new Intent(OverviewActivity.this, FormActivity.class));
                 });
                 binding.fabOverviewAddOther.setOnClickListener(v -> {
                     //TODO add dividend or reduction transaction

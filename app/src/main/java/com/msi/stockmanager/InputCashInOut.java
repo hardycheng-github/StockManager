@@ -129,6 +129,9 @@ public class InputCashInOut extends AppCompatActivity {
         trans.stock_name = "";
         trans.stock_amount = 0;
         trans.cash_amount = Integer.parseInt(editTextNumber.getText().toString());
+        if(selected != R.id.radioInCash){
+            trans.cash_amount = -trans.cash_amount;
+        }
         trans.fee = 0;
         trans.tax = 0;
         trans.remark = "";
@@ -146,6 +149,9 @@ public class InputCashInOut extends AppCompatActivity {
         trans.stock_name = "";
         trans.stock_amount = 0;
         trans.cash_amount = Integer.parseInt(editTextNumber.getText().toString());
+        if(selected != R.id.radioInCash){
+            trans.cash_amount = -trans.cash_amount;
+        }
         trans.fee = 0;
         trans.tax = 0;
         trans.remark = "";

@@ -15,7 +15,7 @@ import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String TAG = DBHelper.class.getSimpleName();
-    private final static int _DBVersion = 4;
+    private final static int _DBVersion = 3;
     private final static String _DBName = "stockAccounting.db";
 
     public DBHelper(@Nullable Context context) {

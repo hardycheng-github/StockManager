@@ -1,7 +1,6 @@
 package com.msi.stockmanager.ui.main.form
 
 import android.app.DatePickerDialog
-import android.graphics.drawable.Icon
 import android.util.Log
 import android.widget.DatePicker
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -42,15 +41,15 @@ val itemHeight = 70.dp
 @Composable
 fun StockIdSelector(
     easyForm: EasyForms,
-    selected: String = "",
+    default: String = "",
 ){
     val state = easyForm.addAndGetCustomState(FormKeys.STOCK_SELECTOR, EasyFormsStockSelectorState())
 
     var value by remember { mutableStateOf("") }
     var isFocus by remember { mutableStateOf(false)}
-    if(selected.isNotEmpty()){
+    if(default.isNotEmpty()){
         for(stock in StockUtil.stockList){
-            if(stock.stockId == selected){
+            if(stock.stockId == default){
                 value = stock.getStockNameWithId()
                 state.onValueChangedCallback(stock)
             }
@@ -134,6 +133,7 @@ fun IntegerSelector(
     var numStr by remember { mutableStateOf(state.state.value)}
     val btnSize = 32.dp
     val view = LocalView.current
+//    state.onValueChangedCallback(numStr)
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)){
         TextTitle(title)
@@ -277,6 +277,7 @@ fun DoubleSelector(
     var numStr by remember { mutableStateOf(state.state.value) }
     val btnSize = 32.dp
     val view = LocalView.current
+//    state.onValueChangedCallback(numStr)
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)){
         TextTitle(title)
@@ -420,6 +421,7 @@ fun DatePicker(easyForm: EasyForms, title: String, default: Long = Date().time, 
             state.onValueChangedCallback(selected.time)
         }, defaultDate.year+1900, defaultDate.month, defaultDate.date
     )
+//    state.onValueChangedCallback(default)
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
         TextTitle(title)
         OutlinedTextField(
@@ -472,6 +474,7 @@ data class DatePickerResult(
 @Composable
 fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, default: Int = items[0], key:Any){
     val state = easyForm.addAndGetCustomState(key, TransTypeSelectorState(default))
+//    state.onValueChangedCallback(default)
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
         TextTitle(title)
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.horizontalScroll(rememberScrollState())){

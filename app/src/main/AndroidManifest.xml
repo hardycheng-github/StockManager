@@ -23,17 +23,18 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.StockManager"
             android:windowSoftInputMode="adjustResize">
+        </activity>
+        <activity
+            android:name=".ui.main.overview.OverviewActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.StockManager.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.main.overview.OverviewActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.StockManager.NoActionBar"></activity>
         <activity
             android:name=".ui.main.pager.PagerActivity"
             android:exported="true"
