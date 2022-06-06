@@ -13,6 +13,7 @@ import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 import com.msi.stockmanager.databinding.ActivityPagerBinding;
+import com.msi.stockmanager.ui.main.form.FormActivity;
 import com.msi.stockmanager.ui.main.overview.OverviewActivity;
 
 import androidx.lifecycle.Lifecycle;
@@ -103,7 +104,7 @@ public class PagerActivity extends AppCompatActivity {
                     startActivity(new Intent(PagerActivity.this, InputCashInOut.class));
                 });
                 binding.fabHoldingAdd.setOnClickListener(v->{
-                    //TODO add stock transaction
+                    startActivity(new Intent(PagerActivity.this, FormActivity.class));
                 });
                 binding.fabOtherAdd.setOnClickListener(v -> {
                     //TODO add dividend or reduction transaction

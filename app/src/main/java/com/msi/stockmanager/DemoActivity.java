@@ -241,9 +241,7 @@ public class DemoActivity extends AppCompatActivity {
         for (int i=0;i<records.size();i++){
             Transaction item = (Transaction) records.get(i);
 
-            showPanel.append(String.format("trans_id : %d, trans_time : %s, "
-                            + "stock_id : %s, cash_amount : %.2f \n\n"
-                    , item.trans_id, DateUtil.toDateString(item.trans_time), item.stock_id, item.cash_amount));
+            showPanel.append(item.toString());
         }
     }
     void updateTrans(int id){

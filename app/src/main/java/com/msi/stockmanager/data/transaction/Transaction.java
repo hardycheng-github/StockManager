@@ -22,10 +22,10 @@ public class Transaction implements Serializable {
 
     @Override
     public String toString(){
-        return String.format("trans_id %d, trans_time %s, trans_type %d, trans_type_other_desc %s, "
-                + "stock_id %s, stock_name %s, stock_amount %d, cash_amount %.2f, fee %.2f, tax %.2f, remark %s"
+        return String.format("=== trans_id: %d ===\ntrans_time: %s\ntrans_type: %d\ntrans_type_other_desc: %s\n"
+                + "stock_id: %s\nstock_name: %s\nstock_amount: %d\nstock_price: %.2f\ncash_amount: %d\nfee: %d\ntax: %d\nremark: %s\n"
         , trans_id, DateUtil.toDateTimeString(trans_time), trans_type, trans_type_other_desc
-        , stock_id, stock_name, stock_amount, cash_amount, fee, tax, remark);
+        , stock_id, stock_name, stock_amount, stock_price, cash_amount, fee, tax, remark);
     }
 
     public boolean isIdValid(){
