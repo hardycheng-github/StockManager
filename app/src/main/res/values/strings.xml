@@ -35,8 +35,12 @@
     <string name="trans_stock_price">成交價格</string>
     <string name="trans_stock_fee">手續費</string>
     <string name="trans_stock_tax">證交稅</string>
+    <string name="trans_cash_total_in">總存入金額</string>
+    <string name="trans_cash_total_out">總提領金額</string>
     <string name="trans_date">交易日期</string>
     <string name="trans_type">交易類型</string>
+    <string name="trans_cash">交易金額</string>
+    <string name="trans_remark">交易備註</string>
 
     <string name="TRANS_TYPE_STOCK_BUY">股票買入</string>
     <string name="TRANS_TYPE_STOCK_SELL">股票賣出</string>
