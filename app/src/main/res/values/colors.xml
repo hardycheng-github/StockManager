@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="main_s">#99bbff</color>
-    <color name="main_m">#1976d2</color>
-    <color name="main_l">#004ba0</color>
+    <color name="main_s">#ccc</color>
+    <color name="main_m">#666</color>
+    <color name="main_l">#333</color>
     <color namn="sub_s">#ffe54c</color>
     <color name="sub_m">#ffc107</color>
     <color name="sub_l">#c68400</color>
