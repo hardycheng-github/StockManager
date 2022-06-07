@@ -128,7 +128,9 @@ fun IntegerSelector(
     step: Int = 1,
     key:Any,
     showButtons: Boolean = true,
-    trailingIcon: @Composable (() -> Unit)? = null){
+    trailingIcon: @Composable (() -> Unit)? = null,
+    readOnly: Boolean = false,
+){
     val state = easyForm.addAndGetCustomState(key, IntSelectorState(range, default))
     var numStr by remember { mutableStateOf(state.state.value)}
     val btnSize = 32.dp
@@ -249,6 +251,10 @@ class IntSelectorState(range: IntRange, default: Int):
         )
     }
 
+    init{
+        onValueChangedCallback(state.value)
+    }
+
 }
 
 data class IntSelectorResult(
@@ -272,7 +278,9 @@ fun DoubleSelector(
     precision:Int = 2,
     key:Any,
     showButtons: Boolean = true,
-    trailingIcon: @Composable (() -> Unit)? = null){
+    trailingIcon: @Composable (() -> Unit)? = null,
+    readOnly: Boolean = false,
+){
     val state = easyForm.addAndGetCustomState(key, DoubleSelectorState(range, default, precision))
     var numStr by remember { mutableStateOf(state.state.value) }
     val btnSize = 32.dp
@@ -393,6 +401,10 @@ class DoubleSelectorState(range: ClosedFloatingPointRange<Double>, default: Doub
         )
     }
 
+    init{
+        onValueChangedCallback(state.value)
+    }
+
 }
 
 data class DoubleSelectorResult(
@@ -458,6 +470,10 @@ class DatePickerState(default: Long): EasyFormsState<MutableState<Long>, Long>()
             easyFormsErrorState = errorState.value,
             value = state.value,
         )
+    }
+
+    init{
+        onValueChangedCallback(state.value)
     }
 }
 
@@ -526,6 +542,10 @@ class TransTypeSelectorState(default: Int): EasyFormsState<MutableState<Int>, In
             easyFormsErrorState = errorState.value,
             value = state.value,
         )
+    }
+
+    init{
+        onValueChangedCallback(state.value)
     }
 }
 

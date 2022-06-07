@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,9 +7,13 @@
     tools:context=".ui.main.pager.PagerActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.StockManager.AppBarOverlay">
+        android:theme="@style/Theme.StockManager.AppBarOverlay"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/pager_toolbar"
@@ -17,36 +21,47 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/Theme.StockManager.PopupOverlay" />
-
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        app:layout_constraintBottom_toTopOf="@+id/tabs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="wrap_content"
+        app:tabIndicatorGravity="stretch"
+        app:tabIndicatorColor="?attr/colorPrimaryVariant"
+        app:tabSelectedTextColor="?attr/colorOnPrimary"
+        app:tabTextColor="?attr/colorOnPrimary"
+        android:background="?attr/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
     <com.github.clans.fab.FloatingActionButton
         android:id="@+id/fab_cash_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:fab_showAnimation="@anim/fab_scale_up"
-        app:fab_hideAnimation="@anim/fab_scale_down"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tabs"
         app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_baseline_add_36"
         app:fab_colorNormal="@color/sub_m"
         app:fab_colorPressed="@color/sub_l"
         app:fab_colorRipple="@color/ripple"
-        app:fab_size="normal"
-        android:src="@drawable/ic_baseline_add_36">
+        app:fab_hideAnimation="@anim/fab_scale_down"
+        app:fab_showAnimation="@anim/fab_scale_up"
+        app:fab_size="normal">
 
     </com.github.clans.fab.FloatingActionButton>
 
@@ -54,18 +69,17 @@
         android:id="@+id/fab_holding_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/tabs"
         app:layout_constraintEnd_toEndOf="parent"
-        app:fab_showAnimation="@anim/fab_scale_up"
-        app:fab_hideAnimation="@anim/fab_scale_down"
+        android:src="@drawable/ic_baseline_add_36"
         app:fab_colorNormal="@color/sub_m"
         app:fab_colorPressed="@color/sub_l"
         app:fab_colorRipple="@color/ripple"
-        app:fab_size="normal"
-        android:src="@drawable/ic_baseline_add_36">
+        app:fab_hideAnimation="@anim/fab_scale_down"
+        app:fab_showAnimation="@anim/fab_scale_up"
+        app:fab_size="normal">
 
     </com.github.clans.fab.FloatingActionButton>
 
@@ -73,50 +87,51 @@
         android:id="@+id/fab_other_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
-        app:menu_fab_show_animation="@anim/fab_scale_up"
-        app:menu_fab_hide_animation="@anim/fab_scale_down"
+        app:layout_constraintBottom_toTopOf="@+id/tabs"
+        app:layout_constraintEnd_toEndOf="parent"
         app:menu_colorNormal="@color/sub_m"
         app:menu_colorPressed="@color/sub_l"
         app:menu_colorRipple="@color/ripple"
+        app:menu_fab_hide_animation="@anim/fab_scale_down"
+        app:menu_fab_label="@string/add_trans"
+        app:menu_fab_show_animation="@anim/fab_scale_up"
         app:menu_fab_size="normal"
-        app:menu_icon="@drawable/ic_baseline_add_36"
-        app:menu_fab_label="@string/add_trans">
+        app:menu_icon="@drawable/ic_baseline_add_36">
+
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_overview_add_cash"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="mini"
+            android:src="@drawable/ic_baseline_attach_money_24"
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
             app:fab_label="@string/add_trans_cash"
-            android:src="@drawable/ic_baseline_attach_money_24"
-            />
+            app:fab_size="mini" />
+
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_overview_add_stock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="mini"
+            android:src="@drawable/ic_baseline_candlestick_chart_24"
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
             app:fab_label="@string/add_trans_stock"
-            android:src="@drawable/ic_baseline_candlestick_chart_24"
-            />
+            app:fab_size="mini" />
+
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_overview_add_other"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="mini"
+            android:src="@drawable/ic_baseline_wifi_protected_setup_24"
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
             app:fab_label="@string/add_trans_other"
-            android:src="@drawable/ic_baseline_wifi_protected_setup_24"
-            />
+            app:fab_size="mini" />
     </com.github.clans.fab.FloatingActionMenu>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

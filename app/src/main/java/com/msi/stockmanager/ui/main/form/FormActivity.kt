@@ -49,6 +49,8 @@ var transObj: Transaction = Transaction()
 var transApi: ITransApi? = null
 var easyFormObj: EasyForms? = null
 var activity: Activity? = null
+var stockPriceLast = 0.0
+var stockAmountLast = 0
 
 class FormActivity : ComponentActivity() {
     @OptIn(ExperimentalFoundationApi::class)
@@ -213,23 +215,32 @@ fun BuildForm(){
                         showButtons = false,
                     )
                     if(stockPriceValue != null && stockAmountValue != null) {
-                        val feeStr = Integer.max(floor(stockPriceValue
-                                * Profile.fee_rate
-                                * Profile.fee_discount
-                                * stockAmountValue)
-                            .toInt(), Profile.fee_minimum)
-                            .toString()
-                        stockFeeState.onValueChangedCallback(feeStr)
+                        if(stockPriceValue != stockPriceLast || stockAmountValue != stockAmountLast) {
+                            stockPriceLast = stockPriceValue
+                            stockAmountLast = stockAmountValue
+                            val feeStr = Integer.max(
+                                floor(
+                                    stockPriceValue
+                                            * Profile.fee_rate
+                                            * Profile.fee_discount
+                                            * stockAmountValue
+                                ).toInt(), Profile.fee_minimum
+                            ).toString()
+                            stockFeeState.onValueChangedCallback(feeStr)
+
+                            if (stockPriceValue != null && stockAmountValue != null) {
+                                val taxStr = floor(
+                                    stockPriceValue
+                                            * Profile.tax_rate
+                                            * stockAmountValue
+                                )
+                                    .toInt()
+                                    .toString()
+                                stockTaxState.onValueChangedCallback(taxStr)
+                            }
+                        }
                     }
                     if(transTypeState.state.value == TransType.TRANS_TYPE_STOCK_SELL){
-                        if(stockPriceValue != null && stockAmountValue != null) {
-                            val taxStr = floor(stockPriceValue
-                                    * Profile.tax_rate
-                                    * stockAmountValue)
-                                .toInt()
-                                .toString()
-                            stockTaxState.onValueChangedCallback(taxStr)
-                        }
                         IntegerSelector(easyForm,
                             title = stringResource(id = R.string.trans_stock_tax),
                             default = transObj.tax,
@@ -281,10 +292,16 @@ fun submitForm(){
                 transObj.stock_amount = (it as IntSelectorResult).value.toIntOrNull()!!
             } else if(it.key == FormKeys.FEE){
                 transObj.fee = (it as IntSelectorResult).value.toIntOrNull()!!
-            } else if(it.key == FormKeys.TAX){
+            } else if(it.key == FormKeys.TAX &&
+                transObj.trans_type == TransType.TRANS_TYPE_STOCK_SELL){
                 transObj.tax = (it as IntSelectorResult).value.toIntOrNull()!!
             }
         }
+        transObj.cash_amount = floor(transObj.stock_amount * transObj.stock_price).toInt()
+        if(transObj.trans_type == TransType.TRANS_TYPE_STOCK_BUY){
+            transObj.cash_amount = -transObj.cash_amount
+        }
+        transObj.cash_amount = transObj.cash_amount - transObj.fee - transObj.tax
         if(transObj.isIdValid){
             transApi?.updateTrans(transObj.trans_id, transObj)
         } else {
