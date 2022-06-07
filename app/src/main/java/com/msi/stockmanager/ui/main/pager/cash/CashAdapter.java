@@ -7,7 +7,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.cardview.widget.CardView;
+
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.DateUtil;
+import com.msi.stockmanager.data.transaction.TransType;
+import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.database.DBDefine;
 
 import java.util.ArrayList;
@@ -15,13 +20,19 @@ import java.util.HashMap;
 
 public class CashAdapter extends BaseAdapter {
     private LayoutInflater myInflater;
-    ArrayList<HashMap> list = new ArrayList<>();
+    ArrayList<Transaction> list = new ArrayList<>();
 
-    public CashAdapter(Context context) {
+    interface ItemLongClickListener {
+        void onLongClick(View view, int position, Transaction trans);
+    }
+    private ItemLongClickListener longClickListener;
+
+    public CashAdapter(Context context, ItemLongClickListener listener) {
+        longClickListener = listener;
         myInflater = LayoutInflater.from(context);
     }
 
-    public void setItems(ArrayList<HashMap> items){
+    public void setItems(ArrayList<Transaction> items){
         list.clear();
         list.addAll(items);
     }
@@ -45,39 +56,45 @@ public class CashAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         ViewTag viewTag;
 
+        Transaction trans = list.get(position);
         if(convertView == null) {
 
             convertView = myInflater.inflate(R.layout.fragment_cash_item, null);
 
 
             viewTag = new ViewTag(
-                     convertView.findViewById(R.id.textTranType),
-                     convertView.findViewById(R.id.textCash),
-                     convertView.findViewById(R.id.textTranDate)
+                    convertView.findViewById(R.id.cardView),
+                    convertView.findViewById(R.id.textTranType),
+                    convertView.findViewById(R.id.textCash),
+                    convertView.findViewById(R.id.textTranDate)
             );
+            viewTag.cardView.setOnLongClickListener(v -> {
+                longClickListener.onLongClick(viewTag.cardView, position, trans);
+                return true;
+            });
             convertView.setTag(viewTag);
 
         } else {
             viewTag = (ViewTag) convertView.getTag();
         }
-
-        int  i = (int) list.get(position).get(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TYPE);
-        if ( i == 3){
-            viewTag.text1.setText("提領金額");
+        if (trans.trans_type == TransType.TRANS_TYPE_CASH_OUT){
+            viewTag.text1.setText(R.string.TRANS_TYPE_CASH_OUT);
         }else {
-            viewTag.text1.setText("存入金額");
+            viewTag.text1.setText(R.string.TRANS_TYPE_CASH_IN);
         }
 
-        viewTag.text2.setText(list.get(position).get(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT).toString());
-        viewTag.text3.setText(list.get(position).get(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME).toString());
+        viewTag.text2.setText(Math.abs(trans.cash_amount)+"");
+        viewTag.text3.setText(DateUtil.toDateString(trans.trans_time));
 
         return convertView;
     }
 
     public class ViewTag{
         TextView text1, text2,text3;
+        CardView cardView;
 
-        public ViewTag(TextView textview1, TextView textview2, TextView textview3){
+        public ViewTag(CardView cardView, TextView textview1, TextView textview2, TextView textview3){
+            this.cardView = cardView;
             this.text1 = textview1;
             this.text2 = textview2;
             this.text3 = textview3;
