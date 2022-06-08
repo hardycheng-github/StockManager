@@ -70,7 +70,7 @@
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/add_trans_cash"
+            app:fab_label="@string/title_trans_cash"
             android:src="@drawable/ic_baseline_attach_money_24"
             />
         <com.github.clans.fab.FloatingActionButton
@@ -81,7 +81,7 @@
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/add_trans_stock"
+            app:fab_label="@string/title_trans_stock"
             android:src="@drawable/ic_baseline_candlestick_chart_24"
             />
         <com.github.clans.fab.FloatingActionButton
@@ -92,7 +92,7 @@
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/add_trans_other"
+            app:fab_label="@string/title_trans_other"
             android:src="@drawable/ic_baseline_wifi_protected_setup_24"
             />
     </com.github.clans.fab.FloatingActionMenu>

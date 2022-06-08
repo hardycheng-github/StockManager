@@ -27,7 +27,7 @@ import java.util.Date;
 
 public class InputCashInOut extends AppCompatActivity {
     private final static String TAG = "InputCashInOut";
-    private RadioButton radioInCash, radioOutcash;
+    private RadioButton radioInCash, radioOutCash;
     private EditText editTextDate,editTextNumber;
     private Button transfer_btn;
     private RadioGroup radioGroup1;
@@ -54,7 +54,7 @@ public class InputCashInOut extends AppCompatActivity {
 
     void initView(){
         radioInCash  = findViewById(R.id.radioInCash);
-        radioOutcash =  findViewById(R.id.radioOutcash);
+        radioOutCash =  findViewById(R.id.radioOutcash);
         editTextDate =  findViewById(R.id.editTextDate);
         editTextNumber =  findViewById(R.id.editTextNumber);
         transfer_btn =  findViewById(R.id.transfer_btn);
@@ -68,7 +68,7 @@ public class InputCashInOut extends AppCompatActivity {
                 if (trans.trans_type == TransType.TRANS_TYPE_CASH_IN) {
                     radioInCash.toggle();
                 } else {
-                    radioOutcash.toggle();
+                    radioOutCash.toggle();
                 }
                 String dateStr = DateUtil.toDateString(trans.trans_time);
                 editTextDate.setText(dateStr);

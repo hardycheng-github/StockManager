@@ -8,11 +8,11 @@
     <string name="title_activity_overview">帳戶總覽</string>
 
     <string name="add_trans">新增交易</string>
-    <string name="add_trans_cash">轉帳紀錄</string>
-    <string name="add_trans_stock">股票買賣</string>
-    <string name="add_trans_other">股利或減資</string>
-    <string name="add_trans_dividend">股利</string>
-    <string name="add_trans_reduction">減資</string>
+    <string name="title_trans_cash">轉帳紀錄</string>
+    <string name="title_trans_stock">股票買賣</string>
+    <string name="title_trans_other">股利或減資</string>
+    <string name="title_trans_dividend">股利</string>
+    <string name="title_trans_reduction">減資</string>
     <string name="title_activity_test_form">TestFormActivity</string>
     <string name="title_activity_form">FormActivity</string>
     <!-- TODO: Remove or change this placeholder text -->
