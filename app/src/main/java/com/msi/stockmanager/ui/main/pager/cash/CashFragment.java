@@ -100,24 +100,17 @@ public class CashFragment extends Fragment {
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
-                        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
                         switch(item.getItemId())
                         {
                             case R.id.item1:
-                                Log.d("ContextItem","Edit"+info.position);
                                 Intent intent = new Intent(getContext(), InputCashInOut.class);
-                                intent.putExtra("transId", listAdapter.get(info.position).trans_id);
+                                intent.putExtra("transId", listAdapter.get(position).trans_id);
                                 startActivity(intent);
-
-
                                 return true;
                             case R.id.item2:
-                                Log.d("ContextItem","Del"+info.position);
-                                transApi.removeTrans(listAdapter.get(info.position).trans_id);
+                                transApi.removeTrans(listAdapter.get(position).trans_id);
                                 showInList();
-
                                 return true;
-
                         }
                         return onOptionsItemSelected(item);
                     }
