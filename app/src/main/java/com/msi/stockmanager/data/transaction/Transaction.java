@@ -20,6 +20,15 @@ public class Transaction implements Serializable {
     public String remark = "";
     public long create_time = 0; //timestamp
 
+    public Transaction(){
+        super();
+    }
+
+    public Transaction(int type){
+        super();
+        trans_type = type;
+    }
+
     @Override
     public String toString(){
         return String.format("=== trans_id: %d ===\ntrans_time: %s\ntrans_type: %d\ntrans_type_other_desc: %s\n"

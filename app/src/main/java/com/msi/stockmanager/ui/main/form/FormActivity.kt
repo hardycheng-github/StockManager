@@ -36,10 +36,12 @@ import com.msi.stockmanager.data.transaction.TransApi
 import com.msi.stockmanager.data.transaction.TransType
 import com.msi.stockmanager.data.transaction.Transaction
 import com.msi.stockmanager.ui.theme.StockManagerTheme
+import kotlin.math.abs
 import kotlin.math.floor
 
 val TAG = "FormActivity"
 var transTypeList: List<Int> = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_STOCK_SELL)
+val cashMinusList: List<Int> = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_CASH_OUT)
 var transObj: Transaction = Transaction()
 var transApi: ITransApi? = null
 var easyFormObj: EasyForms? = null
@@ -171,7 +173,10 @@ fun BuildForm(){
                             width = Dimension.matchParent
                         }
                 ) {
-                    buildStockForm()
+                    when(transEditType){
+                        TransEditType.CASH -> buildCashForm()
+                        TransEditType.STOCK -> buildStockForm()
+                    }
                 }
                 Button(
                     shape = RoundedCornerShape(0.dp),
@@ -195,6 +200,36 @@ fun BuildForm(){
         }
     }
 }
+
+@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
+@Composable
+fun buildCashForm(){
+    val easyForm = easyFormObj!!
+    val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
+    val cashAmountRange = 1..999999999
+    if(!transObj.isIdValid) {
+        TransTypeSelector(
+            easyForm,
+            key = FormKeys.TRANS_TYPE,
+            title = stringResource(id = R.string.trans_type),
+            items = transTypeList,
+            default = transObj.trans_type
+        )
+    }
+    DatePicker(easyForm,
+        title = stringResource(id = R.string.trans_date),
+        key=FormKeys.TRANS_DATE,
+        default = transObj.trans_time
+    )
+    IntegerSelector(easyForm,
+        title = stringResource(id = R.string.trans_cash),
+        default = abs(transObj.cash_amount),
+        range = cashAmountRange,
+        key =FormKeys.CASH_AMOUNT,
+        step = 1000
+    )
+}
+
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -224,12 +259,15 @@ fun buildStockForm(){
     var trailingSyncing by remember{ mutableStateOf(false)}
     var priceSyncFormCloud :@Composable (() -> Unit)? = null
 
-    TransTypeSelector(easyForm,
-        key = FormKeys.TRANS_TYPE,
-        title = stringResource(id = R.string.trans_type),
-        items = transTypeList,
-        default = transObj.trans_type
-    )
+    if(!transObj.isIdValid) {
+        TransTypeSelector(
+            easyForm,
+            key = FormKeys.TRANS_TYPE,
+            title = stringResource(id = R.string.trans_type),
+            items = transTypeList,
+            default = transObj.trans_type
+        )
+    }
     StockIdSelector(easyForm, transObj.stock_id)
     DatePicker(easyForm,
         title = stringResource(id = R.string.trans_date),
@@ -342,13 +380,19 @@ fun submitForm(){
             } else if(it.key == FormKeys.TAX &&
                 transObj.trans_type == TransType.TRANS_TYPE_STOCK_SELL){
                 transObj.tax = (it as IntSelectorResult).value.toIntOrNull()!!
+            } else if(it.key == FormKeys.CASH_AMOUNT){
+                transObj.cash_amount = (it as IntSelectorResult).value.toIntOrNull()!!
             }
         }
-        transObj.cash_amount = floor(transObj.stock_amount * transObj.stock_price).toInt()
-        if(transObj.trans_type == TransType.TRANS_TYPE_STOCK_BUY){
+        if(transEditType == TransEditType.STOCK) {
+            transObj.cash_amount = floor(transObj.stock_amount * transObj.stock_price).toInt()
+        }
+        if(transObj.trans_type in cashMinusList){
             transObj.cash_amount = -transObj.cash_amount
         }
-        transObj.cash_amount = transObj.cash_amount - transObj.fee - transObj.tax
+        if(transEditType == TransEditType.STOCK) {
+            transObj.cash_amount = transObj.cash_amount - transObj.fee - transObj.tax
+        }
         if(transObj.isIdValid){
             transApi?.updateTrans(transObj.trans_id, transObj)
         } else {

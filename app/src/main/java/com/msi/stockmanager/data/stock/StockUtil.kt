@@ -17,7 +17,7 @@ class MyStockUtil {
     val stockList: MutableList<StockInfo> = ArrayList()
     val stockMap: MutableMap<String, StockInfo> = HashMap()
 
-    constructor() {
+    init {
         loadStockList()
     }
 

@@ -19,12 +19,15 @@ import android.widget.TextView;
 
 import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransApi;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.database.DBDefine;
+import com.msi.stockmanager.ui.main.form.FormActivity;
+import com.msi.stockmanager.ui.main.overview.OverviewActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -103,8 +106,8 @@ public class CashFragment extends Fragment {
                         switch(item.getItemId())
                         {
                             case R.id.item1:
-                                Intent intent = new Intent(getContext(), InputCashInOut.class);
-                                intent.putExtra("transId", listAdapter.get(position).trans_id);
+                                Intent intent = new Intent(getContext(), FormActivity.class);
+                                intent.putExtra(Constants.EXTRA_TRANS_OBJECT, listAdapter.get(position));
                                 startActivity(intent);
                                 return true;
                             case R.id.item2:
