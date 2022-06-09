@@ -16,6 +16,9 @@ import android.view.MotionEvent;
 import com.msi.stockmanager.DemoActivity;
 import com.msi.stockmanager.HttpDemoActivity;
 import com.msi.stockmanager.InputCashInOut;
+import com.msi.stockmanager.data.Constants;
+import com.msi.stockmanager.data.transaction.TransType;
+import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 import com.msi.stockmanager.ui.main.form.FormActivity;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
@@ -52,13 +55,24 @@ public class OverviewActivity extends AppCompatActivity {
                 binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DemoActivity.class)));
                 binding.btnPager.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
                 binding.fabOverviewAddCash.setOnClickListener(v -> {
-                    startActivity(new Intent(OverviewActivity.this, InputCashInOut.class));
+                    Intent intent = new Intent(OverviewActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_CASH_IN));
+                    startActivity(intent);
                 });
                 binding.fabOverviewAddStock.setOnClickListener(v -> {
-                    startActivity(new Intent(OverviewActivity.this, FormActivity.class));
+                    Intent intent = new Intent(OverviewActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_BUY));
+                    startActivity(intent);
                 });
-                binding.fabOverviewAddOther.setOnClickListener(v -> {
-                    //TODO add dividend or reduction transaction
+                binding.fabOverviewAddDividend.setOnClickListener(v -> {
+                    Intent intent = new Intent(OverviewActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_DIVIDEND));
+                    startActivity(intent);
+                });
+                binding.fabOverviewAddReduction.setOnClickListener(v -> {
+                    Intent intent = new Intent(OverviewActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_REDUCTION));
+                    startActivity(intent);
                 });
             } else if(event.equals(Lifecycle.Event.ON_START)){
                 isTouchEnable = true;

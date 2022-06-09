@@ -11,6 +11,9 @@ import android.view.View;
 import com.google.android.material.tabs.TabLayout;
 import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.Constants;
+import com.msi.stockmanager.data.transaction.TransType;
+import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 import com.msi.stockmanager.databinding.ActivityPagerBinding;
 import com.msi.stockmanager.ui.main.form.FormActivity;
@@ -101,10 +104,14 @@ public class PagerActivity extends AppCompatActivity {
                 binding.tabs.addOnTabSelectedListener(onTabSelectedListener);
 
                 binding.fabCashAdd.setOnClickListener(v -> {
-                    startActivity(new Intent(PagerActivity.this, InputCashInOut.class));
+                    Intent intent = new Intent(PagerActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_CASH_IN));
+                    startActivity(intent);
                 });
                 binding.fabHoldingAdd.setOnClickListener(v->{
-                    startActivity(new Intent(PagerActivity.this, FormActivity.class));
+                    Intent intent = new Intent(PagerActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_BUY));
+                    startActivity(intent);
                 });
                 binding.fabOtherAdd.setOnClickListener(v -> {
                     //TODO add dividend or reduction transaction

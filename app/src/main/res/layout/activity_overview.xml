@@ -97,16 +97,27 @@
             android:src="@drawable/ic_baseline_candlestick_chart_24"
             />
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_overview_add_other"
+            android:id="@+id/fab_overview_add_dividend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:fab_size="mini"
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/title_trans_other"
-            android:src="@drawable/ic_baseline_wifi_protected_setup_24"
+            app:fab_label="@string/title_trans_dividend"
+            android:src="@drawable/ic_baseline_savings_24"
             />
+
+        <com.github.clans.fab.FloatingActionButton
+            android:id="@+id/fab_overview_add_reduction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_trending_down_24"
+            app:fab_colorNormal="@color/sub_l"
+            app:fab_colorPressed="@color/sub_m"
+            app:fab_colorRipple="@color/ripple"
+            app:fab_label="@string/title_trans_reduction"
+            app:fab_size="mini" />
     </com.github.clans.fab.FloatingActionMenu>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
