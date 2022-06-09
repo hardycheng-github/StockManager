@@ -19,6 +19,7 @@ public class StockApi implements IStockApi{
                 double price = Math.random() * 100;
                 // TODO 將正確的價格設定到price
                 // TODO 將正確的價格設定到price
+                // TESTING
                 // TODO 將正確的價格設定到price
                 // TODO 將正確的價格設定到price
                 info.setLastPrice(price);
