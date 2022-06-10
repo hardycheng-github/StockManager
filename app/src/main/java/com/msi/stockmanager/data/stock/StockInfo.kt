@@ -38,6 +38,7 @@ class StockInfo(
             stockName,
             lastPrice,
             DateUtil.toDateTimeString(lastUpdateTime)
+
         )
     }
 }
