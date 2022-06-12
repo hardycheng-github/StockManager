@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import com.msi.stockmanager.DemoActivity;
 import com.msi.stockmanager.HttpDemoActivity;
 import com.msi.stockmanager.InputCashInOut;
+import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
@@ -47,6 +48,7 @@ public class OverviewActivity extends AppCompatActivity {
         getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
             Log.d(TAG, "onStateChanged: " + event.name());
             if(event.equals(Lifecycle.Event.ON_CREATE)){
+                ApiUtil.init(this);
                 binding = ActivityOverviewBinding.inflate(getLayoutInflater());
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.overviewToolbar);

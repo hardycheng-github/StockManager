@@ -17,6 +17,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.facebook.stetho.Stetho;
+import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransApi;
@@ -29,7 +30,7 @@ import java.util.Date;
 import java.util.List;
 
 public class DemoActivity extends AppCompatActivity {
-    ITransApi transApi = new TransApi(this);
+    ITransApi transApi = ApiUtil.transApi;
 
     private Button addTransBtn = null;
     private Button loadTransBtn = null;

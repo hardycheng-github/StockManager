@@ -11,16 +11,15 @@ import androidx.cardview.widget.CardView;
 
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.DateUtil;
+import com.msi.stockmanager.data.FormatUtil;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
-import com.msi.stockmanager.database.DBDefine;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class CashAdapter extends BaseAdapter {
     private LayoutInflater myInflater;
-    ArrayList<Transaction> list = new ArrayList<>();
+    private ArrayList<Transaction> list = new ArrayList<>();
 
     interface ItemLongClickListener {
         void onLongClick(View view, int position, Transaction trans);
@@ -83,7 +82,7 @@ public class CashAdapter extends BaseAdapter {
             viewTag.text1.setText(R.string.TRANS_TYPE_CASH_IN);
         }
 
-        viewTag.text2.setText(Math.abs(trans.cash_amount)+"");
+        viewTag.text2.setText(FormatUtil.number(Math.abs(trans.cash_amount)));
         viewTag.text3.setText(DateUtil.toDateString(trans.trans_time));
 
         return convertView;

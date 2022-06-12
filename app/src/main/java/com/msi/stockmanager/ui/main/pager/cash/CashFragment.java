@@ -7,30 +7,24 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
-import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.Constants;
-import com.msi.stockmanager.data.DateUtil;
+import com.msi.stockmanager.data.FormatUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
-import com.msi.stockmanager.data.transaction.TransApi;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
-import com.msi.stockmanager.database.DBDefine;
 import com.msi.stockmanager.ui.main.form.FormActivity;
-import com.msi.stockmanager.ui.main.overview.OverviewActivity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -43,7 +37,7 @@ public class CashFragment extends Fragment {
     private int cashin_int=0,cashout_int=0;
     private ArrayList<Transaction> listAdapter = new ArrayList<>();;
     private CashAdapter adapter;
-    ITransApi transApi = null;
+    ITransApi transApi = ApiUtil.transApi;
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -84,7 +78,6 @@ public class CashFragment extends Fragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState){
         super.onViewCreated(view, savedInstanceState);
-        transApi = new TransApi(getContext());
         initView();
 //        registerForContextMenu(listview);
     }
@@ -96,7 +89,7 @@ public class CashFragment extends Fragment {
         adapter = new CashAdapter(getContext(), new CashAdapter.ItemLongClickListener() {
             @Override
             public void onLongClick(View view, int position, Transaction trans) {
-                PopupMenu popupMenu = new PopupMenu(getContext(), view);
+                PopupMenu popupMenu = new PopupMenu(getContext(), view, Gravity.RIGHT);
 
                 // Inflating popup menu from popup_menu.xml file
                 popupMenu.getMenuInflater().inflate(R.menu.item_edit, popupMenu.getMenu());
@@ -145,8 +138,8 @@ public class CashFragment extends Fragment {
                     cashout_int += item_tran.cash_amount;
             }
         }
-        CashIn.setText(cashin_int+"");
-        CashOut.setText(-cashout_int+"");
+        CashIn.setText(FormatUtil.number(cashin_int));
+        CashOut.setText(FormatUtil.number(-cashout_int));
 
         adapter.setItems(listAdapter);
         adapter.notifyDataSetChanged();
