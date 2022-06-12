@@ -71,14 +71,13 @@ public class HttpDemoActivity extends AppCompatActivity {
                 stock.getRegularStockPrice(code, new IStockApi.ResultCallback() {
                     @Override
                     public void onResult(StockInfo info) {
-                        handler.sendMessage(handler.obtainMessage(0, info.toString()));
-                        handler.sendMessage(handler.obtainMessage(1, String.valueOf(info.getLastPrice())));
-                    }
-
-                    @Override
-                    public void onException(Exception e) {
-                        handler.sendMessage(handler.obtainMessage(0, e.getLocalizedMessage()));
-                        handler.sendMessage(handler.obtainMessage(1, String.format("ERROR")));
+                        if(info == null){
+                            handler.sendMessage(handler.obtainMessage(0, "ERROR"));
+                            handler.sendMessage(handler.obtainMessage(1, String.format("ERROR")));
+                        } else {
+                            handler.sendMessage(handler.obtainMessage(0, info.toString()));
+                            handler.sendMessage(handler.obtainMessage(1, String.valueOf(info.getLastPrice())));
+                        }
                     }
                 });
             }

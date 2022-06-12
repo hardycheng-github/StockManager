@@ -54,6 +54,9 @@
         <activity
             android:name=".InputCashInOut"
             android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".HttpDemoActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
