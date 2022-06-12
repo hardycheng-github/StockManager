@@ -26,7 +26,8 @@ public class StockApi implements IStockApi{
             //網路相關操作屬於耗時操作，需要透過非主線Thread執行
             StockInfo info = StockUtilKt.getStockInfoOrNull(stock_id);
             if (info == null) {
-                callback.onException(new Exception("Invalid stock ID (" + stock_id + ")"));
+//                callback.onException(new Exception("Invalid stock ID (" + stock_id + ")"));
+                callback.onResult(null);
                 return;
             }
             //如果stock id是合法的，會進入這個區塊
@@ -70,7 +71,8 @@ public class StockApi implements IStockApi{
             } catch (Exception e) {
                 Log.e("HttpRequest", e.getLocalizedMessage());
                 e.printStackTrace();
-                callback.onException(e);
+//                callback.onException(e);
+                callback.onResult(null);
                 return;
             } finally {
                 if (connection != null) {

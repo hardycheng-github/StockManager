@@ -6,6 +6,5 @@ public interface IStockApi {
 
     interface ResultCallback {
         void onResult(StockInfo info);
-        void onException(Exception e);
     }
 }
