@@ -13,6 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.transaction.ITransApi;
+import com.msi.stockmanager.data.transaction.TransType;
+import com.msi.stockmanager.data.transaction.Transaction;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -23,6 +30,40 @@ public class HoldingFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+    private HoldingAdapter mAdapter;
+    private ITransApi.TransUpdateListener listener = new ITransApi.TransUpdateListener() {
+        @Override
+        public void onAdd(Transaction trans) {
+            switch (trans.trans_type){
+                case TransType.TRANS_TYPE_STOCK_BUY: case TransType.TRANS_TYPE_STOCK_SELL:
+                    mAdapter.mItems.add(trans);
+                    mAdapter.notifyItemInserted(mAdapter.mItems.size());
+                    break;
+            }
+        }
+
+        @Override
+        public void onEdit(long transId, Transaction trans) {
+            for(int i = 0; i < mAdapter.mItems.size(); i++) {
+                if(mAdapter.mItems.get(i).trans_id == transId) {
+                    mAdapter.mItems.set(i, trans);
+                    mAdapter.notifyItemChanged(i);
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onRemove(long transId) {
+            for(int i = 0; i < mAdapter.mItems.size(); i++) {
+                if(mAdapter.mItems.get(i).trans_id == transId) {
+                    mAdapter.mItems.remove(i);
+                    mAdapter.notifyItemRemoved(i);
+                    break;
+                }
+            }
+        }
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -48,24 +89,33 @@ public class HoldingFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        ApiUtil.transApi.addTransUpdateListener(listener);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_holding, container, false);
+        Context context = view.getContext();
+        RecyclerView recyclerView = view.findViewById(R.id.list);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+        if (recyclerView != null) {
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new HoldingAdapter(HoldingContent.ITEMS));
+            mAdapter = new HoldingAdapter();
+            recyclerView.setAdapter(mAdapter);
+            mAdapter.reloadList();
         }
         return view;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        ApiUtil.transApi.removeTransUpdateListener(listener);
     }
 }

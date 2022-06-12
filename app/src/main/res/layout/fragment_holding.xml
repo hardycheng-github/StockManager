@@ -12,8 +12,7 @@
         android:name=".ui.main.HoldingFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginVertical="@dimen/card_margin"
         app:layoutManager="LinearLayoutManager"
         tools:listitem="@layout/fragment_holding_item" />
 

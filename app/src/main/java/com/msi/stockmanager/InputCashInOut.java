@@ -15,6 +15,7 @@ import android.widget.RadioGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransApi;
@@ -34,7 +35,7 @@ public class InputCashInOut extends AppCompatActivity {
     private Date date;
     private Intent intent;
     private int transId = -1;
-    ITransApi transApi = new TransApi(this);
+    ITransApi transApi = ApiUtil.transApi;
     private Transaction trans = new Transaction();
 
     @Override

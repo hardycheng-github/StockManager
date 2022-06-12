@@ -6,6 +6,16 @@ import java.util.List;
 
 public interface ITransApi {
 
+    interface TransUpdateListener {
+        void onAdd(Transaction trans);
+        void onEdit(long transId, Transaction trans);
+        void onRemove(long transId);
+    }
+
+    boolean addTransUpdateListener(TransUpdateListener listener);
+
+    boolean removeTransUpdateListener(TransUpdateListener listener);
+
     /**
      * 取得目前持有的股票代碼列表
      * @return 股票代碼列表

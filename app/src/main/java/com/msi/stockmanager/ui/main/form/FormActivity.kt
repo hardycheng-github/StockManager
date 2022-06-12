@@ -26,6 +26,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import com.github.k0shk0sh.compose.easyforms.*
 import com.msi.stockmanager.R
+import com.msi.stockmanager.data.ApiUtil
 import com.msi.stockmanager.data.Constants
 import com.msi.stockmanager.data.profile.Profile
 import com.msi.stockmanager.data.stock.IStockApi
@@ -43,11 +44,11 @@ val TAG = "FormActivity"
 var transTypeList: List<Int> = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_STOCK_SELL)
 val cashMinusList: List<Int> = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_CASH_OUT)
 var transObj: Transaction = Transaction()
-var transApi: ITransApi? = null
+var transApi: ITransApi = ApiUtil.transApi
+var stockApi: IStockApi = ApiUtil.stockApi
 var easyFormObj: EasyForms? = null
 var stockPriceLast = 0.0
 var stockAmountLast = 0
-var stockApi: IStockApi? = null
 var transEditType: TransEditType = TransEditType.ERROR
 var titleStr = ""
 var activity: Activity? = null
@@ -68,8 +69,6 @@ fun getTransEditType(trans: Transaction): TransEditType {
 
 @Composable
 fun init(){
-    transApi = TransApi(LocalContext.current)
-    stockApi = StockApi(LocalContext.current)
     transEditType = getTransEditType(transObj)
     when(transEditType){
         TransEditType.CASH -> {
@@ -281,7 +280,7 @@ fun buildStockForm(){
                 IconButton(onClick = {
                     trailingSyncing = true
                     if (stockPriceState != null && stockSelectorState != null) {
-                        stockApi?.getRegularStockPrice(stockSelectorState.state.value.stockId) {
+                        stockApi.getRegularStockPrice(stockSelectorState.state.value.stockId) {
                             stockPriceState.state.value =
                                 String.format(
                                     "%." + stockPricePrecision + "f",
@@ -394,9 +393,9 @@ fun submitForm(){
             transObj.cash_amount = transObj.cash_amount - transObj.fee - transObj.tax
         }
         if(transObj.isIdValid){
-            transApi?.updateTrans(transObj.trans_id, transObj)
+            transApi.updateTrans(transObj.trans_id, transObj)
         } else {
-            transApi?.addTrans(transObj)
+            transApi.addTrans(transObj)
         }
     }
     activity?.finish()

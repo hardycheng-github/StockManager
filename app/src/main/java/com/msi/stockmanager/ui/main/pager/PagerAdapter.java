@@ -27,12 +27,13 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
     public PagerAdapter(Context context, FragmentManager fm) {
         super(fm);
+        int columnCount = 1;
         mContext = context;
         pageList.clear();
         pageList.add(new PageInfo(new CashFragment(), R.string.tab_text_cash));
-        pageList.add(new PageInfo(new HoldingFragment(), R.string.tab_text_stock_holding));
-        pageList.add(new PageInfo(new HistoryFragment(), R.string.tab_text_stock_history));
-        pageList.add(new PageInfo(new OtherFragment(), R.string.tab_text_other));
+        pageList.add(new PageInfo(HoldingFragment.newInstance(columnCount), R.string.tab_text_stock_holding));
+        pageList.add(new PageInfo(HistoryFragment.newInstance(columnCount), R.string.tab_text_stock_history));
+        pageList.add(new PageInfo(OtherFragment.newInstance(columnCount), R.string.tab_text_other));
     }
 
     @Override

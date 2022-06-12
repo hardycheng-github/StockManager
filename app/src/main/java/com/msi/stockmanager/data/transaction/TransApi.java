@@ -22,6 +22,17 @@ public class TransApi implements ITransApi{
     public TransApi(Context context){
         dbHelper = new DBHelper(context);
     }
+    private List<TransUpdateListener> listenerList = new ArrayList<>();
+
+    @Override
+    public boolean addTransUpdateListener(TransUpdateListener listener) {
+        return listenerList.add(listener);
+    }
+
+    @Override
+    public boolean removeTransUpdateListener(TransUpdateListener listener) {
+        return listenerList.remove(listener);
+    }
 
     @Override
     public List<String> getHoldingStockList() {
@@ -189,6 +200,10 @@ public class TransApi implements ITransApi{
         // Insert the new row, returning the primary key value of the new row
         long trans_id = db.insert(DBDefine.TB_TransactionRecord.TABLE_NAME, null, values);
         // if insert failed, will return -1
+        if(trans_id < 0) return -1;
+        for(TransUpdateListener listener: listenerList){
+            listener.onAdd(trans);
+        }
         return trans_id;
     }
 
@@ -224,6 +239,9 @@ public class TransApi implements ITransApi{
         if (result == 0){
             return false;
         }
+        for(TransUpdateListener listener: listenerList){
+            listener.onEdit(trans_id, trans);
+        }
         return true;
     }
 
@@ -238,6 +256,9 @@ public class TransApi implements ITransApi{
         int deletedRows = db.delete(DBDefine.TB_TransactionRecord.TABLE_NAME, selection, selectionArgs);
         if (deletedRows <= 0){
             return false;
+        }
+        for(TransUpdateListener listener: listenerList){
+            listener.onRemove(trans_id);
         }
         return true;
     }
