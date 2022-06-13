@@ -113,8 +113,15 @@ public class PagerActivity extends AppCompatActivity {
                     intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_BUY));
                     startActivity(intent);
                 });
-                binding.fabOtherAdd.setOnClickListener(v -> {
-                    //TODO add dividend or reduction transaction
+                binding.fabOtherAddDividend.setOnClickListener(v -> {
+                    Intent intent = new Intent(PagerActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_DIVIDEND));
+                    startActivity(intent);
+                });
+                binding.fabOtherAddReduction.setOnClickListener(v -> {
+                    Intent intent = new Intent(PagerActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_REDUCTION));
+                    startActivity(intent);
                 });
 
                 getSupportActionBar().setTitle(pagerAdapter.getPageTitleId(currentPagePosition));

@@ -56,4 +56,8 @@
     <string name="hint_stock_search">請輸入股票代碼或名稱</string>
     <string name="syncing">同步中</string>
     <string name="title_activity_http_request_demo">HttpRequestDemo</string>
+    <string name="invested_cost">投入成本</string>
+    <string name="profit_calc">損益試算</string>
+    <string name="ROI">投資報酬率</string>
+    <string name="stock_value_calc">股票市值</string>
 </resources>

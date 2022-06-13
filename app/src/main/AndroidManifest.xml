@@ -47,7 +47,7 @@
             android:exported="true"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".DemoActivity"
+            android:name=".DatabaseDemoActivity"
             android:exported="true"
             android:label="TransApi Demo page"
             android:screenOrientation="portrait" />
