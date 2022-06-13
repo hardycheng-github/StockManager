@@ -19,7 +19,6 @@ public class StockApi implements IStockApi{
         parentsContext = context;
     }
 
-    //TODO 實作網路爬蟲取得真實股價
     @Override
     public void getRegularStockPrice(String stock_id, ResultCallback callback) {
         Thread task = new Thread(()->{

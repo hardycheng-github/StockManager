@@ -101,36 +101,26 @@
         app:menu_icon="@drawable/ic_baseline_add_36">
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_overview_add_cash"
+            android:id="@+id/fab_other_add_dividend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_attach_money_24"
+            app:fab_size="mini"
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/title_trans_cash"
-            app:fab_size="mini" />
+            app:fab_label="@string/title_trans_dividend"
+            android:src="@drawable/ic_baseline_savings_24"
+            />
 
         <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_overview_add_stock"
+            android:id="@+id/fab_other_add_reduction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_candlestick_chart_24"
+            android:src="@drawable/ic_baseline_trending_down_24"
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/title_trans_stock"
-            app:fab_size="mini" />
-
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_overview_add_dividend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_wifi_protected_setup_24"
-            app:fab_colorNormal="@color/sub_l"
-            app:fab_colorPressed="@color/sub_m"
-            app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/title_trans_other"
+            app:fab_label="@string/title_trans_reduction"
             app:fab_size="mini" />
     </com.github.clans.fab.FloatingActionMenu>
 

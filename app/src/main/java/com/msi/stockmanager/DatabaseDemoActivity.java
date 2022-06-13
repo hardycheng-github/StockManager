@@ -20,7 +20,6 @@ import com.facebook.stetho.Stetho;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
-import com.msi.stockmanager.data.transaction.TransApi;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
 
@@ -29,7 +28,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class DemoActivity extends AppCompatActivity {
+public class DatabaseDemoActivity extends AppCompatActivity {
     ITransApi transApi = ApiUtil.transApi;
 
     private Button addTransBtn = null;
@@ -48,7 +47,7 @@ public class DemoActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_demo);
+        setContentView(R.layout.activity_db_demo);
 
         Stetho.initializeWithDefaults(this);
 
@@ -90,7 +89,7 @@ public class DemoActivity extends AppCompatActivity {
                 mDay = calendar.get ( Calendar.DAY_OF_MONTH );
 
                 //show dialog
-                DatePickerDialog datePickerDialog = new DatePickerDialog (DemoActivity.this, new DatePickerDialog.OnDateSetListener () {
+                DatePickerDialog datePickerDialog = new DatePickerDialog (DatabaseDemoActivity.this, new DatePickerDialog.OnDateSetListener () {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                         transDateInput.setText ( year + "-" + (month+1<10?"0":"") +(month + 1) + "-" + (dayOfMonth<10?"0":"") + dayOfMonth );

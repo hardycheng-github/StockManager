@@ -13,9 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 
-import com.msi.stockmanager.DemoActivity;
+import com.msi.stockmanager.DatabaseDemoActivity;
 import com.msi.stockmanager.HttpDemoActivity;
-import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.transaction.TransType;
@@ -54,7 +53,7 @@ public class OverviewActivity extends AppCompatActivity {
                 setSupportActionBar(binding.overviewToolbar);
 
                 binding.btnHttp.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class)));
-                binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DemoActivity.class)));
+                binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DatabaseDemoActivity.class)));
                 binding.btnPager.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
                 binding.fabOverviewAddCash.setOnClickListener(v -> {
                     Intent intent = new Intent(OverviewActivity.this, FormActivity.class);
