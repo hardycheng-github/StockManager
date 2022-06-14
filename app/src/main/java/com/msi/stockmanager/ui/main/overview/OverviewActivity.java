@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -17,6 +18,9 @@ import com.msi.stockmanager.DatabaseDemoActivity;
 import com.msi.stockmanager.HttpDemoActivity;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.Constants;
+import com.msi.stockmanager.data.stock.IStockApi;
+import com.msi.stockmanager.data.stock.StockInfo;
+import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
@@ -25,11 +29,31 @@ import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class OverviewActivity extends AppCompatActivity {
     private static final String TAG = OverviewActivity.class.getSimpleName();
     private static final int MSG_JUMP_PENDING = 0x1001;
     private static final int DELAY_JUMP_PENDING = 300;
     private boolean isTouchEnable = false;
+    private ITransApi.TransUpdateListener transUpdateListener = new ITransApi.TransUpdateListener() {
+        @Override
+        public void onAdd(Transaction trans) {
+            onUiDataChanged();
+        }
+
+        @Override
+        public void onEdit(long transId, Transaction trans) {
+            onUiDataChanged();
+        }
+
+        @Override
+        public void onRemove(long transId) {
+            onUiDataChanged();
+        }
+    };
+    private AsyncTask<Void, Void, Void> onUiDataChangedTask;
 
     private ActivityOverviewBinding binding;
     private Handler mHandler = new Handler(){
@@ -42,6 +66,43 @@ public class OverviewActivity extends AppCompatActivity {
             }
         }
     };
+
+    private void onUiDataChanged(){
+        if(onUiDataChangedTask != null && onUiDataChangedTask.getStatus() == AsyncTask.Status.RUNNING){
+            //already running
+        }
+        onUiDataChangedTask = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... voids) {
+                return null;
+            }
+            @Override
+            protected void onPostExecute(Void result){
+
+            }
+        };
+        long totalCash = 0;
+        long totalInvests = 0;
+        long assetsCalc = 0;
+        Map<String, Integer> holdingStockRemainingAmount = new HashMap<>();
+        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+            totalCash += trans.cash_amount;
+            if(!trans.stock_id.isEmpty()) {
+                int amount = holdingStockRemainingAmount.getOrDefault(trans.stock_id, 0);
+                holdingStockRemainingAmount.put(trans.stock_id, amount + trans.stock_amount);
+            }
+        }
+        for(Map.Entry<String, Integer> entry: holdingStockRemainingAmount.entrySet()){
+            String stockId = entry.getKey();
+            int stockAmount = entry.getValue();
+            ApiUtil.stockApi.getRegularStockPrice(stockId, new IStockApi.ResultCallback() {
+                @Override
+                public void onResult(StockInfo info) {
+
+                }
+            });
+        }
+    }
 
     public OverviewActivity(){
         getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
@@ -79,9 +140,12 @@ public class OverviewActivity extends AppCompatActivity {
                 isTouchEnable = true;
 //                binding.fabOverviewAdd.hideMenuButton(false);
                 binding.fabOverviewAdd.showMenuButton(true);
+                ApiUtil.transApi.addTransUpdateListener(transUpdateListener);
+                onUiDataChanged();
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 binding.fabOverviewAdd.close(false);
                 binding.fabOverviewAdd.hideMenuButton(false);
+                ApiUtil.transApi.removeTransUpdateListener(transUpdateListener);
             }
         });
     }

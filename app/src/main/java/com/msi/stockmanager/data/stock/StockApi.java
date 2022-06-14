@@ -13,7 +13,6 @@ import java.net.URL;
 
 
 public class StockApi implements IStockApi{
-
     private Context parentsContext;
     public StockApi(Context context) {
         parentsContext = context;
@@ -27,6 +26,11 @@ public class StockApi implements IStockApi{
             if (info == null) {
 //                callback.onException(new Exception("Invalid stock ID (" + stock_id + ")"));
                 callback.onResult(null);
+                return;
+            }
+            //如果interval時間內取得過，直接返回值
+            if(System.currentTimeMillis() - info.getLastUpdateTime() < LAST_UPDATE_INTERVAL){
+                callback.onResult(info);
                 return;
             }
             //如果stock id是合法的，會進入這個區塊

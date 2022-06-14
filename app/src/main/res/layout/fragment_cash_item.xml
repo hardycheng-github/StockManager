@@ -26,7 +26,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="10dp"
+            android:layout_margin="@dimen/card_padding"
             app:layout_constraintBottom_toBottomOf="@+id/textView3"
             app:layout_constraintTop_toBottomOf="@+id/textView3">
 
