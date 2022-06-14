@@ -17,9 +17,13 @@ import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
+import com.msi.stockmanager.databinding.ActivityOverviewBinding;
+import com.msi.stockmanager.databinding.FragmentHoldingBinding;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A fragment representing a list of Items.
@@ -31,6 +35,7 @@ public class HoldingFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private HoldingAdapter mAdapter;
+    private FragmentHoldingBinding binding;
     private ITransApi.TransUpdateListener listener = new ITransApi.TransUpdateListener() {
         @Override
         public void onAdd(Transaction trans) {
@@ -40,6 +45,7 @@ public class HoldingFragment extends Fragment {
                     mAdapter.notifyItemInserted(mAdapter.mItems.size());
                     break;
             }
+            onTitleValueChange();
         }
 
         @Override
@@ -51,6 +57,7 @@ public class HoldingFragment extends Fragment {
                     break;
                 }
             }
+            onTitleValueChange();
         }
 
         @Override
@@ -62,8 +69,16 @@ public class HoldingFragment extends Fragment {
                     break;
                 }
             }
+            onTitleValueChange();
         }
     };
+
+    private void onTitleValueChange(){
+        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+            Map<String, Integer> stockRemaining = new HashMap<>();
+            //TODO title value change
+        }
+    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -90,12 +105,15 @@ public class HoldingFragment extends Fragment {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
         ApiUtil.transApi.addTransUpdateListener(listener);
+        onTitleValueChange();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_holding, container, false);
+
+        binding = FragmentHoldingBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
         Context context = view.getContext();
         RecyclerView recyclerView = view.findViewById(R.id.list);
 

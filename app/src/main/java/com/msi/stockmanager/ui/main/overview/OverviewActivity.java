@@ -18,6 +18,7 @@ import com.msi.stockmanager.DatabaseDemoActivity;
 import com.msi.stockmanager.HttpDemoActivity;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.Constants;
+import com.msi.stockmanager.data.FormatUtil;
 import com.msi.stockmanager.data.stock.IStockApi;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.transaction.ITransApi;
@@ -31,6 +32,8 @@ import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class OverviewActivity extends AppCompatActivity {
     private static final String TAG = OverviewActivity.class.getSimpleName();
@@ -53,7 +56,65 @@ public class OverviewActivity extends AppCompatActivity {
             onUiDataChanged();
         }
     };
-    private AsyncTask<Void, Void, Void> onUiDataChangedTask;
+    private class UiDataChangedTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+            //TODO calculate fixed
+            assetsCalc = assetsTotal = 0;
+            Map<String, Integer> holdingStockRemainingAmount = new HashMap<>();
+            for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+                if(trans.stock_price * trans.stock_amount <= 0){
+                    assetsCalc += trans.cash_amount;
+                }
+                assetsTotal += trans.cash_amount;
+                if(!trans.stock_id.isEmpty()) {
+                    int amount = holdingStockRemainingAmount.getOrDefault(trans.stock_id, 0);
+                    holdingStockRemainingAmount.put(trans.stock_id, amount + trans.stock_amount);
+                }
+            }
+            Lock lock = new ReentrantLock();
+            lockCount = holdingStockRemainingAmount.size();
+            for(Map.Entry<String, Integer> entry: holdingStockRemainingAmount.entrySet()){
+                String stockId = entry.getKey();
+                int stockAmount = entry.getValue();
+                ApiUtil.stockApi.getRegularStockPrice(stockId, info -> {
+                    if(info != null){
+                        assetsCalc += stockAmount * info.getLastPrice();
+                    }
+                    if(--lockCount <= 0){
+                        synchronized (lock) {
+                            lock.notifyAll();
+                        }
+                    }
+                });
+            }
+            synchronized (lock){
+                try {
+                    lock.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result){
+            int profit = (int)(assetsCalc - assetsTotal);
+            double percent = assetsTotal > 0 ? (profit * 1.0 / assetsTotal) : 0;
+            binding.assetsCalc.setText(FormatUtil.number(assetsCalc));
+            if(profit < 0){
+                binding.assetsProfitCalc.setTextColor(getColor(R.color.stock_lose));
+                binding.assetsProfitCalc.setText(String.format("%s (%s) ▼", FormatUtil.number(profit), FormatUtil.percent(percent)));
+            } else if(profit > 0){
+                binding.assetsProfitCalc.setTextColor(getColor(R.color.stock_earn));
+                binding.assetsProfitCalc.setText(String.format("%s (%s) ▲", FormatUtil.number(profit), FormatUtil.percent(percent)));
+            } else {
+                binding.assetsProfitCalc.setTextColor(getColor(R.color.black));
+                binding.assetsProfitCalc.setText("");
+            }
+        }
+    }
+    private UiDataChangedTask onUiDataChangedTask;
 
     private ActivityOverviewBinding binding;
     private Handler mHandler = new Handler(){
@@ -67,41 +128,17 @@ public class OverviewActivity extends AppCompatActivity {
         }
     };
 
+    private long assetsCalc = 0;
+    private long assetsTotal = 0;
+    private int lockCount = 0;
+
     private void onUiDataChanged(){
         if(onUiDataChangedTask != null && onUiDataChangedTask.getStatus() == AsyncTask.Status.RUNNING){
-            //already running
+            Log.w(TAG, "onUiDataChangedTask already running, interrupt.");
+            return;
         }
-        onUiDataChangedTask = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                return null;
-            }
-            @Override
-            protected void onPostExecute(Void result){
-
-            }
-        };
-        long totalCash = 0;
-        long totalInvests = 0;
-        long assetsCalc = 0;
-        Map<String, Integer> holdingStockRemainingAmount = new HashMap<>();
-        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
-            totalCash += trans.cash_amount;
-            if(!trans.stock_id.isEmpty()) {
-                int amount = holdingStockRemainingAmount.getOrDefault(trans.stock_id, 0);
-                holdingStockRemainingAmount.put(trans.stock_id, amount + trans.stock_amount);
-            }
-        }
-        for(Map.Entry<String, Integer> entry: holdingStockRemainingAmount.entrySet()){
-            String stockId = entry.getKey();
-            int stockAmount = entry.getValue();
-            ApiUtil.stockApi.getRegularStockPrice(stockId, new IStockApi.ResultCallback() {
-                @Override
-                public void onResult(StockInfo info) {
-
-                }
-            });
-        }
+        onUiDataChangedTask = new UiDataChangedTask();
+        onUiDataChangedTask.execute();
     }
 
     public OverviewActivity(){
@@ -116,6 +153,7 @@ public class OverviewActivity extends AppCompatActivity {
                 binding.btnHttp.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class)));
                 binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DatabaseDemoActivity.class)));
                 binding.btnPager.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
+                binding.overviewCard.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
                 binding.fabOverviewAddCash.setOnClickListener(v -> {
                     Intent intent = new Intent(OverviewActivity.this, FormActivity.class);
                     intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_CASH_IN));

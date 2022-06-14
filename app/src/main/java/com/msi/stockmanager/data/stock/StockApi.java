@@ -25,12 +25,20 @@ public class StockApi implements IStockApi{
             StockInfo info = StockUtilKt.getStockInfoOrNull(stock_id);
             if (info == null) {
 //                callback.onException(new Exception("Invalid stock ID (" + stock_id + ")"));
-                callback.onResult(null);
+                try {
+                    callback.onResult(null);
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
                 return;
             }
             //如果interval時間內取得過，直接返回值
             if(System.currentTimeMillis() - info.getLastUpdateTime() < LAST_UPDATE_INTERVAL){
-                callback.onResult(info);
+                try {
+                    callback.onResult(info);
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
                 return;
             }
             //如果stock id是合法的，會進入這個區塊
@@ -69,17 +77,27 @@ public class StockApi implements IStockApi{
                     info.setLastPrice(object.getDouble("regularMarketPrice"));
                     // 取得股價更新時間
                     info.setLastUpdateTime(object.getLong("regularMarketTime")*1000);
-                    callback.onResult(info);
+                    try {
+                        callback.onResult(info);
+                    } catch (Exception ex){
+                        ex.printStackTrace();
+                    }
                 }
             } catch (Exception e) {
-                Log.e("HttpRequest", e.getLocalizedMessage());
+                Log.e("HttpRequest", e.getMessage());
                 e.printStackTrace();
 //                callback.onException(e);
-                callback.onResult(null);
+                try {
+                    callback.onResult(null);
+                } catch (Exception ex){
+                    ex.printStackTrace();
+                }
                 return;
             } finally {
                 if (connection != null) {
-                    connection.disconnect();
+                    try {
+                        connection.disconnect();
+                    } catch (Exception ex){}
                 }
             }
         });
