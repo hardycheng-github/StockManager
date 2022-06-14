@@ -7,92 +7,65 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:background="@color/main_s"
+        android:padding="@dimen/card_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/main_s">
+        app:layout_constraintTop_toTopOf="parent">
 
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout2"
+        <TextView
+            android:id="@+id/textView13"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/constraintLayout3"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:gravity="center"
+            android:text="@string/trans_cash_total_in"
+            android:textColor="?attr/colorOnSecondary"
+            tools:text="@string/stock_value_calc" />
 
-            <TextView
-                android:id="@+id/textCashin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/trans_cash_total_in"
-                android:textColor="?attr/colorOnSecondary"
-                app:layout_constraintBottom_toTopOf="@+id/CashIn"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed" />
-
-            <TextView
-                android:id="@+id/CashIn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnSecondary"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textCashin" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout3"
+        <TextView
+            android:id="@+id/textView14"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/constraintLayout2"
-            app:layout_constraintTop_toTopOf="parent">
+            android:gravity="center"
+            android:text="@string/trans_cash_total_out"
+            android:textColor="?attr/colorOnSecondary"
+            tools:layout_editor_absoluteX="137dp"
+            tools:text="@string/invested_cost" />
 
-            <TextView
-                android:id="@+id/textCashout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/trans_cash_total_out"
-                android:textColor="?attr/colorOnSecondary"
-                app:layout_constraintBottom_toTopOf="@+id/CashOut"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed" />
+        <TextView
+            android:id="@+id/CashIn"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="TextView"
+            android:textColor="?attr/colorOnSecondary"
+            tools:layout_editor_absoluteX="10dp"
+            tools:layout_editor_absoluteY="29dp"
+            tools:text="@string/syncing" />
 
-            <TextView
-                android:id="@+id/CashOut"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="?attr/colorOnSecondary"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textCashout" />
+        <TextView
+            android:id="@+id/CashOut"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="TextView"
+            android:textColor="?attr/colorOnSecondary"
+            tools:layout_editor_absoluteX="140dp"
+            tools:layout_editor_absoluteY="29dp"
+            tools:text="@string/syncing" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/flow3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="textView13,textView14,CashIn,CashOut"
+            app:flow_maxElementsWrap="2"
+            app:flow_wrapMode="chain" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ListView

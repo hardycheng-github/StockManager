@@ -43,6 +43,9 @@ import kotlin.math.floor
 val TAG = "FormActivity"
 var transTypeList: List<Int> = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_STOCK_SELL)
 val cashMinusList: List<Int> = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_CASH_OUT)
+val stockMinusList: List<Int> = listOf(TransType.TRANS_TYPE_STOCK_SELL,
+                                        TransType.TRANS_TYPE_STOCK_REDUCTION,
+                                        TransType.TRANS_TYPE_CASH_REDUCTION)
 var transObj: Transaction = Transaction()
 var transApi: ITransApi = ApiUtil.transApi
 var stockApi: IStockApi = ApiUtil.stockApi
@@ -247,7 +250,8 @@ fun buildStockForm(){
     )
     val stockPriceValue = stockPriceState.state.value.toDoubleOrNull()
     val stockAmountRange = 1..999999
-    val stockAmountState = easyForm.addAndGetCustomState(FormKeys.STOCK_AMOUNT, IntSelectorState(stockAmountRange, transObj.stock_amount))
+    val stockAmountState = easyForm.addAndGetCustomState(FormKeys.STOCK_AMOUNT,
+        IntSelectorState(stockAmountRange, abs(transObj.stock_amount)))
     val stockAmountValue = stockAmountState.state.value.toIntOrNull()
     val stockFeeRange = Profile.fee_minimum..999999
     val stockFeeState = easyForm.addAndGetCustomState(FormKeys.FEE, IntSelectorState(stockFeeRange, transObj.fee))
@@ -388,6 +392,9 @@ fun submitForm(){
         }
         if(transObj.trans_type in cashMinusList){
             transObj.cash_amount = -transObj.cash_amount
+        }
+        if(transObj.trans_type in stockMinusList){
+            transObj.stock_amount = -transObj.stock_amount;
         }
         if(transEditType == TransEditType.STOCK) {
             transObj.cash_amount = transObj.cash_amount - transObj.fee - transObj.tax

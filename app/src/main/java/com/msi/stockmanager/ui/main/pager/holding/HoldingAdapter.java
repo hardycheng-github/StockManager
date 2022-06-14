@@ -105,20 +105,26 @@ public class HoldingAdapter extends RecyclerView.Adapter<HoldingAdapter.ViewHold
 
         if(!forceUpdate && holder.mInfo.getLastPrice() > 0){
             double diff = info.getLastPrice() - trans.stock_price;
-            double percent = diff / trans.stock_price;
+            double percent = trans.stock_price > 0 ? (diff / trans.stock_price) : 0;
             int calcVal = (int) Math.floor(diff * trans.stock_amount);
-            boolean isMinus = calcVal<0;
-            if(isMinus){
+            if(calcVal < 0){
                 activity.runOnUiThread(()->{
                     holder.binding.calc.setTextColor(context.getColor(R.color.stock_lose));
                     holder.binding.calc.setText(String.format("%s (%s) ▼", FormatUtil.number(calcVal), FormatUtil.percent(percent)));
 //                        holder.binding.calcImg.setColorFilter(context.getColor(R.color.stock_lose));
 //                        holder.binding.calcImg.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
                 });
-            } else {
+            } else if(calcVal > 0){
                 activity.runOnUiThread(()->{
                     holder.binding.calc.setTextColor(context.getColor(R.color.stock_earn));
                     holder.binding.calc.setText(String.format("%s (%s) ▲", FormatUtil.number(calcVal), FormatUtil.percent(percent)));
+//                        holder.binding.calcImg.setColorFilter(context.getColor(R.color.stock_earn));
+//                        holder.binding.calcImg.setImageResource(R.drawable.ic_baseline_arrow_drop_up_24);
+                });
+            } else {
+                activity.runOnUiThread(()->{
+                    holder.binding.calc.setTextColor(context.getColor(R.color.black));
+                    holder.binding.calc.setText(String.format("%s (%s)", FormatUtil.number(calcVal), FormatUtil.percent(percent)));
 //                        holder.binding.calcImg.setColorFilter(context.getColor(R.color.stock_earn));
 //                        holder.binding.calcImg.setImageResource(R.drawable.ic_baseline_arrow_drop_up_24);
                 });
