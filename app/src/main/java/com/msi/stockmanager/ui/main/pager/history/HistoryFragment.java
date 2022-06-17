@@ -13,6 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.transaction.ITransApi;
+import com.msi.stockmanager.data.transaction.TransType;
+import com.msi.stockmanager.data.transaction.Transaction;
+import com.msi.stockmanager.databinding.ActivityOverviewBinding;
+import com.msi.stockmanager.databinding.FragmentHistoryBinding;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A fragment representing a list of Items.
@@ -23,6 +34,51 @@ public class HistoryFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+    private HistoryAdapter mAdapter;
+    private FragmentHistoryBinding binding;
+    private ITransApi.TransUpdateListener listener = new ITransApi.TransUpdateListener() {
+        @Override
+        public void onAdd(Transaction trans) {
+            switch (trans.trans_type){
+                case TransType.TRANS_TYPE_STOCK_BUY: case TransType.TRANS_TYPE_STOCK_SELL:
+                    mAdapter.mItems.add(trans);
+                    mAdapter.notifyItemInserted(mAdapter.mItems.size());
+                    break;
+            }
+            onTitleValueChange();
+        }
+
+        @Override
+        public void onEdit(long transId, Transaction trans) {
+            for(int i = 0; i < mAdapter.mItems.size(); i++) {
+                if(mAdapter.mItems.get(i).trans_id == transId) {
+                    mAdapter.mItems.set(i, trans);
+                    mAdapter.notifyItemChanged(i);
+                    break;
+                }
+            }
+            onTitleValueChange();
+        }
+
+        @Override
+        public void onRemove(long transId) {
+            for(int i = 0; i < mAdapter.mItems.size(); i++) {
+                if(mAdapter.mItems.get(i).trans_id == transId) {
+                    mAdapter.mItems.remove(i);
+                    mAdapter.notifyItemRemoved(i);
+                    break;
+                }
+            }
+            onTitleValueChange();
+        }
+    };
+
+    private void onTitleValueChange(){
+        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+            Map<String, Integer> stockRemaining = new HashMap<>();
+            //TODO title value change
+        }
+    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -48,12 +104,16 @@ public class HistoryFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        ApiUtil.transApi.addTransUpdateListener(listener);
+        onTitleValueChange();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_history, container, false);
+
+        binding = FragmentHistoryBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
         Context context = view.getContext();
         RecyclerView recyclerView = view.findViewById(R.id.list);
 
@@ -64,8 +124,16 @@ public class HistoryFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new HistoryAdapter(HistoryContent.ITEMS));
+            mAdapter = new HistoryAdapter();
+            recyclerView.setAdapter(mAdapter);
+            mAdapter.reloadList();
         }
         return view;
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        ApiUtil.transApi.removeTransUpdateListener(listener);
     }
 }

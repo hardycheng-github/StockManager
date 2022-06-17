@@ -83,6 +83,24 @@
 
     </com.github.clans.fab.FloatingActionButton>
 
+    <com.github.clans.fab.FloatingActionButton
+        android:id="@+id/fab_history_add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/tabs"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/ic_baseline_add_36"
+        app:fab_colorNormal="@color/sub_m"
+        app:fab_colorPressed="@color/sub_l"
+        app:fab_colorRipple="@color/ripple"
+        app:fab_hideAnimation="@anim/fab_scale_down"
+        app:fab_showAnimation="@anim/fab_scale_up"
+        app:fab_size="normal">
+
+    </com.github.clans.fab.FloatingActionButton>
+
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_other_add"
         android:layout_width="wrap_content"

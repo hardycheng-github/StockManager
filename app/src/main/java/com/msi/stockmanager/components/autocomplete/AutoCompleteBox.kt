@@ -42,7 +42,7 @@ const val AutoCompleteBoxTag = "AutoCompleteBox"
 fun <T : AutoCompleteEntity> AutoCompleteBox(
     items: List<T>,
     itemContent: @Composable (T) -> Unit,
-    content: @Composable AutoCompleteScope<T>.() -> Unit
+    content: @Composable AutoCompleteScope<T>.() -> Unit,
 ) {
     val autoCompleteState = remember { AutoCompleteState(startItems = items) }
 

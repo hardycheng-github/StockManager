@@ -140,6 +140,22 @@
                     android:id="@+id/textView17"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:text="@string/trans_cash"
+                    tools:layout_editor_absoluteX="174dp"
+                    tools:layout_editor_absoluteY="60dp" />
+
+                <TextView
+                    android:id="@+id/cash_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="TextView"
+                    tools:layout_editor_absoluteX="174dp"
+                    tools:layout_editor_absoluteY="60dp" />
+
+                <TextView
+                    android:id="@+id/textView16"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:text="@string/trans_stock_fee"
                     tools:layout_editor_absoluteX="174dp"
                     tools:layout_editor_absoluteY="60dp" />
@@ -152,12 +168,26 @@
                     tools:layout_editor_absoluteX="174dp"
                     tools:layout_editor_absoluteY="60dp" />
 
+                <TextView
+                    android:id="@+id/textView19"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:layout_editor_absoluteX="174dp"
+                    tools:layout_editor_absoluteY="60dp" />
+
+                <TextView
+                    android:id="@+id/textView20"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    tools:layout_editor_absoluteX="174dp"
+                    tools:layout_editor_absoluteY="60dp" />
+
                 <androidx.constraintlayout.helper.widget.Flow
                     android:id="@+id/flow"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:constraint_referenced_ids="textView11,textView12,trans_date,stock_price,textView18,textView17,stock_amount,stock_fee"
+                    app:constraint_referenced_ids="textView11,textView12,trans_date,stock_price,textView18,textView17,stock_amount,cash_amount,textView16,textView19,stock_fee,textView20"
                     app:flow_horizontalAlign="start"
                     app:flow_horizontalBias="0.5"
                     app:flow_horizontalStyle="spread"

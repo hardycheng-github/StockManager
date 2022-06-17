@@ -3,6 +3,7 @@ package com.msi.stockmanager.ui.main.overview;
 import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 
@@ -13,14 +14,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewTreeObserver;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
 import com.msi.stockmanager.DatabaseDemoActivity;
 import com.msi.stockmanager.HttpDemoActivity;
+import com.msi.stockmanager.data.AccountUtil;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.FormatUtil;
-import com.msi.stockmanager.data.stock.IStockApi;
-import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
@@ -30,7 +36,8 @@ import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -60,26 +67,24 @@ public class OverviewActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             //TODO calculate fixed
-            assetsCalc = assetsTotal = 0;
-            Map<String, Integer> holdingStockRemainingAmount = new HashMap<>();
+            accountCalc = cashTotal = 0;
+            Map<String, Integer> holdingStockAmount = ApiUtil.transApi.getHoldingStockAmount();
             for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
-                if(trans.stock_price * trans.stock_amount <= 0){
-                    assetsCalc += trans.cash_amount;
+                switch (trans.trans_type){
+                    case TransType.TRANS_TYPE_CASH_IN: case TransType.TRANS_TYPE_CASH_OUT:
+                        cashTotal += trans.cash_amount;
+                        break;
                 }
-                assetsTotal += trans.cash_amount;
-                if(!trans.stock_id.isEmpty()) {
-                    int amount = holdingStockRemainingAmount.getOrDefault(trans.stock_id, 0);
-                    holdingStockRemainingAmount.put(trans.stock_id, amount + trans.stock_amount);
-                }
+                accountCalc += trans.cash_amount;
             }
             Lock lock = new ReentrantLock();
-            lockCount = holdingStockRemainingAmount.size();
-            for(Map.Entry<String, Integer> entry: holdingStockRemainingAmount.entrySet()){
+            lockCount = holdingStockAmount.size();
+            for(Map.Entry<String, Integer> entry: holdingStockAmount.entrySet()){
                 String stockId = entry.getKey();
                 int stockAmount = entry.getValue();
                 ApiUtil.stockApi.getRegularStockPrice(stockId, info -> {
                     if(info != null){
-                        assetsCalc += stockAmount * info.getLastPrice();
+                        accountCalc += stockAmount * info.getLastPrice();
                     }
                     if(--lockCount <= 0){
                         synchronized (lock) {
@@ -88,29 +93,31 @@ public class OverviewActivity extends AppCompatActivity {
                     }
                 });
             }
-            synchronized (lock){
-                try {
-                    lock.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            if(lockCount > 0) {
+                synchronized (lock) {
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
             return null;
         }
         @Override
         protected void onPostExecute(Void result){
-            int profit = (int)(assetsCalc - assetsTotal);
-            double percent = assetsTotal > 0 ? (profit * 1.0 / assetsTotal) : 0;
-            binding.assetsCalc.setText(FormatUtil.number(assetsCalc));
+            int profit = (int)(accountCalc - cashTotal);
+            double percent = cashTotal > 0 ? (profit * 1.0 / cashTotal) : 0;
+            binding.accountCalc.setText(FormatUtil.currency(accountCalc));
             if(profit < 0){
-                binding.assetsProfitCalc.setTextColor(getColor(R.color.stock_lose));
-                binding.assetsProfitCalc.setText(String.format("%s (%s) ▼", FormatUtil.number(profit), FormatUtil.percent(percent)));
+                binding.accountProfitCalc.setTextColor(getColor(R.color.stock_lose));
+                binding.accountProfitCalc.setText(String.format("%s (%s) ▼", FormatUtil.number(profit), FormatUtil.percent(percent)));
             } else if(profit > 0){
-                binding.assetsProfitCalc.setTextColor(getColor(R.color.stock_earn));
-                binding.assetsProfitCalc.setText(String.format("%s (%s) ▲", FormatUtil.number(profit), FormatUtil.percent(percent)));
+                binding.accountProfitCalc.setTextColor(getColor(R.color.stock_earn));
+                binding.accountProfitCalc.setText(String.format("%s (%s) ▲", FormatUtil.number(profit), FormatUtil.percent(percent)));
             } else {
-                binding.assetsProfitCalc.setTextColor(getColor(R.color.black));
-                binding.assetsProfitCalc.setText("");
+                binding.accountProfitCalc.setTextColor(getColor(R.color.black));
+                binding.accountProfitCalc.setText(String.format("%s (%s)", FormatUtil.number(profit), FormatUtil.percent(percent)));
             }
         }
     }
@@ -127,9 +134,48 @@ public class OverviewActivity extends AppCompatActivity {
             }
         }
     };
+    private ViewTreeObserver.OnGlobalLayoutListener onPieChartLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        @Override
+        public void onGlobalLayout() {
+            View view = binding.pieChart;
+            int width = view.getWidth();
+            if(width != 0 && width != view.getHeight()){
+                view.setLayoutParams(new ConstraintLayout.LayoutParams(
+                        ConstraintLayout.LayoutParams.MATCH_PARENT, width));
+            }
+        }
+    };
+    private AccountUtil.AccountUpdateListener accountUpdateListener = new AccountUtil.AccountUpdateListener() {
+        @Override
+        public void onUpdate(AccountUtil.AccountValue account) {
+            binding.accountCalc.setText(FormatUtil.currency(accountCalc));
+            if(account.accountProfit < 0){
+                binding.accountProfitCalc.setTextColor(getColor(R.color.stock_lose));
+                binding.accountProfitCalc.setText(String.format("%s (%s) ▼",
+                        FormatUtil.number(account.accountProfit), FormatUtil.percent(account.accountProfitPercent)));
+            } else if(account.accountProfit > 0){
+                binding.accountProfitCalc.setTextColor(getColor(R.color.stock_earn));
+                binding.accountProfitCalc.setText(String.format("%s (%s) ▲",
+                        FormatUtil.number(account.accountProfit), FormatUtil.percent(account.accountProfitPercent)));
+            } else {
+                binding.accountProfitCalc.setTextColor(getColor(R.color.black));
+                binding.accountProfitCalc.setText(String.format("%s (%s)",
+                        FormatUtil.number(account.accountProfit), FormatUtil.percent(account.accountProfitPercent)));
+            }
 
-    private long assetsCalc = 0;
-    private long assetsTotal = 0;
+            List<PieEntry> pieEntryList = new ArrayList<>();
+            pieEntryList.add(new PieEntry(account.cashBalance, getString(R.string.account_balance)));
+            pieEntryList.add(new PieEntry(account.stockCostTotal, getString(R.string.invested_cost)));
+            PieDataSet pieDataSet = new PieDataSet(pieEntryList, getString(R.string.account_calc));
+            pieDataSet.setColors(new int[]{getColor(R.color.main_m), getColor(R.color.sub_m)});
+
+            PieData pieData = new PieData(pieDataSet);
+
+        }
+    };
+
+    private int accountCalc = 0;
+    private int cashTotal = 0;
     private int lockCount = 0;
 
     private void onUiDataChanged(){
@@ -174,16 +220,25 @@ public class OverviewActivity extends AppCompatActivity {
                     intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_REDUCTION));
                     startActivity(intent);
                 });
+                AccountUtil.init(this);
             } else if(event.equals(Lifecycle.Event.ON_START)){
                 isTouchEnable = true;
 //                binding.fabOverviewAdd.hideMenuButton(false);
                 binding.fabOverviewAdd.showMenuButton(true);
+                int width = binding.pieChart.getWidth();
+                int paddingHorizontal;
+                binding.pieChart.getViewTreeObserver().addOnGlobalLayoutListener(onPieChartLayoutListener);
+                AccountUtil.addListener(accountUpdateListener);
                 ApiUtil.transApi.addTransUpdateListener(transUpdateListener);
                 onUiDataChanged();
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 binding.fabOverviewAdd.close(false);
                 binding.fabOverviewAdd.hideMenuButton(false);
+                binding.pieChart.getViewTreeObserver().removeOnGlobalLayoutListener(onPieChartLayoutListener);
+                AccountUtil.removeListener(accountUpdateListener);
                 ApiUtil.transApi.removeTransUpdateListener(transUpdateListener);
+            } else if(event.equals(Lifecycle.Event.ON_DESTROY)){
+                AccountUtil.close();
             }
         });
     }

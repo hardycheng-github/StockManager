@@ -113,6 +113,11 @@ public class PagerActivity extends AppCompatActivity {
                     intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_BUY));
                     startActivity(intent);
                 });
+                binding.fabHistoryAdd.setOnClickListener(v->{
+                    Intent intent = new Intent(PagerActivity.this, FormActivity.class);
+                    intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_SELL));
+                    startActivity(intent);
+                });
                 binding.fabOtherAddDividend.setOnClickListener(v -> {
                     Intent intent = new Intent(PagerActivity.this, FormActivity.class);
                     intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_DIVIDEND));
@@ -161,6 +166,10 @@ public class PagerActivity extends AppCompatActivity {
             binding.fabHoldingAdd.setVisibility(View.GONE);
             binding.fabHoldingAdd.hide(animation);
         }
+        if(!binding.fabHistoryAdd.isHidden()){
+            binding.fabHistoryAdd.setVisibility(View.GONE);
+            binding.fabHistoryAdd.hide(animation);
+        }
         if(binding.fabOtherAdd.isOpened()){
             binding.fabOtherAdd.close(animation);
         }
@@ -193,6 +202,10 @@ public class PagerActivity extends AppCompatActivity {
                     binding.fabHoldingAdd.setVisibility(View.VISIBLE);
                     binding.fabHoldingAdd.show(true);
                     break;
+                case R.string.tab_text_stock_history:
+                    binding.fabHistoryAdd.setVisibility(View.VISIBLE);
+                    binding.fabHistoryAdd.show(true);
+                    break;
                 case R.string.tab_text_other:
                     binding.fabOtherAdd.setVisibility(View.VISIBLE);
                     binding.fabOtherAdd.showMenuButton(true);
@@ -208,6 +221,7 @@ public class PagerActivity extends AppCompatActivity {
         if(isFabShowing) return true;
         if(!binding.fabCashAdd.isHidden()) return true;
         if(!binding.fabHoldingAdd.isHidden()) return true;
+        if(!binding.fabHistoryAdd.isHidden()) return true;
         if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
         return false;
     }
@@ -217,9 +231,14 @@ public class PagerActivity extends AppCompatActivity {
         switch (pagerAdapter.getPageTitleId(currentPagePosition)) {
             case R.string.tab_text_cash:
                 if(!binding.fabCashAdd.isHidden()) return true;
+                if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
                 break;
             case R.string.tab_text_stock_holding:
                 if(!binding.fabHoldingAdd.isHidden()) return true;
+                if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
+                break;
+            case R.string.tab_text_stock_history:
+                if(!binding.fabHistoryAdd.isHidden()) return true;
                 if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
                 break;
             case R.string.tab_text_other:

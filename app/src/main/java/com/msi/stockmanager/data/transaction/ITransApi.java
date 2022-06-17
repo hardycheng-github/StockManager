@@ -3,6 +3,7 @@ package com.msi.stockmanager.data.transaction;
 import android.content.Context;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ITransApi {
 
@@ -21,6 +22,12 @@ public interface ITransApi {
      * @return 股票代碼列表
      */
     List<String> getHoldingStockList();
+
+    /**
+     * 取得目前持有的股票代碼與持有股數
+     * @return 股票代碼與持有股數
+     */
+    Map<String, Integer> getHoldingStockAmount();
 
     /**
      * 取得歷史交易紀錄

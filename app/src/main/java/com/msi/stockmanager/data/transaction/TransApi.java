@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.database.DBDefine;
@@ -13,7 +14,10 @@ import com.msi.stockmanager.database.DBHelper;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TransApi implements ITransApi{
     private final static String TAG = TransApi.class.getSimpleName();
@@ -57,11 +61,24 @@ public class TransApi implements ITransApi{
 
         List holdingStockList = new ArrayList<String>();
         while(cursor.moveToNext()) {
-            holdingStockList.add(cursor.getString(
-                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_CODE)));
+            String stockId = cursor.getString(cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_CODE));
+            if(stockId != null && !stockId.isEmpty()) holdingStockList.add(stockId);
         }
 
         return holdingStockList;
+    }
+
+    @Override
+    public Map<String, Integer> getHoldingStockAmount() {
+        Map<String, Integer> holdingStockAmount = new HashMap<>();
+        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+            if(!trans.stock_id.isEmpty()) {
+                int amount = holdingStockAmount.getOrDefault(trans.stock_id, 0) + trans.stock_amount;
+                if(amount != 0) holdingStockAmount.put(trans.stock_id, amount);
+                else holdingStockAmount.remove(trans.stock_id);
+            }
+        }
+        return holdingStockAmount;
     }
 
     @Override
@@ -70,7 +87,8 @@ public class TransApi implements ITransApi{
 
         // How you want the results sorted in the resulting Cursor
         String sortOrder =
-                DBDefine.TB_TransactionRecord._ID + " ASC";
+                DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME + ", " +
+                DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TYPE + " ASC";
 
         Cursor cursor = db.query(
                 DBDefine.TB_TransactionRecord.TABLE_NAME,   // The table to query

@@ -28,9 +28,11 @@ import com.github.k0shk0sh.compose.easyforms.*
 import com.msi.stockmanager.R
 import com.msi.stockmanager.data.ApiUtil
 import com.msi.stockmanager.data.Constants
+import com.msi.stockmanager.data.FormatUtil
 import com.msi.stockmanager.data.profile.Profile
 import com.msi.stockmanager.data.stock.IStockApi
 import com.msi.stockmanager.data.stock.StockApi
+import com.msi.stockmanager.data.stock.StockInfo
 import com.msi.stockmanager.data.stock.StockUtil
 import com.msi.stockmanager.data.transaction.ITransApi
 import com.msi.stockmanager.data.transaction.TransApi
@@ -73,22 +75,32 @@ fun getTransEditType(trans: Transaction): TransEditType {
 @Composable
 fun init(){
     transEditType = getTransEditType(transObj)
-    when(transEditType){
+    if(transObj.isIdValid) {
+        titleStr = FormatUtil.transType(LocalContext.current, transObj.trans_type)
+        transTypeList = listOf(transObj.trans_type)
+        return
+    }
+    when (transEditType) {
         TransEditType.CASH -> {
             titleStr = stringResource(R.string.title_trans_cash)
             transTypeList = listOf(TransType.TRANS_TYPE_CASH_IN, TransType.TRANS_TYPE_CASH_OUT)
         }
         TransEditType.STOCK -> {
             titleStr = stringResource(R.string.title_trans_stock)
-            transTypeList = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_STOCK_SELL)
+            transTypeList =
+                listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_STOCK_SELL)
         }
         TransEditType.DIVIDEND -> {
             titleStr = stringResource(R.string.title_trans_dividend)
-            transTypeList = listOf(TransType.TRANS_TYPE_STOCK_DIVIDEND, TransType.TRANS_TYPE_CASH_DIVIDEND)
+            transTypeList =
+                listOf(TransType.TRANS_TYPE_STOCK_DIVIDEND, TransType.TRANS_TYPE_CASH_DIVIDEND)
         }
         TransEditType.REDUCTION -> {
             titleStr = stringResource(R.string.title_trans_reduction)
-            transTypeList = listOf(TransType.TRANS_TYPE_STOCK_REDUCTION, TransType.TRANS_TYPE_CASH_REDUCTION)
+            transTypeList = listOf(
+                TransType.TRANS_TYPE_STOCK_REDUCTION,
+                TransType.TRANS_TYPE_CASH_REDUCTION
+            )
         }
     }
     if(transObj.trans_type !in transTypeList){
@@ -104,8 +116,7 @@ class FormActivity : ComponentActivity() {
         try {
             transObj = intent.getSerializableExtra(Constants.EXTRA_TRANS_OBJECT) as Transaction
         } catch(e: Exception){
-            transObj = Transaction()
-            transObj.trans_type = transTypeList[0]
+            transObj = Transaction(transTypeList[0])
         }
 
         setContent {
@@ -240,8 +251,21 @@ fun buildStockForm(){
     val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
     val stockSelectorState = easyForm.addAndGetCustomState(
         FormKeys.STOCK_SELECTOR,
-        EasyFormsStockSelectorState()
+        EasyFormsStockSelectorState(StockUtil.stockMap.getOrDefault(transObj.stock_id, StockInfo()))
     )
+    var stockAmountRange = 1..999999
+    val stockRemainingMap: MutableMap<String, Int> = ApiUtil.transApi.holdingStockAmount
+    if(transTypeState.state.value == TransType.TRANS_TYPE_STOCK_SELL) {
+        if (stockRemainingMap.containsKey(stockSelectorState.state.value.stockId)) {
+            var stockRemaining: Int = stockRemainingMap[stockSelectorState.state.value.stockId]!!
+            if (transObj.isIdValid) {
+                stockRemaining += abs(transObj.stock_amount)
+            }
+            if(stockRemaining > stockAmountRange.start) {
+                stockAmountRange = stockAmountRange.start..stockRemaining
+            }
+        }
+    }
     val stockPriceRange = 0.0..999999.0
     val stockPricePrecision = 2
     val stockPriceState = easyForm.addAndGetCustomState(
@@ -249,7 +273,6 @@ fun buildStockForm(){
         DoubleSelectorState(stockPriceRange, transObj.stock_price, stockPricePrecision)
     )
     val stockPriceValue = stockPriceState.state.value.toDoubleOrNull()
-    val stockAmountRange = 1..999999
     val stockAmountState = easyForm.addAndGetCustomState(FormKeys.STOCK_AMOUNT,
         IntSelectorState(stockAmountRange, abs(transObj.stock_amount)))
     val stockAmountValue = stockAmountState.state.value.toIntOrNull()
@@ -268,14 +291,28 @@ fun buildStockForm(){
             key = FormKeys.TRANS_TYPE,
             title = stringResource(id = R.string.trans_type),
             items = transTypeList,
-            default = transObj.trans_type
+            default = transObj.trans_type,
+            state = transTypeState
         )
     }
-    StockIdSelector(easyForm, transObj.stock_id)
+    val searchThreshold = when(transTypeState.state.value){
+        TransType.TRANS_TYPE_STOCK_SELL -> 0
+        else -> 1
+    }
+
+    if(transTypeState.state.value == TransType.TRANS_TYPE_STOCK_SELL){
+        val stockSelectorList: MutableList<StockInfo> = mutableListOf()
+        for(entry in ApiUtil.transApi.holdingStockAmount){
+            StockUtil.stockMap[entry.key]?.let { stockSelectorList.add(it) }
+        }
+        StockIdSelector(easyForm, searchThreshold, stockSelectorList, state = stockSelectorState)
+    } else {
+        StockIdSelector(easyForm, searchThreshold, StockUtil.stockList, state = stockSelectorState)
+    }
     DatePicker(easyForm,
         title = stringResource(id = R.string.trans_date),
         key=FormKeys.TRANS_DATE,
-        default = transObj.trans_time
+        default = transObj.trans_time,
     )
 
     if(trailingVisible) {
@@ -312,17 +349,27 @@ fun buildStockForm(){
         precision = stockPricePrecision,
         trailingIcon = priceSyncFormCloud,
         showButtons = false,
+        state = stockPriceState,
     )
-    IntegerSelector(easyForm,
+    val stockAmonut = stockAmountState.state.value.toIntOrNull()
+    IntegerSelector(
+        easyForm,
         title = stringResource(id = R.string.trans_stock_amount),
-        default = transObj.stock_amount, range =stockAmountRange, step =1000,
-        key =FormKeys.STOCK_AMOUNT)
+        default = when(stockAmonut == null){
+            true -> stockAmountRange.start
+            false -> stockAmonut
+        },
+        range = stockAmountRange, step = 1000,
+        key = FormKeys.STOCK_AMOUNT,
+        state = stockAmountState,
+    )
     IntegerSelector(easyForm,
         title = stringResource(id = R.string.trans_stock_fee),
         default = transObj.fee,
         range = stockFeeRange,
         key =FormKeys.FEE,
         showButtons = false,
+        state = stockFeeState,
     )
     if(stockPriceValue != null && stockAmountValue != null) {
         if(stockPriceValue != stockPriceLast || stockAmountValue != stockAmountLast) {
@@ -357,6 +404,7 @@ fun buildStockForm(){
             range = stockTaxRange,
             key =FormKeys.TAX,
             showButtons = false,
+            state = stockTaxState,
         )
     }
 }

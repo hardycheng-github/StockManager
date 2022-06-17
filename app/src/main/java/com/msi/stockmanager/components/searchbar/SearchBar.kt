@@ -32,11 +32,14 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.msi.stockmanager.R
 
 @Composable
 fun TextSearchBar(
+    enabled: Boolean = true,
     modifier: Modifier = Modifier,
     value: String,
     placeholder: String? = null,
@@ -56,15 +59,20 @@ fun TextSearchBar(
         modifier = modifier
             .fillMaxWidth()
             .onFocusChanged { onFocusChanged(it) },
-        value = value,
+        value = when(enabled){
+            true -> value
+            false -> stringResource(id = R.string.no_holding_stock)
+        },
         onValueChange = {
             onValueChanged(it)
         },
         textStyle = MaterialTheme.typography.subtitle1,
         singleLine = true,
         trailingIcon = {
-            IconButton(onClick = { onClearClick() }) {
-                Icon(imageVector = Icons.Filled.Clear, contentDescription = "Clear")
+            if(enabled) {
+                IconButton(onClick = { onClearClick() }) {
+                    Icon(imageVector = Icons.Filled.Clear, contentDescription = "Clear")
+                }
             }
         },
         keyboardActions = KeyboardActions(onDone = {
@@ -77,5 +85,6 @@ fun TextSearchBar(
         isError = isError(),
         placeholder = placeholderFun,
         label = labelFun,
+        enabled = enabled,
     )
 }

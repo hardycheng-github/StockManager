@@ -90,6 +90,7 @@
         android:layout_height="0dp"
         android:layout_marginVertical="@dimen/card_margin"
         app:layoutManager="LinearLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
         tools:listitem="@layout/fragment_holding_item" />
 

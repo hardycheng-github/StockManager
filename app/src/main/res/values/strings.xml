@@ -60,7 +60,8 @@
     <string name="profit_calc">損益試算</string>
     <string name="ROI">投資報酬率</string>
     <string name="stock_value_calc">股票市值</string>
-    <string name="assets_calc">資金現值</string>
-    <string name="assets_total">資金總額</string>
+    <string name="account_calc">帳戶現值</string>
+    <string name="account_total">帳戶總額</string>
     <string name="account_balance">帳戶餘額</string>
+    <string name="no_holding_stock">未持有任何股票</string>
 </resources>

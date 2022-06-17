@@ -49,8 +49,8 @@ public class OtherAdapter extends RecyclerView.Adapter<OtherAdapter.ViewHolder> 
 
         public ViewHolder(FragmentOtherItemBinding binding) {
             super(binding.getRoot());
-            mIdView = binding.itemNumber;
-            mContentView = binding.content;
+            mIdView = binding.textView11;
+            mContentView = binding.textView11;
         }
 
         @Override
