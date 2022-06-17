@@ -8,13 +8,14 @@ import com.github.k0shk0sh.compose.easyforms.EasyFormsState
 import com.msi.stockmanager.data.stock.StockInfo
 import com.msi.stockmanager.data.stock.StockUtil
 
-class EasyFormsStockSelectorState(default:StockInfo = StockInfo()): EasyFormsState<MutableState<StockInfo>, StockInfo>() {
-
-    override val state: MutableState<StockInfo> = mutableStateOf(default)
+class EasyFormsStockSelectorState(default:StockInfo = StockInfo(), list: MutableList<StockInfo> = StockUtil.stockList): EasyFormsState<MutableState<StockInfo>, StockInfo>() {
+    var default: StockInfo = default
+    var list: MutableList<StockInfo> = list
+    override val state: MutableState<StockInfo> = mutableStateOf(this.default)
 
     override val onValueChangedCallback: (StockInfo) -> Unit = {
         state.value = it
-        errorState.value = when (it in StockUtil.stockList) {
+        errorState.value = when (it in this.list) {
             true -> EasyFormsErrorState.VALID
             false -> EasyFormsErrorState.INVALID
         }
@@ -26,6 +27,10 @@ class EasyFormsStockSelectorState(default:StockInfo = StockInfo()): EasyFormsSta
             easyFormsErrorState = errorState.value,
             value = state.value.stockId,
         )
+    }
+
+    init {
+        onValueChangedCallback(state.value)
     }
 
 }

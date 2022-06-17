@@ -66,6 +66,8 @@ public class HoldingAdapter extends RecyclerView.Adapter<HoldingAdapter.ViewHold
         holder.binding.stockAmount.setText(FormatUtil.number(Math.abs(trans.stock_amount)));
         holder.binding.stockPrice.setTypeface(null, Typeface.BOLD);
         holder.binding.stockPrice.setText(FormatUtil.number(trans.stock_price));
+        holder.binding.cashAmount.setTypeface(null, Typeface.BOLD);
+        holder.binding.cashAmount.setText(FormatUtil.number(Math.abs(trans.cash_amount)));
         holder.binding.stockFee.setTypeface(null, Typeface.BOLD);
         holder.binding.stockFee.setText(FormatUtil.number(trans.fee));
         holder.binding.cardView.setOnLongClickListener(v -> {
@@ -104,9 +106,9 @@ public class HoldingAdapter extends RecyclerView.Adapter<HoldingAdapter.ViewHold
         Activity activity = (Activity) context;
 
         if(!forceUpdate && holder.mInfo.getLastPrice() > 0){
-            double diff = info.getLastPrice() - trans.stock_price;
-            double percent = trans.stock_price > 0 ? (diff / trans.stock_price) : 0;
-            int calcVal = (int) Math.floor(diff * trans.stock_amount);
+            int stockValue = (int) Math.floor(info.getLastPrice() * trans.stock_amount);
+            int calcVal = stockValue - Math.abs(trans.cash_amount);
+            double percent = trans.stock_price > 0 ? (calcVal * 1. / trans.cash_amount) : 0;
             if(calcVal < 0){
                 activity.runOnUiThread(()->{
                     holder.binding.calc.setTextColor(context.getColor(R.color.stock_lose));

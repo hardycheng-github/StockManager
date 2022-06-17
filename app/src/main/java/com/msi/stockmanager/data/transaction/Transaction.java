@@ -12,10 +12,10 @@ public class Transaction implements Serializable {
     public String trans_type_other_desc = "";
     public String stock_id = "";
     public String stock_name = "";
-    public int stock_amount = 1000; //正負值, unit: 零股, 正數表示股數增加, 負數表示股數減少
+    public int stock_amount = 0; //正負值, unit: 零股, 正數表示股數增加, 負數表示股數減少
     public double stock_price = 0; //正值, unit: 新台幣, 股票價格
     public int cash_amount = 0; //正負值, unit: 新台幣, 正數表示現金轉入, 負數表示現金轉出
-    public int fee = Profile.fee_minimum; //手續費
+    public int fee = 0; //手續費
     public int tax = 0; //證交稅
     public String remark = "";
     public long create_time = 0; //timestamp
@@ -27,6 +27,13 @@ public class Transaction implements Serializable {
     public Transaction(int type){
         super();
         trans_type = type;
+        switch (type){
+            case TransType.TRANS_TYPE_STOCK_BUY:
+            case TransType.TRANS_TYPE_STOCK_SELL:
+                stock_amount = 1000;
+                fee = Profile.fee_minimum;
+                break;
+        }
     }
 
     @Override
