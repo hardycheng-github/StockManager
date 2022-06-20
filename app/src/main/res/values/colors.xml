@@ -3,7 +3,7 @@
     <color name="main_s">#ccc</color>
     <color name="main_m">#666</color>
     <color name="main_l">#333</color>
-    <color namn="sub_s">#ffe54c</color>
+    <color name="sub_s">#ffe54c</color>
     <color name="sub_m">#ffc107</color>
     <color name="sub_l">#c68400</color>
     <color name="ripple">#33FFFFFF</color>
