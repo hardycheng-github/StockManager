@@ -74,18 +74,18 @@ public class AccountUtil {
             for(Map.Entry<String, StockValue> entry: account.stockValueMap.entrySet()) {
                 String stockId = entry.getKey();
                 StockValue stockValue = entry.getValue();
-                stockValue.avgSellPrice = 1.0 * stockValue.sellCost / stockValue.sellAmount;
-                stockValue.avgBuyPrice = 1.0 * stockValue.buyCost / stockValue.buyAmount;
+                stockValue.avgSellPrice = stockValue.sellAmount == 0 ? 0 : 1. * stockValue.sellCost / stockValue.sellAmount;
+                stockValue.avgBuyPrice = stockValue.buyAmount == 0 ? 0 : 1. * stockValue.buyCost / stockValue.buyAmount;
                 stockValue.holdingAmount = stockValue.buyAmount - stockValue.sellAmount;
                 ApiUtil.stockApi.getRegularStockPrice(stockId, info -> {
                     if(info != null){
                         stockValue.holdingCalc = (int) Math.floor(stockValue.holdingAmount * info.getLastPrice());
                         stockValue.holdingCost = stockValue.buyCost - stockValue.sellCost;
                         stockValue.holdingProfit = stockValue.holdingCalc - stockValue.holdingCost;
-                        stockValue.holdingProfitRate = 1. * stockValue.holdingProfit / stockValue.holdingCost;
+                        stockValue.holdingProfitRate = stockValue.holdingCost == 0 ? 0 : 1. * stockValue.holdingProfit / stockValue.holdingCost;
                         stockValue.historyCost = (int) Math.floor(stockValue.avgBuyPrice * stockValue.sellAmount);
                         stockValue.historyProfit = stockValue.sellCost - stockValue.historyCost;
-                        stockValue.historyProfitRate = 1. * stockValue.historyProfit / stockValue.historyCost;
+                        stockValue.historyProfitRate = stockValue.historyCost == 0 ? 0 : 1. * stockValue.historyProfit / stockValue.historyCost;
                         account.stockCostTotal += stockValue.holdingCost;
                         account.stockProfitTotal += stockValue.holdingProfit;
                     }
@@ -105,10 +105,10 @@ public class AccountUtil {
                     }
                 }
             }
-            account.stockProfitRate = 1. * account.stockProfitTotal / account.stockCostTotal;
+            account.stockProfitRate = account.stockCostTotal == 0 ? 0 : 1. * account.stockProfitTotal / account.stockCostTotal;
             account.stockCalcTotal = account.stockCostTotal + account.stockProfitTotal;
             account.accountCalcTotal = account.cashBalance + account.stockCalcTotal;
-            account.accountProfitRate = 1. * account.stockProfitTotal / account.cashInTotal;
+            account.accountProfitRate = account.cashInTotal == 0 ? 0 : 1. * account.stockProfitTotal / account.cashInTotal;
             account.accountTotal = account.cashBalance + account.stockCostTotal;
             hasValue = true;
             return null;

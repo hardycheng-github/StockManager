@@ -55,81 +55,6 @@ public class OverviewActivity extends AppCompatActivity {
     private boolean isTouchEnable = false;
     private int color_balance;
     private int color_invest;
-//    private ITransApi.TransUpdateListener transUpdateListener = new ITransApi.TransUpdateListener() {
-//        @Override
-//        public void onAdd(Transaction trans) {
-//            onUiDataChanged();
-//        }
-//
-//        @Override
-//        public void onEdit(long transId, Transaction trans) {
-//            onUiDataChanged();
-//        }
-//
-//        @Override
-//        public void onRemove(long transId) {
-//            onUiDataChanged();
-//        }
-//    };
-//    private class UiDataChangedTask extends AsyncTask<Void, Void, Void> {
-//        @Override
-//        protected Void doInBackground(Void... voids) {
-//            //TODO calculate fixed
-//            accountCalc = cashTotal = 0;
-//            Map<String, Integer> holdingStockAmount = ApiUtil.transApi.getHoldingStockAmount();
-//            for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
-//                switch (trans.trans_type){
-//                    case TransType.TRANS_TYPE_CASH_IN: case TransType.TRANS_TYPE_CASH_OUT:
-//                        cashTotal += trans.cash_amount;
-//                        break;
-//                }
-//                accountCalc += trans.cash_amount;
-//            }
-//            Lock lock = new ReentrantLock();
-//            lockCount = holdingStockAmount.size();
-//            for(Map.Entry<String, Integer> entry: holdingStockAmount.entrySet()){
-//                String stockId = entry.getKey();
-//                int stockAmount = entry.getValue();
-//                ApiUtil.stockApi.getRegularStockPrice(stockId, info -> {
-//                    if(info != null){
-//                        accountCalc += stockAmount * info.getLastPrice();
-//                    }
-//                    if(--lockCount <= 0){
-//                        synchronized (lock) {
-//                            lock.notifyAll();
-//                        }
-//                    }
-//                });
-//            }
-//            if(lockCount > 0) {
-//                synchronized (lock) {
-//                    try {
-//                        lock.wait();
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//            }
-//            return null;
-//        }
-//        @Override
-//        protected void onPostExecute(Void result){
-//            int profit = (int)(accountCalc - cashTotal);
-//            double percent = cashTotal > 0 ? (profit * 1.0 / cashTotal) : 0;
-//            binding.accountCalc.setText(FormatUtil.currency(accountCalc));
-//            if(profit < 0){
-//                binding.accountProfitCalc.setTextColor(getColor(R.color.stock_lose));
-//                binding.accountProfitCalc.setText(String.format("%s (%s) ▼", FormatUtil.number(profit), FormatUtil.percent(percent)));
-//            } else if(profit > 0){
-//                binding.accountProfitCalc.setTextColor(getColor(R.color.stock_earn));
-//                binding.accountProfitCalc.setText(String.format("%s (%s) ▲", FormatUtil.number(profit), FormatUtil.percent(percent)));
-//            } else {
-//                binding.accountProfitCalc.setTextColor(getColor(R.color.black));
-//                binding.accountProfitCalc.setText(String.format("%s (%s)", FormatUtil.number(profit), FormatUtil.percent(percent)));
-//            }
-//        }
-//    }
-//    private UiDataChangedTask onUiDataChangedTask;
 
     private ActivityOverviewBinding binding;
     private Handler mHandler = new Handler(){
@@ -158,15 +83,15 @@ public class OverviewActivity extends AppCompatActivity {
         public void onUpdate(AccountUtil.AccountValue account) {
             binding.accountCalc.setText(FormatUtil.currency(account.accountCalcTotal));
             if(account.stockProfitTotal < 0){
-                binding.colorProfit.setBackgroundColor(getColor(R.color.stock_lose_light));
-                binding.profitValue.setTextColor(getColor(R.color.stock_lose_light));
+                binding.colorProfit.setBackgroundColor(getColor(R.color.stock_lose));
+                binding.profitValue.setTextColor(getColor(R.color.stock_lose));
                 binding.profitValue.setText("-"+FormatUtil.currency(Math.abs(account.stockProfitTotal)));
                 binding.accountProfitCalc.setTextColor(getColor(R.color.stock_lose));
                 binding.accountProfitCalc.setText(String.format("%s (%s) ▼",
                         FormatUtil.number(account.stockProfitTotal), FormatUtil.percent(account.accountProfitRate)));
             } else if(account.stockProfitTotal > 0){
-                binding.colorProfit.setBackgroundColor(getColor(R.color.stock_earn_light));
-                binding.profitValue.setTextColor(getColor(R.color.stock_earn_light));
+                binding.colorProfit.setBackgroundColor(getColor(R.color.stock_earn));
+                binding.profitValue.setTextColor(getColor(R.color.stock_earn));
                 binding.profitValue.setText("+"+FormatUtil.currency(Math.abs(account.stockProfitTotal)));
                 binding.accountProfitCalc.setTextColor(getColor(R.color.stock_earn));
                 binding.accountProfitCalc.setText(String.format("%s (%s) ▲",
@@ -181,10 +106,35 @@ public class OverviewActivity extends AppCompatActivity {
             }
 
             List<PieEntry> pieEntryList = new ArrayList<>();
-            pieEntryList.add(new PieEntry(account.cashBalance, getString(R.string.account_balance)));
-            pieEntryList.add(new PieEntry(account.stockCostTotal, getString(R.string.invested_cost)));
+            int[] colors = new int[]{color_balance, color_invest, Color.BLACK};
+            int[] values = new int[]{0, 0, 0};
+            if(account.accountTotal == 0){
+                values[0] = 100;
+            } else if(account.stockProfitTotal > 0){
+                values[0] = account.cashBalance;
+                values[1] = account.stockCostTotal;
+                values[2] = account.stockProfitTotal;
+                colors[2] = getColor(R.color.stock_earn);
+            } else if(account.stockProfitTotal < 0){
+                values[0] = account.cashBalance;
+                values[1] = account.stockCalcTotal;
+                values[2] = -account.stockProfitTotal;
+                colors[2] = getColor(R.color.stock_lose);
+            } else {
+                values[0] = account.cashBalance;
+                values[1] = account.stockCostTotal;
+            }
+            int valueTotal = values[0] + values[1] + values[2];
+            int valueMin = valueTotal > 100 ? valueTotal / 100 : 1;
+            values[0] = Integer.max(values[0], valueMin);
+            values[1] = Integer.max(values[1], valueMin);
+            values[2] = Integer.max(values[2], valueMin);
+
             PieDataSet pieDataSet = new PieDataSet(pieEntryList, getString(R.string.account_calc));
-            pieDataSet.setColors(new int[]{color_balance, color_invest});
+            pieDataSet.addEntry(new PieEntry(values[0]));
+            pieDataSet.addEntry(new PieEntry(values[1]));
+            pieDataSet.addEntry(new PieEntry(values[2]));
+            pieDataSet.setColors(colors);
             pieDataSet.setSliceSpace(5f);
 
             PieData pieData = new PieData(pieDataSet);
@@ -198,19 +148,6 @@ public class OverviewActivity extends AppCompatActivity {
         }
     };
 
-//    private int accountCalc = 0;
-//    private int cashTotal = 0;
-//    private int lockCount = 0;
-
-//    private void onUiDataChanged(){
-//        if(onUiDataChangedTask != null && onUiDataChangedTask.getStatus() == AsyncTask.Status.RUNNING){
-//            Log.w(TAG, "onUiDataChangedTask already running, interrupt.");
-//            return;
-//        }
-//        onUiDataChangedTask = new UiDataChangedTask();
-//        onUiDataChangedTask.execute();
-//    }
-
     public OverviewActivity(){
         getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
             Log.d(TAG, "onStateChanged: " + event.name());
@@ -220,8 +157,8 @@ public class OverviewActivity extends AppCompatActivity {
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.overviewToolbar);
 
-                color_balance = getColor(R.color.sub_l);
-                color_invest = getColor(R.color.sub_s);
+                color_balance = getColor(R.color.main_l);
+                color_invest = getColor(R.color.main_s);
                 binding.colorBalance.setBackgroundColor(color_balance);
                 binding.colorInvest.setBackgroundColor(color_invest);
 
@@ -261,28 +198,17 @@ public class OverviewActivity extends AppCompatActivity {
                 binding.pieChart.setTransparentCircleRadius(0f);
                 binding.pieChart.setHoleRadius(90f);
                 binding.pieChart.setHoleColor(Color.TRANSPARENT);
-//                binding.pieChart.setNoDataTextColor(Color.BLACK);
-//                Paint paint = binding.pieChart.getPaint(Chart.PAINT_INFO);
-//                int size = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 18, getResources().getDisplayMetrics());
-//                paint.setTextSize(size);
-//
 
             } else if(event.equals(Lifecycle.Event.ON_START)){
                 isTouchEnable = true;
-//                binding.fabOverviewAdd.hideMenuButton(false);
                 binding.fabOverviewAdd.showMenuButton(true);
-                int width = binding.pieChart.getWidth();
-                int paddingHorizontal;
                 binding.pieChart.getViewTreeObserver().addOnGlobalLayoutListener(onPieChartLayoutListener);
                 AccountUtil.addListener(accountUpdateListener);
-//                ApiUtil.transApi.addTransUpdateListener(transUpdateListener);
-//                onUiDataChanged();
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 binding.fabOverviewAdd.close(false);
                 binding.fabOverviewAdd.hideMenuButton(false);
                 binding.pieChart.getViewTreeObserver().removeOnGlobalLayoutListener(onPieChartLayoutListener);
                 AccountUtil.removeListener(accountUpdateListener);
-//                ApiUtil.transApi.removeTransUpdateListener(transUpdateListener);
             } else if(event.equals(Lifecycle.Event.ON_DESTROY)){
                 AccountUtil.close();
             }
