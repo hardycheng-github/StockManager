@@ -64,4 +64,5 @@
     <string name="account_total">帳戶總額</string>
     <string name="account_balance">帳戶餘額</string>
     <string name="no_holding_stock">未持有任何股票</string>
+    <string name="account_detail">進入帳戶</string>
 </resources>
