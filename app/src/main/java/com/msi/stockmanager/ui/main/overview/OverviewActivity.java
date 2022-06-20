@@ -158,14 +158,23 @@ public class OverviewActivity extends AppCompatActivity {
         public void onUpdate(AccountUtil.AccountValue account) {
             binding.accountCalc.setText(FormatUtil.currency(account.accountCalcTotal));
             if(account.stockProfitTotal < 0){
+                binding.colorProfit.setBackgroundColor(getColor(R.color.stock_lose_light));
+                binding.profitValue.setTextColor(getColor(R.color.stock_lose_light));
+                binding.profitValue.setText("-"+FormatUtil.currency(Math.abs(account.stockProfitTotal)));
                 binding.accountProfitCalc.setTextColor(getColor(R.color.stock_lose));
                 binding.accountProfitCalc.setText(String.format("%s (%s) ▼",
                         FormatUtil.number(account.stockProfitTotal), FormatUtil.percent(account.accountProfitRate)));
             } else if(account.stockProfitTotal > 0){
+                binding.colorProfit.setBackgroundColor(getColor(R.color.stock_earn_light));
+                binding.profitValue.setTextColor(getColor(R.color.stock_earn_light));
+                binding.profitValue.setText("+"+FormatUtil.currency(Math.abs(account.stockProfitTotal)));
                 binding.accountProfitCalc.setTextColor(getColor(R.color.stock_earn));
                 binding.accountProfitCalc.setText(String.format("%s (%s) ▲",
                         FormatUtil.number(account.stockProfitTotal), FormatUtil.percent(account.accountProfitRate)));
             } else {
+                binding.colorProfit.setBackgroundColor(getColor(R.color.black));
+                binding.profitValue.setTextColor(getColor(R.color.black));
+                binding.profitValue.setText(FormatUtil.currency(account.stockProfitTotal));
                 binding.accountProfitCalc.setTextColor(getColor(R.color.black));
                 binding.accountProfitCalc.setText(String.format("%s (%s)",
                         FormatUtil.number(account.stockProfitTotal), FormatUtil.percent(account.accountProfitRate)));
@@ -183,6 +192,9 @@ public class OverviewActivity extends AppCompatActivity {
             binding.pieChart.setData(pieData);
             binding.pieChart.invalidate();
             binding.pieChart.animateY(1000, Easing.EaseInOutQuart);
+
+            binding.accountBalance.setText(FormatUtil.currency(account.cashBalance));
+            binding.investValue.setText(FormatUtil.currency(account.stockCostTotal));
         }
     };
 
@@ -203,12 +215,15 @@ public class OverviewActivity extends AppCompatActivity {
         getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
             Log.d(TAG, "onStateChanged: " + event.name());
             if(event.equals(Lifecycle.Event.ON_CREATE)){
-                color_balance = getColor(R.color.sub_l);
-                color_invest = getColor(R.color.sub_s);
                 ApiUtil.init(this);
                 binding = ActivityOverviewBinding.inflate(getLayoutInflater());
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.overviewToolbar);
+
+                color_balance = getColor(R.color.sub_l);
+                color_invest = getColor(R.color.sub_s);
+                binding.colorBalance.setBackgroundColor(color_balance);
+                binding.colorInvest.setBackgroundColor(color_invest);
 
                 binding.btnHttp.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class)));
                 binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DatabaseDemoActivity.class)));
@@ -240,9 +255,11 @@ public class OverviewActivity extends AppCompatActivity {
                 binding.pieChart.getLegend().setEnabled(false);
                 binding.pieChart.getDescription().setEnabled(false);
 
+                binding.pieChart.setTouchEnabled(false);
+                binding.pieChart.setRotationEnabled(false);
                 binding.pieChart.setNoDataText(null);
                 binding.pieChart.setTransparentCircleRadius(0f);
-                binding.pieChart.setHoleRadius(80f);
+                binding.pieChart.setHoleRadius(90f);
                 binding.pieChart.setHoleColor(Color.TRANSPARENT);
 //                binding.pieChart.setNoDataTextColor(Color.BLACK);
 //                Paint paint = binding.pieChart.getPaint(Chart.PAINT_INFO);
