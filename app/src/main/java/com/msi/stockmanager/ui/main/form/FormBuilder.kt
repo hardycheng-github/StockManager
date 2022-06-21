@@ -177,6 +177,7 @@ fun IntegerSelector(
             OutlinedTextField(
                 trailingIcon = trailingIcon,
                 value = state.state.value,
+                readOnly = readOnly,
                 onValueChange = {
                     val maxLength = range.endInclusive.toString().length
                     var tmpStr = it

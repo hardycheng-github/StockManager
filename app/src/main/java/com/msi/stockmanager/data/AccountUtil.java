@@ -17,7 +17,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AccountUtil {
-    private static boolean hasValue = false;
+    public static boolean hasValue = false;
     private static DataChangedTask onDataChangedTask;
     private static Context mContext;
     private static List<AccountUpdateListener> mListenerList = new ArrayList<>();

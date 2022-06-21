@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -18,6 +19,7 @@ import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 import com.msi.stockmanager.databinding.ActivityPagerBinding;
 import com.msi.stockmanager.ui.main.form.FormActivity;
 import com.msi.stockmanager.ui.main.overview.OverviewActivity;
+import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
@@ -140,11 +142,22 @@ public class PagerActivity extends AppCompatActivity {
         });
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_pager, menu);
+        return true;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                return true;
+            case R.id.menu_history:
+                //TODO history page
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

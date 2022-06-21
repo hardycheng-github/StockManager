@@ -161,18 +161,18 @@
                         android:layout_width="5dp"
                         android:layout_height="0dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/textView23"
+                        app:layout_constraintEnd_toStartOf="@+id/invest_value_title"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textView23"
+                        android:id="@+id/invest_value_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/card_padding"
-                        android:text="@string/stock_value_calc"
+                        android:text="@string/invested_cost"
                         app:layout_constraintStart_toEndOf="@+id/color_invest"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -184,8 +184,8 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="@color/black"
                         android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@+id/textView23"
-                        app:layout_constraintTop_toBottomOf="@+id/textView23" />
+                        app:layout_constraintStart_toStartOf="@+id/invest_value_title"
+                        app:layout_constraintTop_toBottomOf="@+id/invest_value_title" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -200,14 +200,14 @@
                         android:layout_width="5dp"
                         android:layout_height="0dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/textView25"
+                        app:layout_constraintEnd_toStartOf="@+id/profit_value_title"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/textView25"
+                        android:id="@+id/profit_value_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/card_padding"
@@ -223,8 +223,8 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                         android:textColor="@color/black"
                         android:textStyle="bold"
-                        app:layout_constraintStart_toStartOf="@+id/textView25"
-                        app:layout_constraintTop_toBottomOf="@+id/textView25" />
+                        app:layout_constraintStart_toStartOf="@+id/profit_value_title"
+                        app:layout_constraintTop_toBottomOf="@+id/profit_value_title" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>

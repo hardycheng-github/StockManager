@@ -11,7 +11,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="error">#FFFF0000</color>
     <color name="bg_1">#F6F6F6</color>
-    <color name="stock_earn">#900</color>
+    <color name="stock_earn">#b00</color>
     <color name="stock_earn_light">#F00</color>
     <color name="stock_lose">#090</color>
     <color name="stock_lose_light">#0F0</color>

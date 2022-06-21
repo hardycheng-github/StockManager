@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.ColorUtil;
 import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.FormatUtil;
@@ -113,23 +114,23 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             int calcVal = (int) Math.floor(diff * trans.stock_amount);
             if(calcVal < 0){
                 activity.runOnUiThread(()->{
-                    holder.binding.calc.setTextColor(context.getColor(R.color.stock_lose));
+                    holder.binding.calc.setTextColor(ColorUtil.getProfitLose());
                     holder.binding.calc.setText(String.format("%s (%s) ▼", FormatUtil.number(calcVal), FormatUtil.percent(percent)));
-//                        holder.binding.calcImg.setColorFilter(context.getColor(R.color.stock_lose));
+//                        holder.binding.calcImg.setColorFilter(ColorUtil.getLoseColor());
 //                        holder.binding.calcImg.setImageResource(R.drawable.ic_baseline_arrow_drop_down_24);
                 });
             } else if(calcVal > 0){
                 activity.runOnUiThread(()->{
-                    holder.binding.calc.setTextColor(context.getColor(R.color.stock_earn));
+                    holder.binding.calc.setTextColor(ColorUtil.getProfitEarn());
                     holder.binding.calc.setText(String.format("%s (%s) ▲", FormatUtil.number(calcVal), FormatUtil.percent(percent)));
-//                        holder.binding.calcImg.setColorFilter(context.getColor(R.color.stock_earn));
+//                        holder.binding.calcImg.setColorFilter(ColorUtil.getEarnColor());
 //                        holder.binding.calcImg.setImageResource(R.drawable.ic_baseline_arrow_drop_up_24);
                 });
             } else {
                 activity.runOnUiThread(()->{
-                    holder.binding.calc.setTextColor(context.getColor(R.color.black));
+                    holder.binding.calc.setTextColor(ColorUtil.getProfitNone());
                     holder.binding.calc.setText(String.format("%s (%s)", FormatUtil.number(calcVal), FormatUtil.percent(percent)));
-//                        holder.binding.calcImg.setColorFilter(context.getColor(R.color.stock_earn));
+//                        holder.binding.calcImg.setColorFilter(ColorUtil.getEarnColor());
 //                        holder.binding.calcImg.setImageResource(R.drawable.ic_baseline_arrow_drop_up_24);
                 });
             }
