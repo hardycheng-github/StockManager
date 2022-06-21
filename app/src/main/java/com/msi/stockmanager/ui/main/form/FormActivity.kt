@@ -26,6 +26,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import com.github.k0shk0sh.compose.easyforms.*
 import com.msi.stockmanager.R
+import com.msi.stockmanager.data.AccountUtil
 import com.msi.stockmanager.data.ApiUtil
 import com.msi.stockmanager.data.Constants
 import com.msi.stockmanager.data.FormatUtil
@@ -279,7 +280,17 @@ fun buildStockForm(){
     val stockFeeRange = Profile.fee_minimum..999999
     val stockFeeState = easyForm.addAndGetCustomState(FormKeys.FEE, IntSelectorState(stockFeeRange, transObj.fee))
     val stockTaxRange = 0..999999
+    var cashAmountRange = 0..999999999
+    if(transTypeState.state.value == TransType.TRANS_TYPE_STOCK_BUY){
+        var cashBalance: Int = AccountUtil.getAccount().cashBalance
+        if (transObj.isIdValid) {
+            cashBalance += abs(transObj.cash_amount)
+        }
+        cashAmountRange = 0..cashBalance
+    }
     val stockTaxState = easyForm.addAndGetCustomState(FormKeys.TAX, IntSelectorState(stockTaxRange, transObj.tax))
+    val transCashState = easyForm.addAndGetCustomState(FormKeys.CASH_AMOUNT, IntSelectorState(cashAmountRange, transObj.cash_amount))
+    val transCashValue = transCashState.state.value.toIntOrNull()
 
     var trailingVisible = stockSelectorState.state.value.stockId.isNotEmpty()
     var trailingSyncing by remember{ mutableStateOf(false)}
@@ -406,7 +417,40 @@ fun buildStockForm(){
             showButtons = false,
             state = stockTaxState,
         )
+        IntegerSelector(easyForm,
+            title = stringResource(id = R.string.trans_cash),
+            default = transObj.cash_amount,
+            range = 0..999999999,
+            key =FormKeys.CASH_AMOUNT,
+            showButtons = false,
+            readOnly = true,
+            state = transCashState,
+        )
+    } else {
+        IntegerSelector(easyForm,
+            title = stringResource(id = R.string.trans_cash),
+            default = transObj.cash_amount,
+            range = cashAmountRange,
+            key =FormKeys.CASH_AMOUNT,
+            showButtons = false,
+            readOnly = true,
+            state = transCashState,
+        )
     }
+
+    try {
+        var cashAmount: Int
+        if(transTypeState.state.value == TransType.TRANS_TYPE_STOCK_SELL) {
+            cashAmount = floor(stockAmountState.state.value.toInt() * stockPriceState.state.value.toDouble()).toInt()
+            cashAmount -= stockFeeState.state.value.toInt()
+            cashAmount -= stockTaxState.state.value.toInt()
+            transCashState.onValueChangedCallback(cashAmount.toString())
+        } else {
+            cashAmount = -floor(stockAmountState.state.value.toInt() * stockPriceState.state.value.toDouble()).toInt()
+            cashAmount -= stockFeeState.state.value.toInt()
+            transCashState.onValueChangedCallback((-cashAmount).toString())
+        }
+    } catch (e: Exception){}
 }
 
 fun submitForm(){
@@ -433,20 +477,12 @@ fun submitForm(){
                 transObj.tax = (it as IntSelectorResult).value.toIntOrNull()!!
             } else if(it.key == FormKeys.CASH_AMOUNT){
                 transObj.cash_amount = (it as IntSelectorResult).value.toIntOrNull()!!
+                if(transObj.trans_type in cashMinusList){
+                    transObj.cash_amount = -transObj.cash_amount
+                }
             }
         }
-        if(transEditType == TransEditType.STOCK) {
-            transObj.cash_amount = floor(transObj.stock_amount * transObj.stock_price).toInt()
-        }
-        if(transObj.trans_type in cashMinusList){
-            transObj.cash_amount = -transObj.cash_amount
-        }
-        if(transObj.trans_type in stockMinusList){
-            transObj.stock_amount = -transObj.stock_amount;
-        }
-        if(transEditType == TransEditType.STOCK) {
-            transObj.cash_amount = transObj.cash_amount - transObj.fee - transObj.tax
-        }
+
         if(transObj.isIdValid){
             transApi.updateTrans(transObj.trans_id, transObj)
         } else {

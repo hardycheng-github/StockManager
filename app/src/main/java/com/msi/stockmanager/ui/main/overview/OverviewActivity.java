@@ -8,13 +8,9 @@ import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -22,8 +18,6 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -31,9 +25,10 @@ import com.msi.stockmanager.DatabaseDemoActivity;
 import com.msi.stockmanager.HttpDemoActivity;
 import com.msi.stockmanager.data.AccountUtil;
 import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.ColorUtil;
 import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.FormatUtil;
-import com.msi.stockmanager.data.transaction.ITransApi;
+import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
@@ -44,9 +39,6 @@ import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class OverviewActivity extends AppCompatActivity {
     private static final String TAG = OverviewActivity.class.getSimpleName();
@@ -83,30 +75,30 @@ public class OverviewActivity extends AppCompatActivity {
         public void onUpdate(AccountUtil.AccountValue account) {
             binding.accountCalc.setText(FormatUtil.currency(account.accountCalcTotal));
             if(account.stockProfitTotal < 0){
-                binding.colorProfit.setBackgroundColor(getColor(R.color.stock_lose));
-                binding.profitValue.setTextColor(getColor(R.color.stock_lose));
-                binding.profitValue.setText("-"+FormatUtil.currency(Math.abs(account.stockProfitTotal)));
-                binding.accountProfitCalc.setTextColor(getColor(R.color.stock_lose));
+                binding.colorProfit.setBackgroundColor(ColorUtil.getProfitLose());
+                binding.profitValue.setTextColor(ColorUtil.getProfitLose());
+                binding.profitValue.setText(FormatUtil.currency(account.stockCalcTotal) + " (-"+FormatUtil.currency(Math.abs(account.stockProfitTotal))+")");
+                binding.accountProfitCalc.setTextColor(ColorUtil.getProfitLose());
                 binding.accountProfitCalc.setText(String.format("%s (%s) ▼",
                         FormatUtil.number(account.stockProfitTotal), FormatUtil.percent(account.accountProfitRate)));
             } else if(account.stockProfitTotal > 0){
-                binding.colorProfit.setBackgroundColor(getColor(R.color.stock_earn));
-                binding.profitValue.setTextColor(getColor(R.color.stock_earn));
-                binding.profitValue.setText("+"+FormatUtil.currency(Math.abs(account.stockProfitTotal)));
-                binding.accountProfitCalc.setTextColor(getColor(R.color.stock_earn));
+                binding.colorProfit.setBackgroundColor(ColorUtil.getProfitEarn());
+                binding.profitValue.setTextColor(ColorUtil.getProfitEarn());
+                binding.profitValue.setText(FormatUtil.currency(account.stockCalcTotal) + " (+"+FormatUtil.currency(Math.abs(account.stockProfitTotal))+")");
+                binding.accountProfitCalc.setTextColor(ColorUtil.getProfitEarn());
                 binding.accountProfitCalc.setText(String.format("%s (%s) ▲",
                         FormatUtil.number(account.stockProfitTotal), FormatUtil.percent(account.accountProfitRate)));
             } else {
-                binding.colorProfit.setBackgroundColor(getColor(R.color.black));
-                binding.profitValue.setTextColor(getColor(R.color.black));
-                binding.profitValue.setText(FormatUtil.currency(account.stockProfitTotal));
-                binding.accountProfitCalc.setTextColor(getColor(R.color.black));
+                binding.colorProfit.setBackgroundColor(ColorUtil.getProfitNone());
+                binding.profitValue.setTextColor(ColorUtil.getProfitNone());
+                binding.profitValue.setText(FormatUtil.currency(account.stockCalcTotal) + " (+" + FormatUtil.currency(account.stockProfitTotal) + ")");
+                binding.accountProfitCalc.setTextColor(ColorUtil.getProfitNone());
                 binding.accountProfitCalc.setText(String.format("%s (%s)",
                         FormatUtil.number(account.stockProfitTotal), FormatUtil.percent(account.accountProfitRate)));
             }
 
             List<PieEntry> pieEntryList = new ArrayList<>();
-            int[] colors = new int[]{color_balance, color_invest, Color.BLACK};
+            int[] colors = new int[]{color_balance, color_invest, ColorUtil.getProfitNone()};
             int[] values = new int[]{0, 0, 0};
             if(account.accountTotal == 0){
                 values[0] = 100;
@@ -114,12 +106,12 @@ public class OverviewActivity extends AppCompatActivity {
                 values[0] = account.cashBalance;
                 values[1] = account.stockCostTotal;
                 values[2] = account.stockProfitTotal;
-                colors[2] = getColor(R.color.stock_earn);
+                colors[2] = ColorUtil.getProfitEarn();
             } else if(account.stockProfitTotal < 0){
                 values[0] = account.cashBalance;
                 values[1] = account.stockCalcTotal;
                 values[2] = -account.stockProfitTotal;
-                colors[2] = getColor(R.color.stock_lose);
+                colors[2] = ColorUtil.getProfitLose();
             } else {
                 values[0] = account.cashBalance;
                 values[1] = account.stockCostTotal;
@@ -153,6 +145,9 @@ public class OverviewActivity extends AppCompatActivity {
             Log.d(TAG, "onStateChanged: " + event.name());
             if(event.equals(Lifecycle.Event.ON_CREATE)){
                 ApiUtil.init(this);
+                ColorUtil.init(this);
+                Profile.load(this);
+
                 binding = ActivityOverviewBinding.inflate(getLayoutInflater());
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.overviewToolbar);
@@ -161,6 +156,7 @@ public class OverviewActivity extends AppCompatActivity {
                 color_invest = getColor(R.color.main_s);
                 binding.colorBalance.setBackgroundColor(color_balance);
                 binding.colorInvest.setBackgroundColor(color_invest);
+                binding.profitValueTitle.setText(getString(R.string.stock_value_calc) + " (" + getString(R.string.profit_calc)+")");
 
                 binding.btnHttp.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class)));
                 binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DatabaseDemoActivity.class)));
