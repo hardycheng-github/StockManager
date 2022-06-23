@@ -2,31 +2,18 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.msi.stockmanager">
 
-    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.StockManager"
-        android:hardwareAccelerated="true">
+        android:theme="@style/Theme.StockManager">
         <activity
-            android:name=".ui.main.setting.SettingsActivity"
-            android:screenOrientation="portrait"
-            android:exported="false"
-            android:label="@string/title_activity_settings" />
-        <activity
-            android:name=".ui.main.form.FormActivity"
-            android:exported="true"
-            android:label="@string/title_activity_compose"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.StockManager"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
-        <activity
-            android:name=".ui.main.overview.OverviewActivity"
+            android:name=".ui.main.LaunchActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.StockManager.NoActionBar">
@@ -35,6 +22,24 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.main.setting.SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ui.main.form.FormActivity"
+            android:exported="true"
+            android:label="@string/title_activity_compose"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.StockManager"
+            android:windowSoftInputMode="adjustResize"></activity>
+        <activity
+            android:name=".ui.main.overview.OverviewActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.StockManager.NoActionBar">
         </activity>
         <activity
             android:name=".ui.main.pager.PagerActivity"
@@ -53,10 +58,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".InputCashInOut"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".HttpDemoActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

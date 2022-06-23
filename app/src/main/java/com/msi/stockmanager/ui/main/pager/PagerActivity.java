@@ -34,6 +34,7 @@ public class PagerActivity extends AppCompatActivity {
     private PagerAdapter pagerAdapter;
     private int currentPagePosition = 0;
     private boolean isFabShowing = false;
+    private Menu mMenu;
     private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
 
         @Override
@@ -53,6 +54,7 @@ public class PagerActivity extends AppCompatActivity {
                     stateStr = "SCROLL_STATE_SETTLING";
                     currentPagePosition = binding.viewPager.getCurrentItem();
                     showFab(DELAY_FAB_SHOW);
+                    updateMenuHistory();
                     break;
             }
             Log.d(TAG, "onPageScrollStateChanged: " + stateStr);
@@ -146,7 +148,9 @@ public class PagerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        mMenu = menu;
         getMenuInflater().inflate(R.menu.menu_pager, menu);
+        updateMenuHistory();
         return true;
     }
 
@@ -227,6 +231,22 @@ public class PagerActivity extends AppCompatActivity {
                     isFabShowing = false;
                     break;
             }
+        }
+    }
+
+    private void updateMenuHistory(){
+        boolean showMenuHistory = false;
+        switch (pagerAdapter.getPageTitleId(currentPagePosition)) {
+            case R.string.tab_text_stock_holding:
+            case R.string.tab_text_stock_history:
+                showMenuHistory = true;
+                break;
+        }
+        if(mMenu != null){
+            MenuItem item = mMenu.findItem(R.id.menu_history);
+            item.setVisible(showMenuHistory);
+            item.setEnabled(showMenuHistory);
+            supportInvalidateOptionsMenu();
         }
     }
 
