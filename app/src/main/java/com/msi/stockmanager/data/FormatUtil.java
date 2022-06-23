@@ -10,9 +10,18 @@ import java.text.NumberFormat;
 
 public class FormatUtil {
 
+    private static Context mContext;
+
     private static NumberFormat currency = NumberFormat.getCurrencyInstance();
     private static NumberFormat number = NumberFormat.getNumberInstance();
     private static NumberFormat percent = NumberFormat.getPercentInstance();
+
+    public static void init(Context context){
+        mContext = context;
+        percent.setMaximumFractionDigits(2);
+        currency.setMaximumFractionDigits(0);
+        number.setMaximumFractionDigits(2);
+    }
 
     public static String currency(int val){
         return currency.format(val);
@@ -30,7 +39,8 @@ public class FormatUtil {
         return percent.format(val);
     }
 
-    public static String transType(Context context, int type){
+    public static String transType(int type){
+        Context context = mContext;
         switch (type){
             case TransType.TRANS_TYPE_STOCK_BUY:
                 return context.getString(R.string.TRANS_TYPE_STOCK_BUY);
@@ -50,11 +60,5 @@ public class FormatUtil {
                 return context.getString(R.string.TRANS_TYPE_STOCK_REDUCTION);
         }
         return "";
-    }
-
-    static {
-        percent.setMinimumFractionDigits(2);
-        currency.setMinimumFractionDigits(0);
-        number.setMaximumFractionDigits(2);
     }
 }

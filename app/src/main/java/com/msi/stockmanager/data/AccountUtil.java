@@ -60,6 +60,9 @@ public class AccountUtil {
                 if(info != null){
                     StockValue stockValue = account.stockValueMap.getOrDefault(trans.stock_id, new StockValue());
                     stockValue.info = info;
+                    if(stockValue.lastTransTime < trans.trans_time){
+                        stockValue.lastTransTime = trans.trans_time;
+                    }
                     account.stockValueMap.put(trans.stock_id, stockValue);
                     if(trans.stock_amount < 0){
                         stockValue.sellAmount += Math.abs(trans.stock_amount);
@@ -205,5 +208,6 @@ public class AccountUtil {
         public int sellAmount;
         public int sellCost;
         public double avgSellPrice;
+        public long lastTransTime;
     }
 }

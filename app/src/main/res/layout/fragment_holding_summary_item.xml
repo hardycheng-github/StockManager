@@ -61,7 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:gravity="center_vertical"
-                    android:text="@string/syncing"
+                    android:text="@null"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/calc_img"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -105,18 +105,18 @@
                     tools:layout_editor_absoluteY="60dp" />
 
                 <TextView
-                    android:id="@+id/textView17"
+                    android:id="@+id/textView6"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/average_buy"
+                    android:text="@string/realtime_price"
                     tools:layout_editor_absoluteX="174dp"
                     tools:layout_editor_absoluteY="60dp" />
 
                 <TextView
-                    android:id="@+id/average_buy"
+                    android:id="@+id/realtime_price"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
+                    android:text="@string/syncing"
                     tools:layout_editor_absoluteX="174dp"
                     tools:layout_editor_absoluteY="60dp" />
 
@@ -153,18 +153,18 @@
                     tools:layout_editor_absoluteY="60dp" />
 
                 <TextView
-                    android:id="@+id/textView6"
+                    android:id="@+id/textView17"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/realtime_price"
+                    android:text="@string/average_buy"
                     tools:layout_editor_absoluteX="174dp"
                     tools:layout_editor_absoluteY="60dp" />
 
                 <TextView
-                    android:id="@+id/realtime_price"
+                    android:id="@+id/average_buy"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/syncing"
+                    android:text="TextView"
                     tools:layout_editor_absoluteX="174dp"
                     tools:layout_editor_absoluteY="60dp" />
 
@@ -221,7 +221,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    app:constraint_referenced_ids="textView11,textView17,holding_amount,average_buy,textView18,textView12,holding_calc,holding_cost,textView6,textView7,realtime_price,profit_calc,textView21,textView23,profit_rate,profit_rate2"
+                    app:constraint_referenced_ids="textView11,textView6,holding_amount,realtime_price,textView18,textView12,holding_calc,holding_cost,textView17,textView7,average_buy,profit_calc,textView21,textView23,profit_rate,profit_rate2"
                     app:flow_horizontalAlign="start"
                     app:flow_horizontalBias="0.5"
                     app:flow_horizontalStyle="spread"

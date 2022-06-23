@@ -13,6 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StockManager">
         <activity
+            android:name=".ListActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.main.LaunchActivity"
             android:exported="true"
             android:screenOrientation="portrait"
@@ -34,13 +37,12 @@
             android:label="@string/title_activity_compose"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.StockManager"
-            android:windowSoftInputMode="adjustResize"></activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.main.overview.OverviewActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.StockManager.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.StockManager.NoActionBar"></activity>
         <activity
             android:name=".ui.main.pager.PagerActivity"
             android:exported="true"
