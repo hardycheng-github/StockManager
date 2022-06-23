@@ -1,102 +1,118 @@
 package com.msi.stockmanager.ui.main.pager.cash;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 
-import androidx.cardview.widget.CardView;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.ColorUtil;
+import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.FormatUtil;
+import com.msi.stockmanager.data.stock.IStockApi;
+import com.msi.stockmanager.data.stock.StockInfo;
+import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
+import com.msi.stockmanager.databinding.FragmentCashItemBinding;
+import com.msi.stockmanager.ui.main.form.FormActivity;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class CashAdapter extends BaseAdapter {
-    private LayoutInflater myInflater;
-    private ArrayList<Transaction> list = new ArrayList<>();
+public class CashAdapter extends RecyclerView.Adapter<CashAdapter.ViewHolder> {
 
-    interface ItemLongClickListener {
-        void onLongClick(View view, int position, Transaction trans);
-    }
-    private ItemLongClickListener longClickListener;
+    public final List<Transaction> mItems = new ArrayList<>();
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-    public CashAdapter(Context context, ItemLongClickListener listener) {
-        longClickListener = listener;
-        myInflater = LayoutInflater.from(context);
+        return new ViewHolder(FragmentCashItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
+
     }
 
-    public void setItems(ArrayList<Transaction> items){
-        list.clear();
-        list.addAll(items);
+    public void reloadList(){
+        mItems.clear();
+        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+            switch (trans.trans_type){
+                case TransType.TRANS_TYPE_CASH_IN:
+                case TransType.TRANS_TYPE_CASH_OUT:
+                    mItems.add(trans);
+                    break;
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @Override
-    public int getCount() {
-        return list.size();
-    }
-
-    @Override
-    public Object getItem(int position) {
-        return list.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup viewGroup) {
-        ViewTag viewTag;
-
-        Transaction trans = list.get(position);
-        if(convertView == null) {
-
-            convertView = myInflater.inflate(R.layout.fragment_cash_item, null);
-
-
-            viewTag = new ViewTag(
-                    convertView.findViewById(R.id.cardView),
-                    convertView.findViewById(R.id.textTranType),
-                    convertView.findViewById(R.id.textCash),
-                    convertView.findViewById(R.id.textTranDate)
-            );
-            viewTag.cardView.setOnLongClickListener(v -> {
-                longClickListener.onLongClick(viewTag.cardView, position, trans);
-                return true;
-            });
-            convertView.setTag(viewTag);
-
+    public void onBindViewHolder(final ViewHolder holder, int position) {
+        Transaction trans = mItems.get(position);
+        Context context = holder.binding.getRoot().getContext();
+        Activity activity = (Activity) context;
+        StockInfo info = StockUtilKt.getStockInfoOrNull(trans.stock_id);
+        holder.mItem = trans;
+        holder.mInfo = info;
+        holder.binding.title.setTypeface(null, Typeface.BOLD);
+        holder.binding.title.setText(FormatUtil.transType(trans.trans_type));
+        if(trans.trans_type == TransType.TRANS_TYPE_CASH_IN){
+            holder.binding.title.setTextColor(ColorUtil.getProfitEarn());
         } else {
-            viewTag = (ViewTag) convertView.getTag();
+            holder.binding.title.setTextColor(ColorUtil.getProfitLose());
         }
-        if (trans.trans_type == TransType.TRANS_TYPE_CASH_OUT){
-            viewTag.text1.setText(R.string.TRANS_TYPE_CASH_OUT);
-        }else {
-            viewTag.text1.setText(R.string.TRANS_TYPE_CASH_IN);
-        }
+        holder.binding.transDate.setTypeface(null, Typeface.BOLD);
+        holder.binding.transDate.setText(DateUtil.toDateString(trans.trans_time));
+        holder.binding.cashAmount.setTypeface(null, Typeface.BOLD);
+        holder.binding.cashAmount.setText(FormatUtil.number(Math.abs(trans.cash_amount)));
+        holder.binding.cardView.setOnLongClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(context, v, Gravity.RIGHT);
 
-        viewTag.text2.setText(FormatUtil.number(Math.abs(trans.cash_amount)));
-        viewTag.text3.setText(DateUtil.toDateString(trans.trans_time));
-
-        return convertView;
+            // Inflating popup menu from popup_menu.xml file
+            popupMenu.getMenuInflater().inflate(R.menu.item_edit, popupMenu.getMenu());
+            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch(item.getItemId())
+                    {
+                        case R.id.item1:
+                            Intent intent = new Intent(context, FormActivity.class);
+                            intent.putExtra(Constants.EXTRA_TRANS_OBJECT, trans);
+                            context.startActivity(intent);
+                            return true;
+                        case R.id.item2:
+                            ApiUtil.transApi.removeTrans(trans.trans_id);
+                            return true;
+                    }
+                    return onMenuItemClick(item);
+                }
+            });
+            // Showing the popup menu
+            popupMenu.show();
+            return true;
+        });
     }
 
-    public class ViewTag{
-        TextView text1, text2,text3;
-        CardView cardView;
+    @Override
+    public int getItemCount() {
+        return mItems.size();
+    }
 
-        public ViewTag(CardView cardView, TextView textview1, TextView textview2, TextView textview3){
-            this.cardView = cardView;
-            this.text1 = textview1;
-            this.text2 = textview2;
-            this.text3 = textview3;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        public final FragmentCashItemBinding binding;
+        public Transaction mItem;
+        public StockInfo mInfo;
+
+        public ViewHolder(FragmentCashItemBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
+
     }
 }

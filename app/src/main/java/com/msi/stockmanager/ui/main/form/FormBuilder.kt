@@ -552,7 +552,7 @@ fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, defa
                         ),
                         modifier = Modifier.padding(8.dp)
                     )
-                    Text(text = FormatUtil.transType(LocalContext.current, type), modifier = Modifier.padding(end=8.dp))
+                    Text(text = FormatUtil.transType(type), modifier = Modifier.padding(end=8.dp))
                 }
             }
         }

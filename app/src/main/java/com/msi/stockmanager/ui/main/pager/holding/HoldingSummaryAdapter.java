@@ -82,12 +82,12 @@ public class HoldingSummaryAdapter extends RecyclerView.Adapter<HoldingSummaryAd
         int profit = Math.abs(value.holdingProfit);
         double percent = Math.abs(value.holdingProfitRate);
 
-        if(value.holdingCalc < 0){
+        if(value.holdingProfit < 0){
             holder.binding.profitCalc.setTextColor(ColorUtil.getProfitLose());
             holder.binding.profitCalc.setText("-"+FormatUtil.number(profit));
             holder.binding.profitRate.setTextColor(ColorUtil.getProfitLose());
             holder.binding.profitRate.setText("-"+FormatUtil.percent(percent));
-        } else if(value.holdingCalc > 0){
+        } else if(value.holdingProfit > 0){
             holder.binding.profitCalc.setTextColor(ColorUtil.getProfitEarn());
             holder.binding.profitCalc.setText("+"+FormatUtil.number(profit));
             holder.binding.profitRate.setTextColor(ColorUtil.getProfitEarn());

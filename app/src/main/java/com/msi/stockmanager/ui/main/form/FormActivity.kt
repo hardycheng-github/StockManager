@@ -77,7 +77,7 @@ fun getTransEditType(trans: Transaction): TransEditType {
 fun init(){
     transEditType = getTransEditType(transObj)
     if(transObj.isIdValid) {
-        titleStr = FormatUtil.transType(LocalContext.current, transObj.trans_type)
+        titleStr = FormatUtil.transType(transObj.trans_type)
         transTypeList = listOf(transObj.trans_type)
         return
     }

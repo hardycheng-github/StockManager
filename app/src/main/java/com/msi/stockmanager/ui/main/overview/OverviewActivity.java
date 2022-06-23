@@ -172,7 +172,7 @@ public class OverviewActivity extends AppCompatActivity {
                 setSupportActionBar(binding.overviewToolbar);
 
                 color_balance = getColor(R.color.main_l);
-                color_invest = getColor(R.color.main_s);
+                color_invest = getColor(R.color.sub_m);
                 binding.colorBalance.setBackgroundColor(color_balance);
                 binding.colorInvest.setBackgroundColor(color_invest);
 //                binding.profitValueTitle.setText(getString(R.string.stock_value_calc) + " (" + getString(R.string.profit_calc)+")");

@@ -68,16 +68,15 @@
             app:flow_wrapMode="chain" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ListView
-        android:id="@+id/listView1"
-        android:layout_width="0dp"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list"
+        android:name=".ui.main.CashFragment"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_centerHorizontal="true"
-        android:divider="@null"
-        android:layout_marginTop="@dimen/card_margin"
+        android:layout_marginVertical="@dimen/card_margin"
+        app:layoutManager="LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
+        tools:listitem="@layout/fragment_cash_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
