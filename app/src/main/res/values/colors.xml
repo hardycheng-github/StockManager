@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="main_s">#99bbff</color>
+    <color name="main_s">#bbddff</color>
     <color name="main_m">#1976d2</color>
     <color name="main_l">#004ba0</color>
     <color name="sub_s">#ffe54c</color>

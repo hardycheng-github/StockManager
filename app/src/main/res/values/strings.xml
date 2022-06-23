@@ -58,6 +58,7 @@
     <string name="title_activity_http_request_demo">HttpRequestDemo</string>
     <string name="invested_cost">投入成本</string>
     <string name="profit_calc">損益試算</string>
+    <string name="profit_rate">報酬率</string>
     <string name="ROI">投資報酬率</string>
     <string name="stock_value_calc">股票市值</string>
     <string name="account_calc">帳戶現值</string>
@@ -66,4 +67,16 @@
     <string name="no_holding_stock">未持有任何股票</string>
     <string name="account_detail">進入帳戶</string>
     <string name="profit_color_reverse">綠漲紅跌</string>
+    <string name="holding_amount">庫存股數</string>
+    <string name="holding_cost">持股成本</string>
+    <string name="holding_calc">持股現值</string>
+    <string name="holding_profit">損益試算</string>
+    <string name="average_buy">平均買價</string>
+    <string name="history_cost">平均成本</string>
+    <string name="history_profit">已實現損益</string>
+    <string name="realtime_price">即時股價</string>
+    <string name="dialog_remove_stock_msg">刪除所有【%s】的紀錄?</string>
+    <string name="confirm">確定</string>
+    <string name="cancel">取消</string>
+    <string name="copyright_msg">Copyright © 2022 MSI</string>
 </resources>

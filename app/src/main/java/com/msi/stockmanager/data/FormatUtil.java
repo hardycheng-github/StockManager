@@ -5,6 +5,7 @@ import android.content.Context;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.R;
 
+import java.math.RoundingMode;
 import java.text.NumberFormat;
 
 public class FormatUtil {
@@ -54,5 +55,6 @@ public class FormatUtil {
     static {
         percent.setMinimumFractionDigits(2);
         currency.setMinimumFractionDigits(0);
+        number.setMaximumFractionDigits(2);
     }
 }

@@ -9,10 +9,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout4"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/main_s"
-        android:padding="@dimen/card_padding"
+        android:paddingVertical="@dimen/card_padding"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -44,6 +44,16 @@
             tools:layout_editor_absoluteX="274dp" />
 
         <TextView
+            android:id="@+id/textView24"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/profit_rate"
+            android:textColor="?attr/colorOnSecondary"
+            tools:layout_editor_absoluteX="274dp"
+            tools:layout_editor_absoluteY="10dp" />
+
+        <TextView
             android:id="@+id/stock_value_calc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -73,13 +83,25 @@
             tools:layout_editor_absoluteX="270dp"
             tools:layout_editor_absoluteY="29dp" />
 
+        <TextView
+            android:id="@+id/profit_rate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/syncing"
+            android:textColor="?attr/colorOnSecondary"
+            tools:layout_editor_absoluteX="270dp"
+            tools:layout_editor_absoluteY="29dp" />
+
         <androidx.constraintlayout.helper.widget.Flow
             android:id="@+id/flow3"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:constraint_referenced_ids="textView13,textView14,textView15,stock_value_calc,invested_cost,profit_calc"
-            app:flow_maxElementsWrap="3"
-            app:flow_wrapMode="chain" />
+            app:constraint_referenced_ids="textView13,textView14,textView15,textView24,stock_value_calc,invested_cost,profit_calc,profit_rate"
+            app:flow_maxElementsWrap="4"
+            app:flow_wrapMode="chain"
+            tools:layout_editor_absoluteX="10dp"
+            tools:layout_editor_absoluteY="10dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

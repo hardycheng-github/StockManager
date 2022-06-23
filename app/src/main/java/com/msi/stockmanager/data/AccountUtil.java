@@ -59,6 +59,7 @@ public class AccountUtil {
                 StockInfo info = StockUtilKt.getStockInfoOrNull(trans.stock_id);
                 if(info != null){
                     StockValue stockValue = account.stockValueMap.getOrDefault(trans.stock_id, new StockValue());
+                    stockValue.info = info;
                     account.stockValueMap.put(trans.stock_id, stockValue);
                     if(trans.stock_amount < 0){
                         stockValue.sellAmount += Math.abs(trans.stock_amount);

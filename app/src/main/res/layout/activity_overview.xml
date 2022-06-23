@@ -193,6 +193,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="@dimen/card_padding"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
 
                     <TextView
@@ -200,20 +202,39 @@
                         android:layout_width="5dp"
                         android:layout_height="0dp"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/profit_value_title"
+                        app:layout_constraintEnd_toStartOf="@+id/stock_value_calc_title"
                         app:layout_constraintHorizontal_bias="0.5"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
-                        android:id="@+id/profit_value_title"
+                        android:id="@+id/stock_value_calc_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginHorizontal="@dimen/card_padding"
-                        android:text="@string/profit_calc"
+                        android:text="@string/stock_value_calc"
                         app:layout_constraintStart_toEndOf="@+id/color_profit"
                         app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/stock_value_calc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/syncing"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="@+id/stock_value_calc_title"
+                        app:layout_constraintTop_toBottomOf="@+id/stock_value_calc_title" />
+
+                    <TextView
+                        android:id="@+id/profit_value_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/profit_calc"
+                        app:layout_constraintStart_toStartOf="@+id/stock_value_calc"
+                        app:layout_constraintTop_toBottomOf="@+id/stock_value_calc" />
 
                     <TextView
                         android:id="@+id/profit_value"
@@ -254,6 +275,7 @@
         android:id="@+id/constraintLayout7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
