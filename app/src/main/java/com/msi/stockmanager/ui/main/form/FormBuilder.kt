@@ -133,7 +133,6 @@ fun IntegerSelector(
 ){
     state.range = range
     state.default = default
-    var numStr by remember { mutableStateOf(state.state.value)}
     val btnSize = 32.dp
     val view = LocalView.current
     state.onValueChangedCallback(state.state.value)
@@ -147,14 +146,11 @@ fun IntegerSelector(
                     onClick = {
                         view.clearFocus()
                         try {
-                            val tmp = numStr.toInt()
+                            val tmp = state.state.value.toInt()
                             var n = tmp - tmp % step - step
                             if (n < range.start) n = range.start
-                            numStr = n.toString()
-                        } catch (e: Exception) {
-                            numStr = range.start.toString()
-                        }
-                        state.onValueChangedCallback(numStr)
+                            state.onValueChangedCallback(n.toString())
+                        } catch (e: Exception) {}
                     },
                     modifier = Modifier.constrainAs(sub) {
                         start.linkTo(parent.start)
@@ -162,9 +158,9 @@ fun IntegerSelector(
                         bottom.linkTo(parent.bottom)
                         height = Dimension.fillToConstraints
                     },
-                    enabled = when(numStr.toIntOrNull() == null){
+                    enabled = when(state.state.value.toIntOrNull() == null){
                         true -> true
-                        false -> numStr.toInt() > range.start
+                        false -> state.state.value.toInt() > range.start
                     }
                 ) {
                     Icon(
@@ -209,14 +205,11 @@ fun IntegerSelector(
                     onClick = {
                         view.clearFocus()
                         try {
-                            val tmp = numStr.toInt()
+                            val tmp = state.state.value.toInt()
                             var n = tmp - tmp % step + step
                             if (n > range.endInclusive) n = range.endInclusive
-                            numStr = n.toString()
-                        } catch (e: Exception) {
-                            numStr = range.start.toString()
-                        }
-                        state.onValueChangedCallback(numStr)
+                            state.onValueChangedCallback(n.toString())
+                        } catch (e: Exception) {}
                     },
                     modifier = Modifier.constrainAs(add) {
                         end.linkTo(parent.end)
@@ -224,9 +217,9 @@ fun IntegerSelector(
                         bottom.linkTo(parent.bottom)
                         height = Dimension.fillToConstraints
                     },
-                    enabled = when(numStr.toIntOrNull() == null){
+                    enabled = when(state.state.value.toIntOrNull() == null){
                         true -> true
-                        false -> numStr.toInt() < range.endInclusive
+                        false -> state.state.value.toInt() < range.endInclusive
                     }
                 ) {
                     Icon(
@@ -298,7 +291,6 @@ fun DoubleSelector(
     state.range = range
     state.default = default
     state.precision = precision
-    var numStr by remember { mutableStateOf(state.state.value) }
     val btnSize = 32.dp
     val view = LocalView.current
     state.onValueChangedCallback(state.state.value)
@@ -312,14 +304,11 @@ fun DoubleSelector(
                     onClick = {
                         view.clearFocus()
                         try {
-                            val tmp = numStr.toDouble()
+                            val tmp = state.state.value.toDouble()
                             var n = tmp - tmp % step - step
                             if (n < range.start) n = range.start
-                            numStr = String.format("%." + precision + "f", n);
-                        } catch (e: Exception) {
-                            numStr = String.format("%." + precision + "f", range.start);
-                        }
-                        state.onValueChangedCallback(numStr)
+                            state.onValueChangedCallback(String.format("%." + precision + "f", n))
+                        } catch (e: Exception) {}
                     },
                     modifier = Modifier.constrainAs(sub) {
                         start.linkTo(parent.start)
@@ -327,9 +316,9 @@ fun DoubleSelector(
                         bottom.linkTo(parent.bottom)
                         height = Dimension.fillToConstraints
                     },
-                    enabled = when(numStr.toDoubleOrNull() == null){
+                    enabled = when(state.state.value.toDoubleOrNull() == null){
                         true -> true
-                        false -> numStr.toDouble() > range.start
+                        false -> state.state.value.toDouble() > range.start
                     }
                 ) {
                     Icon(
@@ -373,14 +362,11 @@ fun DoubleSelector(
                     onClick = {
                         view.clearFocus()
                         try {
-                            val tmp = numStr.toDouble()
+                            val tmp = state.state.value.toDouble()
                             var n = tmp - tmp % step + step
                             if (n > range.endInclusive) n = range.endInclusive
-                            numStr = String.format("%." + precision + "f", n)
-                        } catch (e: Exception) {
-                            numStr = String.format("%." + precision + "f", range.start);
-                        }
-                        state.onValueChangedCallback(numStr)
+                            state.onValueChangedCallback(String.format("%." + precision + "f", n))
+                        } catch (e: Exception) {}
                     },
                     modifier = Modifier.constrainAs(add) {
                         end.linkTo(parent.end)
@@ -388,9 +374,9 @@ fun DoubleSelector(
                         bottom.linkTo(parent.bottom)
                         height = Dimension.fillToConstraints
                     },
-                    enabled = when(numStr.toDoubleOrNull() == null){
+                    enabled = when(state.state.value.toDoubleOrNull() == null){
                         true -> true
-                        false -> numStr.toDouble() < range.endInclusive
+                        false -> state.state.value.toDouble() < range.endInclusive
                     }
                 ) {
                     Icon(
