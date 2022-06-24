@@ -44,7 +44,7 @@ import java.util.List;
 public class OverviewActivity extends AppCompatActivity {
     private static final String TAG = OverviewActivity.class.getSimpleName();
     private static final int MSG_JUMP_PENDING = 0x1001;
-    private static final int DELAY_JUMP_PENDING = 300;
+    private static final int DELAY_JUMP_PENDING = 350;
     private boolean isTouchEnable = false;
     private int color_balance;
     private int color_invest;

@@ -6,6 +6,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
@@ -26,10 +27,13 @@ public class PagerActivity extends AppCompatActivity {
     private static final String TAG = PagerActivity.class.getSimpleName();
     private static final int MSG_FAB_SHOW = 0x1001;
     private static final int DELAY_FAB_SHOW = 200;
+    private static final int MSG_JUMP_PENDING = 0x1002;
+    private static final int DELAY_JUMP_PENDING = 350;
     private ActivityPagerBinding binding;
     private PagerAdapter pagerAdapter;
     private int currentPagePosition = 0;
     private boolean isFabShowing = false;
+    private boolean isTouchEnable = false;
     private Menu mMenu;
     private ViewPager.OnPageChangeListener onPageChangeListener = new ViewPager.SimpleOnPageChangeListener() {
 
@@ -82,6 +86,9 @@ public class PagerActivity extends AppCompatActivity {
             switch (msg.what){
                 case MSG_FAB_SHOW:
                     showFab();
+                    break;
+                case MSG_JUMP_PENDING:
+                    startActivity((Intent)msg.obj);
                     break;
             }
         }
@@ -151,6 +158,11 @@ public class PagerActivity extends AppCompatActivity {
 
                 getSupportActionBar().setTitle(pagerAdapter.getPageTitleId(currentPagePosition));
                 showFab();
+            } else if(event.equals(Lifecycle.Event.ON_START)){
+                isTouchEnable = true;
+                binding.fabOtherAdd.close(false);
+            } else if(event.equals(Lifecycle.Event.ON_STOP)){
+                binding.fabOtherAdd.close(false);
             } else if(event.equals(Lifecycle.Event.ON_DESTROY)){
                 if(binding.viewPager != null)
                     binding.viewPager.removeOnPageChangeListener(onPageChangeListener);
@@ -158,6 +170,24 @@ public class PagerActivity extends AppCompatActivity {
                     binding.tabs.removeOnTabSelectedListener(onTabSelectedListener);
             }
         });
+    }
+
+    @Override
+    public void startActivity(Intent intent){
+        isTouchEnable = false;
+        if(binding.fabOtherAdd.isOpened()){
+            binding.fabOtherAdd.close(true);
+            Message msg = mHandler.obtainMessage(MSG_JUMP_PENDING, intent);
+            mHandler.sendMessageDelayed(msg, DELAY_JUMP_PENDING);
+        } else {
+            super.startActivity(intent);
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if(!isTouchEnable) return true;
+        return super.dispatchTouchEvent(ev);
     }
 
 

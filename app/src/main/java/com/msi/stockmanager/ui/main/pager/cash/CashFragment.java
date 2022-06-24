@@ -43,12 +43,21 @@ public class CashFragment extends Fragment {
     private FragmentCashBinding binding;
     private AccountUtil.AccountUpdateListener accountListener = accountValue -> {
         if(binding != null){
-            binding.CashIn.setTypeface(null, Typeface.BOLD);
-            binding.CashIn.setTextColor(ColorUtil.getProfitEarn());
+            binding.accountTotal.setText(FormatUtil.number(accountValue.accountTotal));
+            binding.accountBalance.setText(FormatUtil.number(accountValue.cashBalance));
+
+            if(accountValue.cashInTotal > 0) {
+                binding.CashIn.setTextColor(ColorUtil.getProfitEarn());
+            } else {
+                binding.CashIn.setTextColor(ColorUtil.getProfitNone());
+            }
             binding.CashIn.setText(FormatUtil.number(accountValue.cashInTotal));
 
-            binding.CashOut.setTypeface(null, Typeface.BOLD);
-            binding.CashOut.setTextColor(ColorUtil.getProfitLose());
+            if(accountValue.cashOutTotal > 0) {
+                binding.CashOut.setTextColor(ColorUtil.getProfitLose());
+            } else {
+                binding.CashOut.setTextColor(ColorUtil.getProfitNone());
+            }
             binding.CashOut.setText(FormatUtil.number(accountValue.cashOutTotal));
 
             mAdapter.reloadList();
