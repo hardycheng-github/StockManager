@@ -17,13 +17,11 @@ import androidx.compose.material.icons.outlined.CloudDownload
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.navigation.NavController
 import com.github.k0shk0sh.compose.easyforms.*
 import com.msi.stockmanager.R
 import com.msi.stockmanager.data.AccountUtil
@@ -32,11 +30,9 @@ import com.msi.stockmanager.data.Constants
 import com.msi.stockmanager.data.FormatUtil
 import com.msi.stockmanager.data.profile.Profile
 import com.msi.stockmanager.data.stock.IStockApi
-import com.msi.stockmanager.data.stock.StockApi
 import com.msi.stockmanager.data.stock.StockInfo
 import com.msi.stockmanager.data.stock.StockUtil
 import com.msi.stockmanager.data.transaction.ITransApi
-import com.msi.stockmanager.data.transaction.TransApi
 import com.msi.stockmanager.data.transaction.TransType
 import com.msi.stockmanager.data.transaction.Transaction
 import com.msi.stockmanager.ui.theme.StockManagerTheme
@@ -190,6 +186,8 @@ fun BuildForm(){
                     when(transEditType){
                         TransEditType.CASH -> buildCashForm()
                         TransEditType.STOCK -> buildStockForm()
+                        TransEditType.DIVIDEND -> buildDividendForm()
+                        TransEditType.REDUCTION -> buildReductionForm()
                     }
                 }
                 Button(
@@ -453,6 +451,97 @@ fun buildStockForm(){
     } catch (e: Exception){}
 }
 
+
+@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
+@Composable
+fun buildDividendForm(){
+    val easyForm = easyFormObj!!
+    val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
+    if(!transObj.isIdValid) {
+        TransTypeSelector(
+            easyForm,
+            key = FormKeys.TRANS_TYPE,
+            title = stringResource(id = R.string.trans_type),
+            items = transTypeList,
+            default = transObj.trans_type
+        )
+    }
+    DatePicker(easyForm,
+        title = stringResource(id = R.string.trans_date),
+        key=FormKeys.TRANS_DATE,
+        default = transObj.trans_time
+    )
+    val stockSelectorList: MutableList<StockInfo> = mutableListOf()
+    for(entry in AccountUtil.getAccount().stockValueMap){
+        stockSelectorList.add(entry.value.info)
+    }
+    StockIdSelector(easyForm, 0, stockSelectorList)
+    if(transTypeState.state.value == TransType.TRANS_TYPE_CASH_DIVIDEND){
+        IntegerSelector(easyForm = easyForm,
+            title = stringResource(id = R.string.trans_cash_earn),
+            range = 1..999999999,
+            showButtons = false,
+            key = FormKeys.CASH_AMOUNT)
+    } else {
+        IntegerSelector(easyForm = easyForm,
+            title = stringResource(id = R.string.trans_stock_earn),
+            range = 1..999999,
+            key = FormKeys.STOCK_AMOUNT)
+    }
+}
+
+@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
+@Composable
+fun buildReductionForm(){
+    val easyForm = easyFormObj!!
+    val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
+    if(!transObj.isIdValid) {
+        TransTypeSelector(
+            easyForm,
+            key = FormKeys.TRANS_TYPE,
+            title = stringResource(id = R.string.trans_type),
+            items = transTypeList,
+            default = transObj.trans_type
+        )
+    }
+    DatePicker(easyForm,
+        title = stringResource(id = R.string.trans_date),
+        key=FormKeys.TRANS_DATE,
+        default = transObj.trans_time
+    )
+    val stockSelectorState = easyForm.addAndGetCustomState(
+        FormKeys.STOCK_SELECTOR,
+        EasyFormsStockSelectorState(StockUtil.stockMap.getOrDefault(transObj.stock_id, StockInfo()))
+    )
+    val stockSelectorList: MutableList<StockInfo> = mutableListOf()
+    for(entry in AccountUtil.getAccount().stockValueMap){
+        stockSelectorList.add(entry.value.info)
+    }
+    var stockAmountRange = 1..999999
+    val stockRemainingMap: MutableMap<String, Int> = ApiUtil.transApi.holdingStockAmount
+    if (stockRemainingMap.containsKey(stockSelectorState.state.value.stockId)) {
+        var stockRemaining: Int = stockRemainingMap[stockSelectorState.state.value.stockId]!!
+        if (transObj.isIdValid) {
+            stockRemaining += abs(transObj.stock_amount)
+        }
+        if(stockRemaining > stockAmountRange.start) {
+            stockAmountRange = stockAmountRange.start..stockRemaining
+        }
+    }
+    StockIdSelector(easyForm, 0, stockSelectorList, stockSelectorState)
+    IntegerSelector(easyForm = easyForm,
+        title = stringResource(id = R.string.trans_stock_lose),
+        range = stockAmountRange,
+        key = FormKeys.STOCK_AMOUNT)
+    if(transTypeState.state.value == TransType.TRANS_TYPE_CASH_REDUCTION){
+        IntegerSelector(easyForm = easyForm,
+            title = stringResource(id = R.string.trans_cash_earn),
+            showButtons = false,
+            key = FormKeys.CASH_AMOUNT)
+    }
+}
+
+
 fun submitForm(){
     if(easyFormObj != null){
         easyFormObj!!.formData().forEach {
@@ -470,6 +559,9 @@ fun submitForm(){
                 transObj.stock_price = (it as DoubleSelectorResult).value.toDoubleOrNull()!!
             } else if(it.key == FormKeys.STOCK_AMOUNT){
                 transObj.stock_amount = (it as IntSelectorResult).value.toIntOrNull()!!
+                if(transObj.trans_type in stockMinusList){
+                    transObj.stock_amount = -abs(transObj.stock_amount)
+                }
             } else if(it.key == FormKeys.FEE){
                 transObj.fee = (it as IntSelectorResult).value.toIntOrNull()!!
             } else if(it.key == FormKeys.TAX &&
@@ -478,7 +570,7 @@ fun submitForm(){
             } else if(it.key == FormKeys.CASH_AMOUNT){
                 transObj.cash_amount = (it as IntSelectorResult).value.toIntOrNull()!!
                 if(transObj.trans_type in cashMinusList){
-                    transObj.cash_amount = -transObj.cash_amount
+                    transObj.cash_amount = -abs(transObj.cash_amount)
                 }
             }
         }

@@ -101,6 +101,14 @@
 
     </com.github.clans.fab.FloatingActionButton>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fab_other_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="2dp">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <com.github.clans.fab.FloatingActionMenu
         android:id="@+id/fab_other_add"
         android:layout_width="wrap_content"
@@ -116,19 +124,19 @@
         app:menu_fab_label="@string/add_trans"
         app:menu_fab_show_animation="@anim/fab_scale_up"
         app:menu_fab_size="normal"
-        app:menu_icon="@drawable/ic_baseline_add_36">
+        app:menu_icon="@drawable/ic_baseline_add_36"
+        android:elevation="3dp">>
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_other_add_dividend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_size="mini"
+            android:src="@drawable/ic_baseline_savings_24"
             app:fab_colorNormal="@color/sub_l"
             app:fab_colorPressed="@color/sub_m"
             app:fab_colorRipple="@color/ripple"
             app:fab_label="@string/title_trans_dividend"
-            android:src="@drawable/ic_baseline_savings_24"
-            />
+            app:fab_size="mini" />
 
         <com.github.clans.fab.FloatingActionButton
             android:id="@+id/fab_other_add_reduction"

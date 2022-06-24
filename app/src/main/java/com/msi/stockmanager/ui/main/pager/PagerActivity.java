@@ -1,7 +1,6 @@
 package com.msi.stockmanager.ui.main.pager;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -10,16 +9,13 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.google.android.material.tabs.TabLayout;
-import com.msi.stockmanager.InputCashInOut;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
-import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 import com.msi.stockmanager.databinding.ActivityPagerBinding;
+import com.msi.stockmanager.ui.main.list.ListActivity;
 import com.msi.stockmanager.ui.main.form.FormActivity;
-import com.msi.stockmanager.ui.main.overview.OverviewActivity;
-import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
@@ -132,6 +128,26 @@ public class PagerActivity extends AppCompatActivity {
                     intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_REDUCTION));
                     startActivity(intent);
                 });
+                binding.fabOtherAdd.setOnMenuButtonClickListener(view -> {
+                    if(!binding.fabOtherAdd.isOpened()) {
+                        binding.fabOtherContainer.setClickable(true);
+                        binding.fabOtherContainer.setBackgroundColor(getColor(R.color.transparent_bg_1));
+                        binding.fabOtherAdd.open(true);
+                    } else {
+                        binding.fabOtherAdd.close(true);
+                    }
+                });
+                binding.fabOtherAdd.setOnMenuToggleListener(opened -> {
+                    if(!opened){
+                        binding.fabOtherContainer.setClickable(false);
+                        binding.fabOtherContainer.setBackgroundColor(getColor(R.color.transparent));
+                    }
+                });
+                binding.fabOtherContainer.setOnClickListener(v->{
+                    binding.fabOtherAdd.close(true);
+                });
+                binding.fabOtherContainer.setClickable(false);
+                binding.fabOtherContainer.setBackgroundColor(getColor(R.color.transparent));
 
                 getSupportActionBar().setTitle(pagerAdapter.getPageTitleId(currentPagePosition));
                 showFab();
@@ -161,7 +177,8 @@ public class PagerActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.menu_history:
-                //TODO history page
+                Intent intent = new Intent(PagerActivity.this, ListActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -245,8 +262,6 @@ public class PagerActivity extends AppCompatActivity {
         if(mMenu != null){
             MenuItem item = mMenu.findItem(R.id.menu_history);
             item.setVisible(showMenuHistory);
-            item.setEnabled(showMenuHistory);
-            supportInvalidateOptionsMenu();
         }
     }
 

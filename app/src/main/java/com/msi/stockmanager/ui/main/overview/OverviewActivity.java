@@ -17,6 +17,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
+import com.github.clans.fab.FloatingActionMenu;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
@@ -201,6 +202,26 @@ public class OverviewActivity extends AppCompatActivity {
                     intent.putExtra(Constants.EXTRA_TRANS_OBJECT, new Transaction(TransType.TRANS_TYPE_STOCK_REDUCTION));
                     startActivity(intent);
                 });
+                binding.fabOverviewAdd.setOnMenuButtonClickListener(view -> {
+                    if(!binding.fabOverviewAdd.isOpened()) {
+                        binding.fabOverviewContainer.setClickable(true);
+                        binding.fabOverviewContainer.setBackgroundColor(getColor(R.color.transparent_bg_1));
+                        binding.fabOverviewAdd.open(true);
+                    } else {
+                        binding.fabOverviewAdd.close(true);
+                    }
+                });
+                binding.fabOverviewAdd.setOnMenuToggleListener(opened -> {
+                    if(!opened){
+                        binding.fabOverviewContainer.setClickable(false);
+                        binding.fabOverviewContainer.setBackgroundColor(getColor(R.color.transparent));
+                    }
+                });
+                binding.fabOverviewContainer.setOnClickListener(v->{
+                    binding.fabOverviewAdd.close(true);
+                });
+                binding.fabOverviewContainer.setClickable(false);
+                binding.fabOverviewContainer.setBackgroundColor(getColor(R.color.transparent));
 
                 binding.pieChart.setDrawEntryLabels(false);
                 binding.pieChart.getLegend().setEnabled(false);
