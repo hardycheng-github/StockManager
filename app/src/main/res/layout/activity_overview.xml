@@ -316,65 +316,74 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.github.clans.fab.FloatingActionMenu
-        android:id="@+id/fab_overview_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
-        android:elevation="2dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:menu_colorNormal="@color/sub_m"
-        app:menu_colorPressed="@color/sub_l"
-        app:menu_colorRipple="@color/ripple"
-        app:menu_fab_label="@string/add_trans"
-        app:menu_fab_size="normal"
-        app:menu_icon="@drawable/ic_baseline_add_36">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fab_overview_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="false"
+        android:background="@color/transparent"
+        android:elevation="2dp">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_overview_add_cash"
+        <com.github.clans.fab.FloatingActionMenu
+            android:id="@+id/fab_overview_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_attach_money_24"
-            app:fab_colorNormal="@color/sub_l"
-            app:fab_colorPressed="@color/sub_m"
-            app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/title_trans_cash"
-            app:fab_size="mini" />
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:menu_colorNormal="@color/sub_m"
+            app:menu_colorPressed="@color/sub_l"
+            app:menu_colorRipple="@color/ripple"
+            app:menu_fab_label="@string/add_trans"
+            app:menu_fab_size="normal"
+            app:menu_icon="@drawable/ic_baseline_add_36">
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_overview_add_stock"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_candlestick_chart_24"
-            app:fab_colorNormal="@color/sub_l"
-            app:fab_colorPressed="@color/sub_m"
-            app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/title_trans_stock"
-            app:fab_size="mini" />
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_overview_add_cash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_attach_money_24"
+                app:fab_colorNormal="@color/sub_l"
+                app:fab_colorPressed="@color/sub_m"
+                app:fab_colorRipple="@color/ripple"
+                app:fab_label="@string/title_trans_cash"
+                app:fab_size="mini" />
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_overview_add_dividend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_savings_24"
-            app:fab_colorNormal="@color/sub_l"
-            app:fab_colorPressed="@color/sub_m"
-            app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/title_trans_dividend"
-            app:fab_size="mini" />
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_overview_add_stock"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_candlestick_chart_24"
+                app:fab_colorNormal="@color/sub_l"
+                app:fab_colorPressed="@color/sub_m"
+                app:fab_colorRipple="@color/ripple"
+                app:fab_label="@string/title_trans_stock"
+                app:fab_size="mini" />
 
-        <com.github.clans.fab.FloatingActionButton
-            android:id="@+id/fab_overview_add_reduction"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_baseline_trending_down_24"
-            app:fab_colorNormal="@color/sub_l"
-            app:fab_colorPressed="@color/sub_m"
-            app:fab_colorRipple="@color/ripple"
-            app:fab_label="@string/title_trans_reduction"
-            app:fab_size="mini" />
-    </com.github.clans.fab.FloatingActionMenu>
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_overview_add_dividend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_savings_24"
+                app:fab_colorNormal="@color/sub_l"
+                app:fab_colorPressed="@color/sub_m"
+                app:fab_colorRipple="@color/ripple"
+                app:fab_label="@string/title_trans_dividend"
+                app:fab_size="mini" />
+
+            <com.github.clans.fab.FloatingActionButton
+                android:id="@+id/fab_overview_add_reduction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_trending_down_24"
+                app:fab_colorNormal="@color/sub_l"
+                app:fab_colorPressed="@color/sub_m"
+                app:fab_colorRipple="@color/ripple"
+                app:fab_label="@string/title_trans_reduction"
+                app:fab_size="mini" />
+        </com.github.clans.fab.FloatingActionMenu>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

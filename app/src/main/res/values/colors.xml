@@ -15,5 +15,7 @@
     <color name="stock_earn_light">#F00</color>
     <color name="stock_lose">#090</color>
     <color name="stock_lose_light">#0F0</color>
+    <color name="transparent_bg_1">#33000000</color>
+    <color name="transparent">#00000000</color>
 
 </resources>
