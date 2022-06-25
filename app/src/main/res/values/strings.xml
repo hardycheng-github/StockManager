@@ -75,7 +75,8 @@
     <string name="holding_cost">持股成本</string>
     <string name="holding_calc">持股現值</string>
     <string name="holding_profit">損益試算</string>
-    <string name="average_buy">平均買價</string>
+    <string name="average_buy">買入平均價</string>
+    <string name="average_sell">賣出平均價</string>
     <string name="history_cost">平均成本</string>
     <string name="history_profit">已實現損益</string>
     <string name="realtime_price">即時股價</string>
@@ -86,4 +87,5 @@
     <string name="search_stock">股票搜尋</string>
     <string name="filter">過濾器</string>
     <string name="title_activity_list">歷史紀錄</string>
+    <string name="no_data">尚無資料</string>
 </resources>

@@ -228,8 +228,8 @@
 
                 <androidx.constraintlayout.helper.widget.Flow
                     android:id="@+id/flow2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     app:constraint_referenced_ids="trans_date_container,trans_stock_name_container,trans_stock_amount_container,trans_stock_price_container,trans_stock_fee_container,trans_stock_tax_container,trans_cash_container"
                     app:flow_maxElementsWrap="2"
                     app:flow_wrapMode="chain" />

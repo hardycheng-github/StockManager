@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.facebook.stetho.Stetho;
+//import com.facebook.stetho.Stetho;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
@@ -35,7 +35,7 @@ public class DatabaseDemoActivity extends AppCompatActivity {
     private Button loadTransBtn = null;
     private Button updateTransBtn = null;
     private Button removeTransBtn = null;
-    private Button loadHodingBtn = null;
+    private Button loadHoldingBtn = null;
     private Button clearBtn = null;
 
     private EditText transIdInput = null;
@@ -49,7 +49,7 @@ public class DatabaseDemoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_db_demo);
 
-        Stetho.initializeWithDefaults(this);
+//        Stetho.initializeWithDefaults(this);
 
         initView();
         setListener();
@@ -60,7 +60,7 @@ public class DatabaseDemoActivity extends AppCompatActivity {
         loadTransBtn = (Button) findViewById(R.id.load_trans);
         updateTransBtn = (Button) findViewById(R.id.update_trans);
         removeTransBtn = (Button) findViewById(R.id.remove_trans);
-        loadHodingBtn = (Button) findViewById(R.id.load_holding);
+        loadHoldingBtn = (Button) findViewById(R.id.load_holding);
         clearBtn = (Button) findViewById(R.id.clear);
 
         transIdInput = (EditText) findViewById(R.id.trans_id);
@@ -153,7 +153,7 @@ public class DatabaseDemoActivity extends AppCompatActivity {
                 }
             }
         });
-        loadHodingBtn.setOnClickListener(new View.OnClickListener() {
+        loadHoldingBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 loadHoding();
