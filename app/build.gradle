@@ -70,8 +70,8 @@ dependencies {
     implementation 'androidx.preference:preference:1.1.1'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
 
-    debugImplementation 'com.facebook.stetho:stetho:1.6.0'
-    debugImplementation 'com.facebook.stetho:stetho-js-rhino:1.6.0'
+//    debugImplementation 'com.facebook.stetho:stetho:1.6.0'
+//    debugImplementation 'com.facebook.stetho:stetho-js-rhino:1.6.0'
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"

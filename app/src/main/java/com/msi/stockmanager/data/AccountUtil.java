@@ -2,6 +2,7 @@ package com.msi.stockmanager.data;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
@@ -17,6 +18,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class AccountUtil {
+    public static final String TAG = AccountUtil.class.getSimpleName();
     public static boolean hasValue = false;
     private static DataChangedTask onDataChangedTask;
     private static Context mContext;
@@ -83,15 +85,26 @@ public class AccountUtil {
                 stockValue.holdingAmount = stockValue.buyAmount - stockValue.sellAmount;
                 ApiUtil.stockApi.getRegularStockPrice(stockId, info -> {
                     if(info != null){
-                        stockValue.holdingCalc = (int) Math.floor(stockValue.holdingAmount * info.getLastPrice());
-                        stockValue.holdingCost = stockValue.buyCost - stockValue.sellCost;
-                        stockValue.holdingProfit = stockValue.holdingCalc - stockValue.holdingCost;
-                        stockValue.holdingProfitRate = stockValue.holdingCost == 0 ? 0 : 1. * stockValue.holdingProfit / stockValue.holdingCost;
-                        stockValue.historyCost = (int) Math.floor(stockValue.avgBuyPrice * stockValue.sellAmount);
-                        stockValue.historyProfit = stockValue.sellCost - stockValue.historyCost;
-                        stockValue.historyProfitRate = stockValue.historyCost == 0 ? 0 : 1. * stockValue.historyProfit / stockValue.historyCost;
-                        account.stockCostTotal += stockValue.holdingCost;
-                        account.stockProfitTotal += stockValue.holdingProfit;
+                        try {
+                            stockValue.holdingCalc = (int) Math.floor(stockValue.holdingAmount * info.getLastPrice());
+                            stockValue.holdingCost = stockValue.buyCost - stockValue.sellCost;
+                            stockValue.holdingProfit = stockValue.holdingCalc - stockValue.holdingCost;
+                            stockValue.holdingProfitRate = stockValue.holdingCost == 0 ? 0 : 1. * stockValue.holdingProfit / stockValue.holdingCost;
+                            stockValue.historyCost = (int) Math.floor(stockValue.avgBuyPrice * stockValue.sellAmount);
+                            stockValue.historyProfit = stockValue.sellCost - stockValue.historyCost;
+                            stockValue.historyProfitRate = stockValue.historyCost == 0 ? 0 : 1. * stockValue.historyProfit / stockValue.historyCost;
+                            account.stockCostTotal += stockValue.holdingCost;
+                            account.stockProfitTotal += stockValue.holdingProfit;
+                            account.historyCostTotal += stockValue.historyCost;
+                            account.historyProfitTotal += stockValue.historyProfit;
+                            if(account.historyProfitTotal > 0) {
+                                account.historyProfitRate = account.historyProfitTotal / account.historyCostTotal;
+                            } else {
+                                account.historyProfitRate = 0.;
+                            }
+                        } catch (Exception e){
+                            Log.e(TAG, info.getStockId() + " get price err: " + e.getMessage());
+                        }
                     }
                     if(--lockCount <= 0){
                         synchronized (lock) {
@@ -173,6 +186,9 @@ public class AccountUtil {
         public int stockCalcTotal;
         public int stockProfitTotal;
         public double stockProfitRate;
+        public int historyCostTotal;
+        public int historyProfitTotal;
+        public double historyProfitRate;
         public int cashBalance;
         public int cashInTotal;
         public int cashOutTotal;
@@ -185,6 +201,9 @@ public class AccountUtil {
             stockCalcTotal = 0;
             stockProfitTotal = 0;
             stockProfitRate = 0.;
+            historyCostTotal = 0;
+            historyProfitTotal = 0;
+            historyProfitRate = 0.;
             cashBalance = 0;
             cashInTotal = 0;
             cashOutTotal = 0;

@@ -38,7 +38,7 @@ public class HoldingFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private HoldingSummaryAdapter mSummaryAdapter;
+    private HoldingAdapter mAdapter;
 //    private HoldingAdapter mAdapter;
     private FragmentHoldingBinding binding;
     private AccountUtil.AccountUpdateListener accountListener = accountValue -> {
@@ -68,52 +68,14 @@ public class HoldingFragment extends Fragment {
                 binding.profitRate.setTextColor(ColorUtil.getProfitNone());
                 binding.profitRate.setText(FormatUtil.percent(percent));
             }
-            mSummaryAdapter.reloadList();
+            mAdapter.reloadList();
+            if(mAdapter.getItemCount() > 0){
+                binding.noData.setVisibility(View.INVISIBLE);
+            } else {
+                binding.noData.setVisibility(View.VISIBLE);
+            }
         }
     };
-//    private ITransApi.TransUpdateListener listener = new ITransApi.TransUpdateListener() {
-//        @Override
-//        public void onAdd(Transaction trans) {
-//            switch (trans.trans_type){
-//                case TransType.TRANS_TYPE_STOCK_BUY: case TransType.TRANS_TYPE_STOCK_SELL:
-//                    mAdapter.mItems.add(trans);
-//                    mAdapter.notifyItemInserted(mAdapter.mItems.size());
-//                    break;
-//            }
-//            onTitleValueChange();
-//        }
-//
-//        @Override
-//        public void onEdit(long transId, Transaction trans) {
-//            for(int i = 0; i < mAdapter.mItems.size(); i++) {
-//                if(mAdapter.mItems.get(i).trans_id == transId) {
-//                    mAdapter.mItems.set(i, trans);
-//                    mAdapter.notifyItemChanged(i);
-//                    break;
-//                }
-//            }
-//            onTitleValueChange();
-//        }
-//
-//        @Override
-//        public void onRemove(long transId) {
-//            for(int i = 0; i < mAdapter.mItems.size(); i++) {
-//                if(mAdapter.mItems.get(i).trans_id == transId) {
-//                    mAdapter.mItems.remove(i);
-//                    mAdapter.notifyItemRemoved(i);
-//                    break;
-//                }
-//            }
-//            onTitleValueChange();
-//        }
-//    };
-
-//    private void onTitleValueChange(){
-//        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
-//            Map<String, Integer> stockRemaining = new HashMap<>();
-//            //TODO title value change
-//        }
-//    }
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -159,21 +121,21 @@ public class HoldingFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-//            mAdapter = new HoldingAdapter();
-//            recyclerView.setAdapter(mAdapter);
-//            mAdapter.reloadList();
-            mSummaryAdapter = new HoldingSummaryAdapter();
-            recyclerView.setAdapter(mSummaryAdapter);
-            mSummaryAdapter.reloadList();
-            AccountUtil.addListener(accountListener);
+            mAdapter = new HoldingAdapter();
+            recyclerView.setAdapter(mAdapter);
         }
         return view;
     }
 
     @Override
-    public void onDestroy(){
-        super.onDestroy();
+    public void onStart(){
+        super.onStart();
+        AccountUtil.addListener(accountListener);
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
         AccountUtil.removeListener(accountListener);
-//        ApiUtil.transApi.removeTransUpdateListener(listener);
     }
 }

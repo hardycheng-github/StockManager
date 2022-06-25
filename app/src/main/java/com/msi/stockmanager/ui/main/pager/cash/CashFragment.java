@@ -61,6 +61,11 @@ public class CashFragment extends Fragment {
             binding.CashOut.setText(FormatUtil.number(accountValue.cashOutTotal));
 
             mAdapter.reloadList();
+            if(mAdapter.getItemCount() > 0){
+                binding.noData.setVisibility(View.INVISIBLE);
+            } else {
+                binding.noData.setVisibility(View.VISIBLE);
+            }
         }
     };
 
@@ -113,16 +118,19 @@ public class CashFragment extends Fragment {
 //            mAdapter.reloadList();
             mAdapter = new CashAdapter();
             recyclerView.setAdapter(mAdapter);
-            mAdapter.reloadList();
-            AccountUtil.addListener(accountListener);
         }
         return view;
     }
 
     @Override
-    public void onDestroy(){
-        super.onDestroy();
+    public void onStart(){
+        super.onStart();
+        AccountUtil.addListener(accountListener);
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
         AccountUtil.removeListener(accountListener);
-//        ApiUtil.transApi.removeTransUpdateListener(listener);
     }
 }

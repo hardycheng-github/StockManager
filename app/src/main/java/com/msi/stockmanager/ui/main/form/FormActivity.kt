@@ -54,6 +54,7 @@ var stockAmountLast = 0
 var transEditType: TransEditType = TransEditType.ERROR
 var titleStr = ""
 var activity: Activity? = null
+val keySet:MutableSet<FormKeys> = mutableSetOf()
 
 enum class TransEditType {
     CASH, STOCK, DIVIDEND, REDUCTION, ERROR
@@ -205,8 +206,8 @@ fun BuildForm(){
                 ) {
                     Text(stringResource(id = R.string.btn_check), style=MaterialTheme.typography.h6)
                 }
-                easyFormAllValid = easyForm.observeFormStates().value.all {
-                    it.value == EasyFormsErrorState.VALID
+                easyFormAllValid = easyForm.formData().all {
+                    it.key !in keySet || it.easyFormsErrorState == EasyFormsErrorState.VALID
                 }
             }
         }
@@ -216,10 +217,19 @@ fun BuildForm(){
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun buildCashForm(){
+    keySet.clear()
     val easyForm = easyFormObj!!
     val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
-    val cashAmountRange = 1..999999999
+    var cashAmountRange = 0..999999999
+    if(transTypeState.state.value == TransType.TRANS_TYPE_CASH_OUT){
+        var cashBalance: Int = AccountUtil.getAccount().cashBalance
+        if (transObj.isIdValid) {
+            cashBalance += abs(transObj.cash_amount)
+        }
+        cashAmountRange = 0..cashBalance
+    }
     if(!transObj.isIdValid) {
+        keySet.add(FormKeys.TRANS_TYPE)
         TransTypeSelector(
             easyForm,
             key = FormKeys.TRANS_TYPE,
@@ -227,12 +237,16 @@ fun buildCashForm(){
             items = transTypeList,
             default = transObj.trans_type
         )
+    } else {
+        keySet.remove(FormKeys.TRANS_TYPE)
     }
+    keySet.add(FormKeys.TRANS_DATE)
     DatePicker(easyForm,
         title = stringResource(id = R.string.trans_date),
         key=FormKeys.TRANS_DATE,
         default = transObj.trans_time
     )
+    keySet.add(FormKeys.CASH_AMOUNT)
     IntegerSelector(easyForm,
         title = stringResource(id = R.string.trans_cash),
         default = abs(transObj.cash_amount),
@@ -246,6 +260,7 @@ fun buildCashForm(){
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun buildStockForm(){
+    keySet.clear()
     val easyForm = easyFormObj!!
     val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
     val stockSelectorState = easyForm.addAndGetCustomState(
@@ -295,6 +310,7 @@ fun buildStockForm(){
     var priceSyncFormCloud :@Composable (() -> Unit)? = null
 
     if(!transObj.isIdValid) {
+        keySet.add(FormKeys.TRANS_TYPE)
         TransTypeSelector(
             easyForm,
             key = FormKeys.TRANS_TYPE,
@@ -303,6 +319,8 @@ fun buildStockForm(){
             default = transObj.trans_type,
             state = transTypeState
         )
+    } else {
+        keySet.remove(FormKeys.TRANS_TYPE)
     }
     val searchThreshold = when(transTypeState.state.value){
         TransType.TRANS_TYPE_STOCK_SELL -> 0
@@ -314,10 +332,13 @@ fun buildStockForm(){
         for(entry in ApiUtil.transApi.holdingStockAmount){
             StockUtil.stockMap[entry.key]?.let { stockSelectorList.add(it) }
         }
+        keySet.add(FormKeys.STOCK_SELECTOR)
         StockIdSelector(easyForm, searchThreshold, stockSelectorList, state = stockSelectorState)
     } else {
+        keySet.add(FormKeys.STOCK_SELECTOR)
         StockIdSelector(easyForm, searchThreshold, StockUtil.stockList, state = stockSelectorState)
     }
+    keySet.add(FormKeys.TRANS_DATE)
     DatePicker(easyForm,
         title = stringResource(id = R.string.trans_date),
         key=FormKeys.TRANS_DATE,
@@ -351,6 +372,7 @@ fun buildStockForm(){
             }
         }
     }
+    keySet.add(FormKeys.STOCK_PRICE)
     DoubleSelector(easyForm,
         title = stringResource(id = R.string.trans_stock_price),
         default = transObj.stock_price,
@@ -361,6 +383,7 @@ fun buildStockForm(){
         state = stockPriceState,
     )
     val stockAmonut = stockAmountState.state.value.toIntOrNull()
+    keySet.add(FormKeys.STOCK_AMOUNT)
     IntegerSelector(
         easyForm,
         title = stringResource(id = R.string.trans_stock_amount),
@@ -372,12 +395,13 @@ fun buildStockForm(){
         key = FormKeys.STOCK_AMOUNT,
         state = stockAmountState,
     )
+    keySet.add(FormKeys.FEE)
     IntegerSelector(easyForm,
         title = stringResource(id = R.string.trans_stock_fee),
         default = transObj.fee,
         range = stockFeeRange,
         key =FormKeys.FEE,
-        showButtons = false,
+        step = 10,
         state = stockFeeState,
     )
     if(stockPriceValue != null && stockAmountValue != null) {
@@ -407,14 +431,16 @@ fun buildStockForm(){
         }
     }
     if(transTypeState.state.value == TransType.TRANS_TYPE_STOCK_SELL){
+        keySet.add(FormKeys.TAX)
         IntegerSelector(easyForm,
             title = stringResource(id = R.string.trans_stock_tax),
             default = transObj.tax,
             range = stockTaxRange,
             key =FormKeys.TAX,
-            showButtons = false,
+            step = 10,
             state = stockTaxState,
         )
+        keySet.add(FormKeys.CASH_AMOUNT)
         IntegerSelector(easyForm,
             title = stringResource(id = R.string.trans_cash),
             default = transObj.cash_amount,
@@ -425,6 +451,8 @@ fun buildStockForm(){
             state = transCashState,
         )
     } else {
+        keySet.remove(FormKeys.TAX)
+        keySet.add(FormKeys.CASH_AMOUNT)
         IntegerSelector(easyForm,
             title = stringResource(id = R.string.trans_cash),
             default = transObj.cash_amount,
@@ -455,9 +483,11 @@ fun buildStockForm(){
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun buildDividendForm(){
+    keySet.clear()
     val easyForm = easyFormObj!!
     val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
     if(!transObj.isIdValid) {
+        keySet.add(FormKeys.TRANS_TYPE)
         TransTypeSelector(
             easyForm,
             key = FormKeys.TRANS_TYPE,
@@ -465,7 +495,10 @@ fun buildDividendForm(){
             items = transTypeList,
             default = transObj.trans_type
         )
+    } else {
+        keySet.remove(FormKeys.TRANS_TYPE)
     }
+    keySet.add(FormKeys.TRANS_DATE)
     DatePicker(easyForm,
         title = stringResource(id = R.string.trans_date),
         key=FormKeys.TRANS_DATE,
@@ -475,14 +508,19 @@ fun buildDividendForm(){
     for(entry in AccountUtil.getAccount().stockValueMap){
         stockSelectorList.add(entry.value.info)
     }
+    keySet.add(FormKeys.STOCK_SELECTOR)
     StockIdSelector(easyForm, 0, stockSelectorList)
     if(transTypeState.state.value == TransType.TRANS_TYPE_CASH_DIVIDEND){
+        keySet.add(FormKeys.CASH_AMOUNT)
+        keySet.remove(FormKeys.STOCK_AMOUNT)
         IntegerSelector(easyForm = easyForm,
             title = stringResource(id = R.string.trans_cash_earn),
             range = 1..999999999,
-            showButtons = false,
+            step = 1000,
             key = FormKeys.CASH_AMOUNT)
     } else {
+        keySet.remove(FormKeys.CASH_AMOUNT)
+        keySet.add(FormKeys.STOCK_AMOUNT)
         IntegerSelector(easyForm = easyForm,
             title = stringResource(id = R.string.trans_stock_earn),
             range = 1..999999,
@@ -493,9 +531,11 @@ fun buildDividendForm(){
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun buildReductionForm(){
+    keySet.clear()
     val easyForm = easyFormObj!!
     val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
     if(!transObj.isIdValid) {
+        keySet.add(FormKeys.TRANS_TYPE)
         TransTypeSelector(
             easyForm,
             key = FormKeys.TRANS_TYPE,
@@ -503,7 +543,10 @@ fun buildReductionForm(){
             items = transTypeList,
             default = transObj.trans_type
         )
+    } else {
+        keySet.remove(FormKeys.TRANS_TYPE)
     }
+    keySet.add(FormKeys.TRANS_DATE)
     DatePicker(easyForm,
         title = stringResource(id = R.string.trans_date),
         key=FormKeys.TRANS_DATE,
@@ -528,16 +571,21 @@ fun buildReductionForm(){
             stockAmountRange = stockAmountRange.start..stockRemaining
         }
     }
+    keySet.add(FormKeys.STOCK_SELECTOR)
     StockIdSelector(easyForm, 0, stockSelectorList, stockSelectorState)
+    keySet.add(FormKeys.STOCK_AMOUNT)
     IntegerSelector(easyForm = easyForm,
         title = stringResource(id = R.string.trans_stock_lose),
         range = stockAmountRange,
         key = FormKeys.STOCK_AMOUNT)
     if(transTypeState.state.value == TransType.TRANS_TYPE_CASH_REDUCTION){
+        keySet.add(FormKeys.CASH_AMOUNT)
         IntegerSelector(easyForm = easyForm,
             title = stringResource(id = R.string.trans_cash_earn),
-            showButtons = false,
+            step = 1000,
             key = FormKeys.CASH_AMOUNT)
+    } else {
+        keySet.remove(FormKeys.CASH_AMOUNT)
     }
 }
 
