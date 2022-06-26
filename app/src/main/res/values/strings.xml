@@ -81,6 +81,7 @@
     <string name="history_profit">已實現損益</string>
     <string name="realtime_price">即時股價</string>
     <string name="dialog_remove_stock_msg">刪除所有【%s】的紀錄?</string>
+    <string name="dialog_remove_stock_dividend_reduction_msg">刪除所有【%s】的股利與減資紀錄?</string>
     <string name="confirm">確定</string>
     <string name="cancel">取消</string>
     <string name="copyright_msg">Copyright © 2022 MSI</string>
@@ -88,4 +89,15 @@
     <string name="filter">過濾器</string>
     <string name="title_activity_list">歷史紀錄</string>
     <string name="no_data">尚無資料</string>
+    <string name="dividend_cash">現金股利</string>
+    <string name="dividend_stock">股票股利</string>
+    <string name="reduction_cash">減資返現</string>
+    <string name="reduction_stock">減資股數</string>
+    <string name="title_activity_list2">List2Activity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
 </resources>

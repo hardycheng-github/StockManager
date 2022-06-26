@@ -38,7 +38,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/stock_id"
+                    android:id="@+id/title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -49,11 +49,11 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/type"
+                    android:id="@+id/subtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:gravity="center_vertical"
-                    android:text="@string/title_trans_dividend"
+                    android:text="@null"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -79,118 +79,98 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/divider">
 
-
-                <TextView
-                    android:id="@+id/textView11"
+                <LinearLayout
+                    android:id="@+id/dividend_cash_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/trans_date"
-                    tools:layout_editor_absoluteX="89dp"
-                    tools:layout_editor_absoluteY="21dp" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/trans_date"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dividend_cash" />
+
+                    <TextView
+                        android:id="@+id/dividend_cash"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/syncing"
+                        android:textStyle="bold"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/dividend_stock_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    tools:layout_editor_absoluteX="116dp"
-                    tools:layout_editor_absoluteY="60dp" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textView12"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dividend_stock" />
+
+                    <TextView
+                        android:id="@+id/dividend_stock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/syncing"
+                        android:textStyle="bold"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/reduction_cash_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/trans_stock_price"
-                    tools:layout_editor_absoluteX="58dp"
-                    tools:layout_editor_absoluteY="21dp" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/stock_price"
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reduction_cash" />
+
+                    <TextView
+                        android:id="@+id/reduction_cash"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/syncing"
+                        android:textStyle="bold"
+                        />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/reduction_stock_container"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="TextView"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/textView18"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/trans_stock_amount"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/reduction_stock" />
 
-                <TextView
-                    android:id="@+id/stock_amount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
+                    <TextView
+                        android:id="@+id/reduction_stock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/syncing"
+                        android:textStyle="bold"
+                        />
 
-                <TextView
-                    android:id="@+id/textView17"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/trans_cash"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
-
-                <TextView
-                    android:id="@+id/cash_amount"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
-
-                <TextView
-                    android:id="@+id/textView16"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/trans_stock_fee"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
-
-                <TextView
-                    android:id="@+id/stock_fee"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
-
-                <TextView
-                    android:id="@+id/textView19"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="@string/trans_stock_tax"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
-
-                <TextView
-                    android:id="@+id/stock_tax"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:text="TextView"
-                    tools:layout_editor_absoluteX="174dp"
-                    tools:layout_editor_absoluteY="60dp" />
+                </LinearLayout>
 
                 <androidx.constraintlayout.helper.widget.Flow
-                    android:id="@+id/flow"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    app:constraint_referenced_ids="textView11,textView12,trans_date,stock_price,textView18,textView17,stock_amount,cash_amount,textView16,textView19,stock_fee,stock_tax"
-                    app:flow_horizontalAlign="start"
-                    app:flow_horizontalBias="0.5"
-                    app:flow_horizontalStyle="spread"
+                    android:id="@+id/flow2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:constraint_referenced_ids="dividend_cash_container,dividend_stock_container,reduction_cash_container,reduction_stock_container"
                     app:flow_maxElementsWrap="2"
-                    app:flow_wrapMode="chain"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:flow_wrapMode="chain" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

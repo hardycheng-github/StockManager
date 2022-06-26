@@ -56,6 +56,7 @@ public class AccountUtil {
                     case TransType.TRANS_TYPE_CASH_OUT:
                         account.cashOutTotal += Math.abs(trans.cash_amount);
                         break;
+
                 }
 
                 StockInfo info = StockUtilKt.getStockInfoOrNull(trans.stock_id);
@@ -72,6 +73,28 @@ public class AccountUtil {
                     } else {
                         stockValue.buyAmount += Math.abs(trans.stock_amount);
                         stockValue.buyCost += Math.abs(trans.cash_amount);
+                    }
+
+                    switch (trans.trans_type){
+                        case TransType.TRANS_TYPE_CASH_DIVIDEND:
+                            stockValue.dividendCash += Math.abs(trans.cash_amount);
+                            account.dividendCashTotal += stockValue.dividendCash;
+                            break;
+                        case TransType.TRANS_TYPE_STOCK_DIVIDEND:
+                            stockValue.dividendStock += Math.abs(trans.stock_amount);
+                            account.dividendStockTotal += stockValue.dividendStock;
+                            break;
+                        case TransType.TRANS_TYPE_CASH_REDUCTION:
+                            stockValue.reductionCash += Math.abs(trans.cash_amount);
+                            stockValue.reductionStock += Math.abs(trans.stock_amount);
+                            account.reductionCashTotal += stockValue.reductionCash;
+                            account.reductionStockTotal += stockValue.reductionStock;
+                            break;
+                        case TransType.TRANS_TYPE_STOCK_REDUCTION:
+                            stockValue.reductionStock += Math.abs(trans.stock_amount);
+                            account.reductionStockTotal += stockValue.reductionStock;
+                            break;
+
                     }
                 }
             }
@@ -97,11 +120,6 @@ public class AccountUtil {
                             account.stockProfitTotal += stockValue.holdingProfit;
                             account.historyCostTotal += stockValue.historyCost;
                             account.historyProfitTotal += stockValue.historyProfit;
-                            if(account.historyProfitTotal > 0) {
-                                account.historyProfitRate = account.historyProfitTotal / account.historyCostTotal;
-                            } else {
-                                account.historyProfitRate = 0.;
-                            }
                         } catch (Exception e){
                             Log.e(TAG, info.getStockId() + " get price err: " + e.getMessage());
                         }
@@ -127,6 +145,7 @@ public class AccountUtil {
             account.accountCalcTotal = account.cashBalance + account.stockCalcTotal;
             account.accountProfitRate = account.cashInTotal == 0 ? 0 : 1. * account.stockProfitTotal / account.cashInTotal;
             account.accountTotal = account.cashBalance + account.stockCostTotal;
+            account.historyProfitRate = account.historyCostTotal == 0 ? 0 : 1. * account.historyProfitTotal / account.historyCostTotal;
             hasValue = true;
             return null;
         }
@@ -192,6 +211,11 @@ public class AccountUtil {
         public int cashBalance;
         public int cashInTotal;
         public int cashOutTotal;
+        public int dividendCashTotal;
+        public int dividendStockTotal;
+        public int reductionCashTotal;
+        public int reductionStockTotal;
+
         public Map<String, StockValue> stockValueMap = new HashMap<>();
         public void reset(){
             accountCalcTotal = 0;
@@ -207,6 +231,10 @@ public class AccountUtil {
             cashBalance = 0;
             cashInTotal = 0;
             cashOutTotal = 0;
+            dividendCashTotal = 0;
+            dividendStockTotal = 0;
+            reductionCashTotal = 0;
+            reductionStockTotal = 0;
             stockValueMap.clear();
         }
     }
@@ -228,5 +256,9 @@ public class AccountUtil {
         public int sellCost;
         public double avgSellPrice;
         public long lastTransTime;
+        public int dividendCash;
+        public int dividendStock;
+        public int reductionCash;
+        public int reductionStock;
     }
 }

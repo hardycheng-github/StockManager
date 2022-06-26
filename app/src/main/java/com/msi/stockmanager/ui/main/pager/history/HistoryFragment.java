@@ -21,7 +21,6 @@ import com.msi.stockmanager.data.FormatUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
-import com.msi.stockmanager.databinding.ActivityOverviewBinding;
 import com.msi.stockmanager.databinding.FragmentHistoryBinding;
 
 import java.util.ArrayList;
