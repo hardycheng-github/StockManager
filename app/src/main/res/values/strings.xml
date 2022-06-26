@@ -93,11 +93,6 @@
     <string name="dividend_stock">股票股利</string>
     <string name="reduction_cash">減資返現</string>
     <string name="reduction_stock">減資股數</string>
-    <string name="title_activity_list2">List2Activity</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <string name="reset_filter">清除所有</string>
+    <string name="apply_filter">應用篩選</string>
 </resources>
