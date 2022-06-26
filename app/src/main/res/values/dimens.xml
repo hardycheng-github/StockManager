@@ -10,4 +10,5 @@
     <dimen name="card_padding">10dp</dimen>
     <dimen name="circle_btn_padding">4dp</dimen>
     <integer name="fab_anim_int">200</integer>
+    <dimen name="filter_padding_1">5dp</dimen>
 </resources>

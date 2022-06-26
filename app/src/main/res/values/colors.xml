@@ -12,6 +12,7 @@
     <color name="error">#FFFF0000</color>
     <color name="bg_1">#F6F6F6</color>
     <color name="bg_2">#ccc</color>
+    <color name="filter_bg_1">#eee</color>
     <color name="stock_earn">#b00</color>
     <color name="stock_earn_light">#F00</color>
     <color name="stock_lose">#090</color>

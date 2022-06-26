@@ -15,7 +15,7 @@ import com.msi.stockmanager.data.Constants;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.databinding.ActivityPagerBinding;
-import com.msi.stockmanager.ui.main.list.ListActivity;
+import com.msi.stockmanager.ui.main.trans_history.TransHistoryActivity;
 import com.msi.stockmanager.ui.main.form.FormActivity;
 
 import androidx.lifecycle.Lifecycle;
@@ -207,7 +207,7 @@ public class PagerActivity extends AppCompatActivity {
                 onBackPressed();
                 return true;
             case R.id.menu_history:
-                Intent intent = new Intent(PagerActivity.this, ListActivity.class);
+                Intent intent = new Intent(PagerActivity.this, TransHistoryActivity.class);
                 startActivity(intent);
                 return true;
             default:
