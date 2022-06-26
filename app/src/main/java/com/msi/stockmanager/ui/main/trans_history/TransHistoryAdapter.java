@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.msi.stockmanager.R;
@@ -35,7 +36,6 @@ public class TransHistoryAdapter extends RecyclerView.Adapter<TransHistoryAdapte
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         return new ViewHolder(TransHistoryItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-
     }
 
     public void reloadList(){
@@ -52,15 +52,57 @@ public class TransHistoryAdapter extends RecyclerView.Adapter<TransHistoryAdapte
         StockInfo info = StockUtilKt.getStockInfoOrNull(trans.stock_id);
         holder.mItem = trans;
         holder.mInfo = info;
-        holder.binding.title.setTypeface(null, Typeface.BOLD);
         holder.binding.title.setText(FormatUtil.transType(trans.trans_type));
-        if(trans.trans_type == TransType.TRANS_TYPE_CASH_IN){
-            holder.binding.title.setTextColor(ColorUtil.getProfitEarn());
-        } else {
-            holder.binding.title.setTextColor(ColorUtil.getProfitLose());
-        }
-        holder.binding.transDate.setTypeface(null, Typeface.BOLD);
         holder.binding.transDate.setText(DateUtil.toDateString(trans.trans_time));
+        holder.binding.transStockNameContainer.setVisibility(View.GONE);
+        holder.binding.transStockAmountContainer.setVisibility(View.GONE);
+        holder.binding.transStockPriceContainer.setVisibility(View.GONE);
+        holder.binding.transStockFeeContainer.setVisibility(View.GONE);
+        holder.binding.transStockTaxContainer.setVisibility(View.GONE);
+        holder.binding.transCashContainer.setVisibility(View.GONE);
+        switch (trans.trans_type){
+            case TransType.TRANS_TYPE_CASH_IN:
+            case TransType.TRANS_TYPE_CASH_OUT:
+                holder.binding.transCashContainer.setVisibility(View.VISIBLE);
+                holder.binding.transCash.setText(FormatUtil.number(trans.cash_amount));
+                break;
+            case TransType.TRANS_TYPE_STOCK_SELL:
+                holder.binding.transStockTaxContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockTax.setText(FormatUtil.number(trans.tax));
+            case TransType.TRANS_TYPE_STOCK_BUY:
+                holder.binding.transStockNameContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockName.setText(info.getStockNameWithId());
+                holder.binding.transStockAmountContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockAmount.setText(FormatUtil.number(trans.stock_amount));
+                holder.binding.transStockPriceContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockPrice.setText(FormatUtil.number(trans.stock_price));
+                holder.binding.transStockFeeContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockFee.setText(FormatUtil.number(trans.fee));
+                holder.binding.transCashContainer.setVisibility(View.VISIBLE);
+                holder.binding.transCash.setText(FormatUtil.number(trans.cash_amount));
+                break;
+            case TransType.TRANS_TYPE_CASH_DIVIDEND:
+                holder.binding.transStockNameContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockName.setText(info.getStockNameWithId());
+                holder.binding.transCashContainer.setVisibility(View.VISIBLE);
+                holder.binding.transCash.setText(FormatUtil.number(trans.cash_amount));
+                break;
+            case TransType.TRANS_TYPE_STOCK_DIVIDEND:
+                holder.binding.transStockNameContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockName.setText(info.getStockNameWithId());
+                holder.binding.transStockAmountContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockAmount.setText(FormatUtil.number(trans.stock_amount));
+                break;
+            case TransType.TRANS_TYPE_CASH_REDUCTION:
+                holder.binding.transCashContainer.setVisibility(View.VISIBLE);
+                holder.binding.transCash.setText(FormatUtil.number(trans.cash_amount));
+            case TransType.TRANS_TYPE_STOCK_REDUCTION:
+                holder.binding.transStockNameContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockName.setText(info.getStockNameWithId());
+                holder.binding.transStockAmountContainer.setVisibility(View.VISIBLE);
+                holder.binding.transStockAmount.setText(FormatUtil.number(trans.stock_amount));
+                break;
+        }
         holder.binding.cardView.setOnLongClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, v, Gravity.RIGHT);
 
