@@ -95,4 +95,7 @@
     <string name="reduction_stock">減資股數</string>
     <string name="reset_filter">清除所有</string>
     <string name="apply_filter">應用篩選</string>
+    <string name="title_filter">進階篩選</string>>
+    <string name="search">搜尋</string>
+    <string name="version">版本</string>
 </resources>
