@@ -24,4 +24,22 @@ public class ColorUtil {
     public static int getProfitNone(){
         return Color.BLACK;
     }
+
+    public static int getProfitColor(int val){
+        if(val > 0){
+            return getProfitEarn();
+        } else if(val < 0){
+            return getProfitLose();
+        }
+        return getProfitNone();
+    }
+
+    public static int getProfitColor(double val){
+        if(val > 0){
+            return getProfitEarn();
+        } else if(val < 0){
+            return getProfitLose();
+        }
+        return getProfitNone();
+    }
 }

@@ -27,11 +27,11 @@ public class TransHistoryUtil {
         List<Transaction> list = new ArrayList<>();
         for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
             StockInfo info = StockUtilKt.getStockInfoOrNull(trans.stock_id);
-            if((keyword != null && !keyword.isEmpty() &&
-                    info != null && !info.getStockNameWithId().equals(keyword)) ||
+            String stockName = info == null ? "" : info.getStockNameWithId();
+            if((keyword != null && !keyword.isEmpty() && !stockName.contains(keyword)) ||
                     (!targetTypes.isEmpty() && !targetTypes.contains(trans.trans_type)) ||
                     (startTime > trans.trans_time || endTime < trans.trans_time)){
-                break;
+                continue;
             }
             list.add(trans);
         }

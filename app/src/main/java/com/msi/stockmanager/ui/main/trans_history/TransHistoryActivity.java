@@ -14,21 +14,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.AccountUtil;
+import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.databinding.ActivityTransHistoryBinding;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -47,8 +51,22 @@ public class TransHistoryActivity extends AppCompatActivity {
     private SearchView mSearchView;
     private SearchView.SearchAutoComplete mSearchSrcTextView;
     private ImageView mSearchCloseBtn;
+    private boolean isSearchExpand = false;
     private TransHistoryAdapter mAdapter;
     private int mColumnCount = 1;
+
+    private View.OnLayoutChangeListener mSearchLayoutChangListener = new View.OnLayoutChangeListener() {
+        @Override
+        public void onLayoutChange(View v, int left, int top, int right, int bottom,
+                                   int oldLeft, int oldTop, int oldRight, int oldBottom){
+            if(isSearchExpand != !mSearchView.isIconified()){
+                isSearchExpand = !mSearchView.isIconified();
+                if(isSearchExpand){
+                    mSearchView.setQuery(TransHistoryUtil.keyword, false);
+                }
+            }
+        }
+    };
 
     private AccountUtil.AccountUpdateListener accountListener = accountValue -> {
         if(binding != null){
@@ -112,6 +130,7 @@ public class TransHistoryActivity extends AppCompatActivity {
                 AccountUtil.addListener(accountListener);
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 AccountUtil.removeListener(accountListener);
+                mSearchView.removeOnLayoutChangeListener(mSearchLayoutChangListener);
             }
         });
     }
@@ -132,8 +151,14 @@ public class TransHistoryActivity extends AppCompatActivity {
         TransHistoryUtil.endTime = intent.getLongExtra(EXTRA_END_TIME, TransHistoryUtil.endTime);
     }
 
-    private void onSearchChanged(String keyword){
+    private void onSearchApply(String keyword){
+        mSearchView.onActionViewCollapsed();
         TransHistoryUtil.keyword = keyword;
+        if(keyword != null && !keyword.isEmpty()){
+            getSupportActionBar().setTitle(getString(R.string.search) + ": " + keyword);
+        } else {
+            getSupportActionBar().setTitle(R.string.title_activity_list);
+        }
         mAdapter.reloadList();
         if(mAdapter.getItemCount() > 0){
             binding.noData.setVisibility(View.INVISIBLE);
@@ -142,6 +167,15 @@ public class TransHistoryActivity extends AppCompatActivity {
         }
     }
 
+    public int getListPreferredItemHeightInPixels() {
+        TypedValue value = new TypedValue();
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        getTheme().resolveAttribute(
+                android.R.attr.listPreferredItemHeight, value, true);
+        return (int) TypedValue.complexToDimension(value.data, metrics);
+    }
+
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -153,19 +187,38 @@ public class TransHistoryActivity extends AppCompatActivity {
         mSearchSrcTextView = mSearchView.findViewById(R.id.search_src_text);
         mSearchCloseBtn = mSearchView.findViewById(R.id.search_close_btn);
         mSearchCloseBtn.setOnClickListener(v -> {
-            mSearchView.setQuery("", true);
+            onSearchApply("");
         });
         List<String> stockNameList = new ArrayList<>();
-        for(StockInfo info: StockUtilKt.getStockUtil().getStockList()){
-            stockNameList.add(info.getStockNameWithId());
+
+        for(AccountUtil.StockValue value: AccountUtil.getAccount().stockValueMap.values()){
+            stockNameList.add(value.info.getStockNameWithId());
         }
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(TransHistoryActivity.this,
-                android.R.layout.simple_dropdown_item_1line, stockNameList);
-        mSearchSrcTextView.setAdapter(adapter);
-        mSearchSrcTextView.setOnItemClickListener((parent, view, position, id) -> {
-            String searchString = (String)parent.getItemAtPosition(position);
-            mSearchView.setQuery(searchString, true);
+        StockFilterAdapter adapter = new StockFilterAdapter(this, stockNameList) {
+            @Override
+            public void onItemSelected(int position, String target) {
+                onSearchApply(target);
+            }
+        };
+        adapter.registerDataSetObserver(new DataSetObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                int count = adapter.getCount();
+                int maxHeight = (int)(getResources().getDisplayMetrics().heightPixels * .33);
+                int itemHeight = getListPreferredItemHeightInPixels();
+                int listHeight = maxHeight;
+                if(count > 0){
+                    listHeight = Integer.min(maxHeight, itemHeight * count);
+                }
+                mSearchSrcTextView.setDropDownHeight(listHeight);
+            }
         });
+        mSearchSrcTextView.setAdapter(adapter);
+        mSearchSrcTextView.setDropDownBackgroundResource(R.color.white);
+//        mSearchSrcTextView.setDropDownHeight((int) (getResources().getDisplayMetrics().heightPixels*.33));
+        mSearchSrcTextView.setThreshold(0);
+        mSearchView.addOnLayoutChangeListener(mSearchLayoutChangListener);
         mSearchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,9 +230,8 @@ public class TransHistoryActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mSearchView.onActionViewCollapsed();
-                mSearchItem.collapseActionView();
-                MenuItemCompat.collapseActionView(mSearchItem);
-                onSearchChanged(query);
+
+                onSearchApply(query);
                 return true;
             }
 
@@ -188,13 +240,6 @@ public class TransHistoryActivity extends AppCompatActivity {
                 return false;
             }
         });
-        mSearchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                return false;
-            }
-        });
-        setFilterActive(false);
         return true;
     }
 
@@ -236,10 +281,14 @@ public class TransHistoryActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed(){
-        if(!mSearchView.isIconified()){
+        if(binding.drawer.isDrawerVisible(GravityCompat.END)){
+            binding.drawer.closeDrawer(GravityCompat.END);
+        } else if(!mSearchView.isIconified()){
             mSearchView.onActionViewCollapsed();
             mSearchItem.collapseActionView();
             MenuItemCompat.collapseActionView(mSearchItem);
+        } else if(TransHistoryUtil.keyword != null && !TransHistoryUtil.keyword.isEmpty()) {
+            onSearchApply("");
         } else {
             super.onBackPressed();
         }
