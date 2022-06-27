@@ -29,6 +29,7 @@ import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.databinding.FragmentOtherItemBinding;
 import com.msi.stockmanager.ui.main.form.FormActivity;
+import com.msi.stockmanager.ui.main.trans_history.TransHistoryActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +37,12 @@ import java.util.Map;
 
 public class OtherAdapter extends RecyclerView.Adapter<OtherAdapter.ViewHolder> {
     private static final String TAG = OtherAdapter.class.getSimpleName();
+    private Context mContext;
 
     public final List<AccountUtil.StockValue> mItems = new ArrayList<>();
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        mContext = parent.getContext();
         return new ViewHolder(FragmentOtherItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
@@ -79,7 +82,7 @@ public class OtherAdapter extends RecyclerView.Adapter<OtherAdapter.ViewHolder> 
         holder.binding.reductionStock.setTextColor(value.reductionStock == 0
                 ? ColorUtil.getProfitNone() : ColorUtil.getProfitLose());
         holder.binding.reductionStock.setText(FormatUtil.number(value.reductionStock));
-
+        holder.binding.cardView.setOnClickListener(v->onEdit(info));
         holder.binding.cardView.setOnLongClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, v, Gravity.RIGHT);
 
@@ -91,34 +94,10 @@ public class OtherAdapter extends RecyclerView.Adapter<OtherAdapter.ViewHolder> 
                     switch(item.getItemId())
                     {
                         case R.id.item1:
-//                            Intent intent = new Intent(context, FormActivity.class);
-//                            intent.putExtra(Constants.EXTRA_TRANS_OBJECT, trans);
-//                            context.startActivity(intent);
+                            onEdit(info);
                             return true;
                         case R.id.item2:
-                            new AlertDialog.Builder(context)
-                                    .setMessage(String.format(context.getString(R.string.dialog_remove_stock_dividend_reduction_msg), info.getStockNameWithId()))
-                                    .setPositiveButton(R.string.confirm, ((dialogInterface, i) -> {
-                                        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
-                                            if(trans.stock_id.equals(info.getStockId())){
-                                                switch (trans.trans_type){
-                                                    case TransType.TRANS_TYPE_CASH_DIVIDEND:
-                                                    case TransType.TRANS_TYPE_STOCK_DIVIDEND:
-                                                    case TransType.TRANS_TYPE_CASH_REDUCTION:
-                                                    case TransType.TRANS_TYPE_STOCK_REDUCTION:
-                                                        ApiUtil.transApi.removeTrans(trans.trans_id);
-                                                        break;
-                                                }
-                                            }
-                                        }
-                                        reloadList();
-                                        dialogInterface.dismiss();
-                                    }))
-                                    .setNegativeButton(R.string.cancel, ((dialogInterface, i) -> {
-                                        dialogInterface.cancel();
-                                    }))
-                                    .create()
-                                    .show();
+                            onRemove(info);
                             return true;
                     }
                     return onMenuItemClick(item);
@@ -128,6 +107,46 @@ public class OtherAdapter extends RecyclerView.Adapter<OtherAdapter.ViewHolder> 
             popupMenu.show();
             return true;
         });
+    }
+
+
+    private void onEdit(StockInfo info){
+        Intent intent = new Intent(mContext, TransHistoryActivity.class);
+        intent.putExtra(TransHistoryActivity.EXTRA_KEYWORD, info.getStockNameWithId());
+        intent.putExtra(TransHistoryActivity.EXTRA_TARGET_TYPES, new int[]{
+                TransType.TRANS_TYPE_CASH_DIVIDEND,
+                TransType.TRANS_TYPE_STOCK_DIVIDEND,
+                TransType.TRANS_TYPE_CASH_REDUCTION,
+                TransType.TRANS_TYPE_STOCK_REDUCTION,
+        });
+        mContext.startActivity(intent);
+    }
+
+    private void onRemove(StockInfo info){
+        Context context = mContext;
+        new AlertDialog.Builder(context)
+                .setMessage(String.format(context.getString(R.string.dialog_remove_stock_dividend_reduction_msg), info.getStockNameWithId()))
+                .setPositiveButton(R.string.confirm, ((dialogInterface, i) -> {
+                    for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+                        if(trans.stock_id.equals(info.getStockId())){
+                            switch (trans.trans_type){
+                                case TransType.TRANS_TYPE_CASH_DIVIDEND:
+                                case TransType.TRANS_TYPE_STOCK_DIVIDEND:
+                                case TransType.TRANS_TYPE_CASH_REDUCTION:
+                                case TransType.TRANS_TYPE_STOCK_REDUCTION:
+                                    ApiUtil.transApi.removeTrans(trans.trans_id);
+                                    break;
+                            }
+                        }
+                    }
+                    reloadList();
+                    dialogInterface.dismiss();
+                }))
+                .setNegativeButton(R.string.cancel, ((dialogInterface, i) -> {
+                    dialogInterface.cancel();
+                }))
+                .create()
+                .show();
     }
 
     @Override

@@ -69,15 +69,26 @@ public class TransHistoryActivity extends AppCompatActivity {
     };
 
     private AccountUtil.AccountUpdateListener accountListener = accountValue -> {
-        if(binding != null){
+        reload();
+    };
+
+    private void reload(){
+        if(binding != null && mMenu != null) {
+            String keyword = TransHistoryUtil.keyword;
+            if (keyword != null && !keyword.isEmpty()) {
+                getSupportActionBar().setTitle(getString(R.string.search) + ": " + keyword);
+            } else {
+                getSupportActionBar().setTitle(R.string.title_activity_list);
+            }
             mAdapter.reloadList();
-            if(mAdapter.getItemCount() > 0){
+            if (mAdapter.getItemCount() > 0) {
                 binding.noData.setVisibility(View.INVISIBLE);
             } else {
                 binding.noData.setVisibility(View.VISIBLE);
             }
+            setFilterIconActive(TransHistoryUtil.isFilterActive());
         }
-    };
+    }
 
     public TransHistoryActivity(){
         getLifecycle().addObserver((LifecycleEventObserver) (source, event) -> {
@@ -154,17 +165,7 @@ public class TransHistoryActivity extends AppCompatActivity {
     private void onSearchApply(String keyword){
         mSearchView.onActionViewCollapsed();
         TransHistoryUtil.keyword = keyword;
-        if(keyword != null && !keyword.isEmpty()){
-            getSupportActionBar().setTitle(getString(R.string.search) + ": " + keyword);
-        } else {
-            getSupportActionBar().setTitle(R.string.title_activity_list);
-        }
-        mAdapter.reloadList();
-        if(mAdapter.getItemCount() > 0){
-            binding.noData.setVisibility(View.INVISIBLE);
-        } else {
-            binding.noData.setVisibility(View.VISIBLE);
-        }
+        reload();
     }
 
     public int getListPreferredItemHeightInPixels() {
@@ -240,10 +241,12 @@ public class TransHistoryActivity extends AppCompatActivity {
                 return false;
             }
         });
+        reload();
         return true;
     }
 
-    private void setFilterActive(boolean isActive){
+    private void setFilterIconActive(boolean isActive){
+        if(isActive == isFilterIconActive()) return;
         if(isActive){
             Drawable drawable = getDrawable(R.drawable.ic_filter_active);
             drawable.setColorFilter(getColor(R.color.sub_m), PorterDuff.Mode.SRC_ATOP);
@@ -255,6 +258,10 @@ public class TransHistoryActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isFilterIconActive(){
+        return mFilterItem.isChecked();
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -264,16 +271,11 @@ public class TransHistoryActivity extends AppCompatActivity {
             case R.id.app_bar_filter:
                 //TODO filter
 //                setFilterActive(!TransFilter.isChecked());
-                if(!mFilterItem.isChecked()){
-                    binding.drawer.openDrawer(GravityCompat.END);
-                } else {
-                    binding.drawer.closeDrawer(GravityCompat.END);
-                }
-
+                binding.drawer.openDrawer(GravityCompat.END);
                 return true;
-            case R.id.app_bar_search:
-                //TODO search
-                return true;
+//            case R.id.app_bar_search:
+//                //TODO search
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

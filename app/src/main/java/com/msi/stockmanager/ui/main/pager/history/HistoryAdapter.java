@@ -29,6 +29,7 @@ import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.databinding.FragmentHistoryItemBinding;
 import com.msi.stockmanager.ui.main.form.FormActivity;
+import com.msi.stockmanager.ui.main.trans_history.TransHistoryActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +37,12 @@ import java.util.Map;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
     private static final String TAG = HistoryAdapter.class.getSimpleName();
+    private Context mContext;
 
     public final List<AccountUtil.StockValue> mItems = new ArrayList<>();
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        mContext = parent.getContext();
         return new ViewHolder(FragmentHistoryItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
@@ -89,6 +92,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             holder.binding.profitRate.setTextColor(ColorUtil.getProfitNone());
             holder.binding.profitRate.setText(FormatUtil.percent(percent));
         }
+        holder.binding.cardView.setOnClickListener(v->onEdit(info));
         holder.binding.cardView.setOnLongClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, v, Gravity.RIGHT);
 
@@ -100,27 +104,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                     switch(item.getItemId())
                     {
                         case R.id.item1:
-//                            Intent intent = new Intent(context, FormActivity.class);
-//                            intent.putExtra(Constants.EXTRA_TRANS_OBJECT, trans);
-//                            context.startActivity(intent);
+                            onEdit(info);
                             return true;
                         case R.id.item2:
-                            new AlertDialog.Builder(context)
-                                    .setMessage(String.format(context.getString(R.string.dialog_remove_stock_msg), info.getStockNameWithId()))
-                                    .setPositiveButton(R.string.confirm, ((dialogInterface, i) -> {
-                                        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
-                                            if(trans.stock_id.equals(info.getStockId())){
-                                                ApiUtil.transApi.removeTrans(trans.trans_id);
-                                            }
-                                        }
-                                        reloadList();
-                                        dialogInterface.dismiss();
-                                    }))
-                                    .setNegativeButton(R.string.cancel, ((dialogInterface, i) -> {
-                                        dialogInterface.cancel();
-                                    }))
-                                    .create()
-                                    .show();
+                            onRemove(info);
                             return true;
                     }
                     return onMenuItemClick(item);
@@ -131,6 +118,36 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             return true;
         });
     }
+
+    private void onEdit(StockInfo info){
+        Intent intent = new Intent(mContext, TransHistoryActivity.class);
+        intent.putExtra(TransHistoryActivity.EXTRA_KEYWORD, info.getStockNameWithId());
+        intent.putExtra(TransHistoryActivity.EXTRA_TARGET_TYPES, new int[]{
+                TransType.TRANS_TYPE_STOCK_BUY,
+                TransType.TRANS_TYPE_STOCK_SELL
+        });
+        mContext.startActivity(intent);
+    }
+
+    private void onRemove(StockInfo info){
+        new AlertDialog.Builder(mContext)
+                .setMessage(String.format(mContext.getString(R.string.dialog_remove_stock_msg), info.getStockNameWithId()))
+                .setPositiveButton(R.string.confirm, ((dialogInterface, i) -> {
+                    for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+                        if(trans.stock_id.equals(info.getStockId())){
+                            ApiUtil.transApi.removeTrans(trans.trans_id);
+                        }
+                    }
+                    reloadList();
+                    dialogInterface.dismiss();
+                }))
+                .setNegativeButton(R.string.cancel, ((dialogInterface, i) -> {
+                    dialogInterface.cancel();
+                }))
+                .create()
+                .show();
+    }
+
 
     @Override
     public int getItemCount() {

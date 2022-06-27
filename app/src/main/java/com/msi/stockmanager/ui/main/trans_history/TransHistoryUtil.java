@@ -37,4 +37,8 @@ public class TransHistoryUtil {
         }
         return list;
     }
+
+    public static boolean isFilterActive(){
+        return (targetTypes.size() > 0 || startTime > 0 || endTime < Long.MAX_VALUE);
+    }
 }
