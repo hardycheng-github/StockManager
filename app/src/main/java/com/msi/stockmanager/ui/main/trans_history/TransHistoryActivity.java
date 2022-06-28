@@ -33,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
@@ -161,6 +162,19 @@ public class TransHistoryActivity extends AppCompatActivity {
         } catch (Exception e){}
         TransHistoryUtil.startTime = intent.getLongExtra(EXTRA_START_TIME, TransHistoryUtil.startTime);
         TransHistoryUtil.endTime = intent.getLongExtra(EXTRA_END_TIME, TransHistoryUtil.endTime);
+
+        Button btnReset = binding.navView.findViewById(R.id.reset);
+        btnReset.setOnClickListener(v->{
+            TransHistoryUtil.resetFilter();
+            binding.drawer.closeDrawer(GravityCompat.END);
+            reload();
+        });
+        Button btnApply = binding.navView.findViewById(R.id.apply);
+        btnApply.setOnClickListener(v->{
+            //TODO set filter
+            binding.drawer.closeDrawer(GravityCompat.END);
+            reload();
+        });
     }
 
     private void onSearchApply(String keyword){

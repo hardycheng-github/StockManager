@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +14,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
+import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.profile.Profile;
 
@@ -23,6 +25,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+        ((TextView)findViewById(R.id.version))
+                .setText(getString(R.string.version) + " " + BuildConfig.VERSION_NAME);
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()

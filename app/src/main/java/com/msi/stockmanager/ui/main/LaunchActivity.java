@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 
+import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.DatabaseDemoActivity;
 import com.msi.stockmanager.HttpDemoActivity;
 import com.msi.stockmanager.R;
@@ -49,6 +50,7 @@ public class LaunchActivity extends AppCompatActivity {
         binding.getRoot().setOnClickListener(v->{
             if(isInit) initThread.interrupt();
         });
+        binding.version.setText(getString(R.string.version) + " " + BuildConfig.VERSION_NAME);
         long t1 = System.currentTimeMillis();
         initThread = new Thread(()->{
             Log.d(TAG, "+++ init start +++");
