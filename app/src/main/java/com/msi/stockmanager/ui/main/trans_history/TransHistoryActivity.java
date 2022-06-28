@@ -54,6 +54,7 @@ public class TransHistoryActivity extends AppCompatActivity {
     private boolean isSearchExpand = false;
     private TransHistoryAdapter mAdapter;
     private int mColumnCount = 1;
+    private boolean activeSearch = false;
 
     private View.OnLayoutChangeListener mSearchLayoutChangListener = new View.OnLayoutChangeListener() {
         @Override
@@ -163,6 +164,7 @@ public class TransHistoryActivity extends AppCompatActivity {
     }
 
     private void onSearchApply(String keyword){
+        activeSearch = true;
         mSearchView.onActionViewCollapsed();
         TransHistoryUtil.keyword = keyword;
         reload();
@@ -231,7 +233,6 @@ public class TransHistoryActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 mSearchView.onActionViewCollapsed();
-
                 onSearchApply(query);
                 return true;
             }
@@ -249,7 +250,7 @@ public class TransHistoryActivity extends AppCompatActivity {
         if(isActive == isFilterIconActive()) return;
         if(isActive){
             Drawable drawable = getDrawable(R.drawable.ic_filter_active);
-            drawable.setColorFilter(getColor(R.color.sub_m), PorterDuff.Mode.SRC_ATOP);
+            drawable.setColorFilter(getColor(R.color.sub_s), PorterDuff.Mode.SRC_ATOP);
             mFilterItem.setIcon(drawable);
             mFilterItem.setChecked(true);
         } else {
@@ -289,7 +290,7 @@ public class TransHistoryActivity extends AppCompatActivity {
             mSearchView.onActionViewCollapsed();
             mSearchItem.collapseActionView();
             MenuItemCompat.collapseActionView(mSearchItem);
-        } else if(TransHistoryUtil.keyword != null && !TransHistoryUtil.keyword.isEmpty()) {
+        } else if(activeSearch && TransHistoryUtil.keyword != null && !TransHistoryUtil.keyword.isEmpty()) {
             onSearchApply("");
         } else {
             super.onBackPressed();
