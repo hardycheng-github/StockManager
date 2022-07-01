@@ -111,10 +111,10 @@ class FormActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = this
-        try {
-            transObj = intent.getSerializableExtra(Constants.EXTRA_TRANS_OBJECT) as Transaction
+        transObj = try {
+            intent.getSerializableExtra(Constants.EXTRA_TRANS_OBJECT) as Transaction
         } catch(e: Exception){
-            transObj = Transaction(transTypeList[0])
+            Transaction(transTypeList[0])
         }
 
         setContent {
@@ -486,6 +486,10 @@ fun buildDividendForm(){
     keySet.clear()
     val easyForm = easyFormObj!!
     val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
+    val stockSelectorState = easyForm.addAndGetCustomState(
+        FormKeys.STOCK_SELECTOR,
+        EasyFormsStockSelectorState(StockUtil.stockMap.getOrDefault(transObj.stock_id, StockInfo()))
+    )
     if(!transObj.isIdValid) {
         keySet.add(FormKeys.TRANS_TYPE)
         TransTypeSelector(
@@ -509,7 +513,7 @@ fun buildDividendForm(){
         stockSelectorList.add(entry.value.info)
     }
     keySet.add(FormKeys.STOCK_SELECTOR)
-    StockIdSelector(easyForm, 0, stockSelectorList)
+    StockIdSelector(easyForm, 0, stockSelectorList, stockSelectorState)
     if(transTypeState.state.value == TransType.TRANS_TYPE_CASH_DIVIDEND){
         keySet.add(FormKeys.CASH_AMOUNT)
         keySet.remove(FormKeys.STOCK_AMOUNT)
@@ -517,14 +521,18 @@ fun buildDividendForm(){
             title = stringResource(id = R.string.trans_cash_earn),
             range = 1..999999999,
             step = 1000,
-            key = FormKeys.CASH_AMOUNT)
+            key = FormKeys.CASH_AMOUNT,
+            default = abs(transObj.cash_amount)
+        )
     } else {
         keySet.remove(FormKeys.CASH_AMOUNT)
         keySet.add(FormKeys.STOCK_AMOUNT)
         IntegerSelector(easyForm = easyForm,
             title = stringResource(id = R.string.trans_stock_earn),
             range = 1..999999,
-            key = FormKeys.STOCK_AMOUNT)
+            key = FormKeys.STOCK_AMOUNT,
+            default = abs(transObj.stock_amount)
+        )
     }
 }
 
@@ -534,6 +542,10 @@ fun buildReductionForm(){
     keySet.clear()
     val easyForm = easyFormObj!!
     val transTypeState = easyForm.addAndGetCustomState(FormKeys.TRANS_TYPE, TransTypeSelectorState(transObj.trans_type))
+    val stockSelectorState = easyForm.addAndGetCustomState(
+        FormKeys.STOCK_SELECTOR,
+        EasyFormsStockSelectorState(StockUtil.stockMap.getOrDefault(transObj.stock_id, StockInfo()))
+    )
     if(!transObj.isIdValid) {
         keySet.add(FormKeys.TRANS_TYPE)
         TransTypeSelector(
@@ -551,10 +563,6 @@ fun buildReductionForm(){
         title = stringResource(id = R.string.trans_date),
         key=FormKeys.TRANS_DATE,
         default = transObj.trans_time
-    )
-    val stockSelectorState = easyForm.addAndGetCustomState(
-        FormKeys.STOCK_SELECTOR,
-        EasyFormsStockSelectorState(StockUtil.stockMap.getOrDefault(transObj.stock_id, StockInfo()))
     )
     val stockSelectorList: MutableList<StockInfo> = mutableListOf()
     for(entry in AccountUtil.getAccount().stockValueMap){
@@ -577,13 +585,17 @@ fun buildReductionForm(){
     IntegerSelector(easyForm = easyForm,
         title = stringResource(id = R.string.trans_stock_lose),
         range = stockAmountRange,
-        key = FormKeys.STOCK_AMOUNT)
+        key = FormKeys.STOCK_AMOUNT,
+        default = abs(transObj.stock_amount)
+    )
     if(transTypeState.state.value == TransType.TRANS_TYPE_CASH_REDUCTION){
         keySet.add(FormKeys.CASH_AMOUNT)
         IntegerSelector(easyForm = easyForm,
             title = stringResource(id = R.string.trans_cash_earn),
             step = 1000,
-            key = FormKeys.CASH_AMOUNT)
+            key = FormKeys.CASH_AMOUNT,
+            default = abs(transObj.cash_amount)
+        )
     } else {
         keySet.remove(FormKeys.CASH_AMOUNT)
     }
