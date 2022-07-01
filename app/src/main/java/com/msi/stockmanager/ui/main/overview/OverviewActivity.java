@@ -230,7 +230,7 @@ public class OverviewActivity extends AppCompatActivity {
                 binding.pieChart.setTouchEnabled(false);
                 binding.pieChart.setRotationEnabled(false);
                 binding.pieChart.setNoDataText(null);
-                binding.pieChart.setTransparentCircleRadius(88f);
+                binding.pieChart.setTransparentCircleRadius(0f);
                 binding.pieChart.setHoleRadius(85f);
                 binding.pieChart.setHoleColor(Color.TRANSPARENT);
 

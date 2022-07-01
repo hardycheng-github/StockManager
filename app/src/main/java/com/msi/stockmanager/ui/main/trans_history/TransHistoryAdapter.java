@@ -32,10 +32,11 @@ import java.util.List;
 
 public class TransHistoryAdapter extends RecyclerView.Adapter<TransHistoryAdapter.ViewHolder> {
 
+    private Context mContext;
     public final List<Transaction> mItems = new ArrayList<>();
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
+        mContext = parent.getContext();
         return new ViewHolder(TransHistoryItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
     }
 
@@ -119,6 +120,7 @@ public class TransHistoryAdapter extends RecyclerView.Adapter<TransHistoryAdapte
                 setText(holder.binding.transStockAmount, (trans.stock_amount));
                 break;
         }
+        holder.binding.cardView.setOnClickListener(v->onEdit(trans));
         holder.binding.cardView.setOnLongClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(context, v, Gravity.RIGHT);
 
@@ -130,12 +132,10 @@ public class TransHistoryAdapter extends RecyclerView.Adapter<TransHistoryAdapte
                     switch(item.getItemId())
                     {
                         case R.id.item1:
-                            Intent intent = new Intent(context, FormActivity.class);
-                            intent.putExtra(Constants.EXTRA_TRANS_OBJECT, trans);
-                            context.startActivity(intent);
+                            onEdit(trans);
                             return true;
                         case R.id.item2:
-                            ApiUtil.transApi.removeTrans(trans.trans_id);
+                            onRemove(trans);
                             return true;
                     }
                     return onMenuItemClick(item);
@@ -145,6 +145,16 @@ public class TransHistoryAdapter extends RecyclerView.Adapter<TransHistoryAdapte
             popupMenu.show();
             return true;
         });
+    }
+
+    private void onEdit(Transaction trans){
+        Intent intent = new Intent(mContext, FormActivity.class);
+        intent.putExtra(Constants.EXTRA_TRANS_OBJECT, trans);
+        mContext.startActivity(intent);
+    }
+
+    private void onRemove(Transaction trans){
+        ApiUtil.transApi.removeTrans(trans.trans_id);
     }
 
     @Override
