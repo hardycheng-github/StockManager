@@ -84,7 +84,7 @@
 
 > Stetho is a sophisticated debug bridge for Android applications
 
-Android採用SQLite作為資料庫的預設開發選項，在除錯的方式上一直是開發人員的困擾，而Facebook Stetho可作為資料庫除錯的解套方式，其強大Database Inspection大大簡化了資料庫除錯的難度，我們可以透過Stetho串連手機與電腦，在Chrome上檢視資料庫架構、資料內容、甚至可以直接執行SQL指令。
+Android採用SQLite作為資料庫的預設開發選項，在除錯的方式上一直是開發人員的困擾，而Facebook Stetho可作為資料庫除錯的解套方式，其強大的Database Inspection大大簡化了資料庫除錯的難度，我們可以透過Stetho串連手機與電腦，在Chrome上檢視資料庫架構、資料內容、甚至可以直接執行SQL指令。
 
 ### [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart)
 
