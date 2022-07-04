@@ -104,7 +104,7 @@ MPAndroidChart是最多人使用的圖表產生工具，可以輕鬆製作各種
 
 > Jetpack Compose 是 Android 的新型工具包，可用來建構原生 UI。這可簡化及加快 Android 平台上的 UI 開發作業。透過較少的程式碼、強大的工具和直觀的 Kotlin API，讓您的應用程式更貼近生活。
 
-Jetpack Compose是基於Kotlin的新型Android原生UI建構工具，對於資深的Android開發者而言，可能無法輕易的將所有開發重心過渡到Compose，因為它擁有非常獨特的設計邏輯，但以使用者介面設計的角度而言，Compose是一個非常強大且簡潔的建構工具，設計模式採用[MATERIAL DESIGN](https://material.io/)，能夠以最少的程式碼完成極具質感的使用者介面。
+對於資深的Android開發者而言，可能無法輕易的將所有開發模式過渡到Compose，因為它擁有非常獨特的設計邏輯，但以使用者介面設計的角度而言，Compose是一個非常強大且簡潔的建構工具，設計模式採用[MATERIAL DESIGN](https://material.io/)，能夠以最少的程式碼完成極具質感的使用者介面。
 
 Android使用者所熟知[Play商店](https://play.google.com/)，以及非常熱門的社群軟體[Twitter](https://twitter.com/)，最新的程式版本都是使用Compose開發建構。
 
