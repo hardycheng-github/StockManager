@@ -2,10 +2,10 @@
 
 一個簡單上手且兼具多功能便利性的股票記帳小幫手
 
-* [👨‍🏫 APP Introduction](#-app-introduction)
-* [👀 User Guide](#-user-guide)
-* [🛠 Development Notes](#-development-notes)
-* [🏃‍♀️ Next Stage](#%EF%B8%8F-next-stage)
+* [APP Introduction](#-app-introduction)
+* [User Guide](#-user-guide)
+* [Development Notes](#-development-notes)
+* [Next Stage](#%EF%B8%8F-next-stage)
 
 ## 👨‍🏫 APP Introduction
 
