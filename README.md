@@ -74,31 +74,53 @@
 
 > Kotlin是一種在Java虛擬機上執行的靜態型別程式語言
 
-作為一個基於Java的高階程式語言，Kotlin已躍升為Android Studio的主推官方語言，善用Kotlin特性可以大幅的降低開發成本。
+作為一個基於Java的高階程式語言，Kotlin已經取代了Java躍升為Google的Android開發主推語言，善用Kotlin特性可以大幅的降低開發成本。
+
 本專案中使用了Java+Kotlin混和式開發，Kotlin可以與Java共生的性質讓入門學習者可以更容易的開始使用Kotlin。
 
+對於資深的Java開發者而言，也可直接在習慣的Java環境中呼叫Kotlin物件。
+
 ### [Facebook Stetho](https://github.com/facebook/stetho)
+
 > Stetho is a sophisticated debug bridge for Android applications
 
-Android採用SQLite作為資料庫的預設開發選項，在除錯的方式上一直是開發人員的困擾，我們可以透過Facebook Stetho的強大功能之一來簡化資料庫除錯的難度。
+Android採用SQLite作為資料庫的預設開發選項，在除錯的方式上一直是開發人員的困擾，而Facebook Stetho可作為資料庫除錯的解套方式，其強大Database Inspection大大簡化了資料庫除錯的難度，我們可以透過Stetho串連手機與電腦，在Chrome上檢視資料庫架構、資料內容、甚至可以直接執行SQL指令。
 
 ### [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart)
 
+> ⚡ A powerful & easy to use chart library for Android ⚡
+
+MPAndroidChart是最多人使用的圖表產生工具，可以輕鬆製作各種圖表
+
+* 線性圖
+* 離散圖
+* 圓餅圖
+* 組合圖表
+
+另外這個第三方庫還有[IOS版本](https://github.com/danielgindi/Charts)
 
 
 ### [Jetpack Compose](https://developer.android.com/jetpack/compose?hl=zh-tw)
 
+> Jetpack Compose 是 Android 的新型工具包，可用來建構原生 UI。這可簡化及加快 Android 平台上的 UI 開發作業。透過較少的程式碼、強大的工具和直觀的 Kotlin API，讓您的應用程式更貼近生活。
 
+Jetpack Compose是基於Kotlin的新型Android原生UI建構工具，對於資深的Android開發者而言，可能無法輕易的將所有開發重心過渡到Compose，因為它擁有非常獨特的設計邏輯，但以使用者介面設計的角度而言，Compose是一個非常強大且簡潔的建構工具，設計模式採用[MATERIAL DESIGN](https://material.io/)，能夠以最少的程式碼完成極具質感的使用者介面。
+
+Android使用者所熟知[Play商店](https://play.google.com/)，以及非常熱門的社群軟體[Twitter](https://twitter.com/)，最新的程式版本都是使用Compose開發建構。
+
+考慮到Compose架構對於排列式設計的適用性，我們在專案中將交易編輯介面採用Compose設計 ([參考](#簡單易懂的介面設計))
 
 ### [Compose EasyForms](https://github.com/k0shk0sh/ComposeEasyForms)
 
+EasyForms是在Compose環境中使用的表單建構工具，幫助我們管理表單的狀態與驗證，讓開發者可以專注於設計美觀的界面。
 
+股票交易編輯就需要管理眾多輸入內容的狀態，非常適合使用EasyForms來協助表單驗證。
 
 ## 🏃‍♀️ Next Stage
 
 - [x] 交易資料的增加/刪除/修改
 - [x] 呈現庫存股票的總覽(交易資料的查詢)
 - [x] 連結股票現值(計算個股損益/總損益)
-- [ ] ***財經新聞與資訊彙整***
-- [ ] ***股票走勢圖與技術分析線圖***
-- [ ] ***個股投資分析建議***
+- [ ] **財經新聞與資訊彙整**
+- [ ] **股票走勢圖與技術分析線圖**
+- [ ] **個股投資分析建議**
