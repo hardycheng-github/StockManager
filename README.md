@@ -3,7 +3,7 @@
 一個簡單上手且兼具多功能便利性的股票記帳小幫手
 
 * [👨‍🏫 APP Introduction](#-app-introduction)
-* [👀 The Demo](#-the-demo)
+* [👀 User Guide](#-user-guide)
 * [🛠 Development Notes](#-development-notes)
 * [🏃‍♀️ Next Stage](#%EF%B8%8F-next-stage)
 
@@ -48,7 +48,9 @@
 
 <img width="360" src="https://github.com/hardycheng-github/StockManager/blob/demo/demo/20220704_140911.gif" />
 
-## 👀 The Demo
+## 👀 User Guide
+
+### The Demo
 
 使用情境的快速展示
 * 視覺化總覽
@@ -70,12 +72,15 @@
 
 ### [Kotlin](https://kotlinlang.org/)
 
-Kotlin是一個基於Java的進階程式語言，目前已成為Android Studio的主推官方語言，善用Kotlin特性可以大幅的降低開發成本。
-本專案中使用了Java+Kotlin混和式開發，Kotlin可以與Java共生的特性讓入門學習者可以更容易的開始使用Kotlin。
+> Kotlin是一種在Java虛擬機上執行的靜態型別程式語言
+
+作為一個基於Java的高階程式語言，Kotlin已躍升為Android Studio的主推官方語言，善用Kotlin特性可以大幅的降低開發成本。
+本專案中使用了Java+Kotlin混和式開發，Kotlin可以與Java共生的性質讓入門學習者可以更容易的開始使用Kotlin。
 
 ### [Facebook Stetho](https://github.com/facebook/stetho)
+> Stetho is a sophisticated debug bridge for Android applications
 
-
+Android採用SQLite作為資料庫的預設開發選項，在除錯的方式上一直是開發人員的困擾，我們可以透過Facebook Stetho的強大功能之一來簡化資料庫除錯的難度。
 
 ### [MPAndroidChart](https://github.com/PhilJay/MPAndroidChart)
 
