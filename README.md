@@ -29,7 +29,7 @@
 <img width="360" src="https://github.com/hardycheng-github/StockManager/blob/demo/demo/Screenshot_2022-07-02-13-33-03-788_com.msi.stockmanager.jpg" />
 
 ### 交割帳戶管理
-帳戶轉入轉出記帳，投資比例與可用餘額一目瞭然
+資金記帳，投資比例與可用餘額一目瞭然
 
 <img width="360" src="https://github.com/hardycheng-github/StockManager/blob/demo/demo/Screenshot_2022-07-02-13-40-29-918_com.msi.stockmanager.jpg" />
 
