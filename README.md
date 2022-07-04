@@ -60,7 +60,7 @@
 
 ## 🛠 Development Notes
 
-### 值得一提的開發工具
+跳脫舊時代的開發思維，在專案中使用強大的新型開發工具
 
 * [Kotlin](#kotlin)
 * [Facebook Stetho](#facebook-stetho)
@@ -70,7 +70,8 @@
 
 ### Kotlin
 
-
+Kotlin是一個基於Java的進階程式語言，目前已成為Android Studio的主推官方語言，善用Kotlin特性可以大幅的降低開發成本。
+本專案中使用了Java+Kotlin混和式開發，Kotlin可以與Java共生的特性讓入門學習者可以更容易的開始使用Kotlin。
 
 ### Facebook Stetho
 
