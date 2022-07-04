@@ -60,7 +60,8 @@
 
 ## 🛠 Development Notes
 
-### 專案中採用的開發工具
+### 值得一提的開發工具
+
 * [Kotlin](#kotlin)
 * [Facebook Stetho](#facebook-stetho)
 * [MPAndroidChart](#mpandroidchart)
