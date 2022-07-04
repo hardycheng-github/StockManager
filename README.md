@@ -2,11 +2,12 @@
 
 一個簡單上手且兼具多功能便利性的股票記帳小幫手
 
-### 目錄
 * [👨‍🏫 APP Introduction](#-app-introduction)
 * [👀 The Demo](#-the-demo)
 * [🛠 Development Notes](#-development-notes)
 * [🏃‍♀️ Next Stage](#%EF%B8%8F-next-stage)
+
+## 👨‍🏫 APP Introduction
 
 ### 特色功能
 * [簡單易懂的介面設計](#簡單易懂的介面設計)
@@ -15,8 +16,6 @@
 * [股利與減資管理](#股利與減資管理)
 * [漲跌顏色客製](#漲跌顏色客製)
 * [實時股價對接](#實時股價對接)
-
-## 👨‍🏫 APP Introduction
 
 ### 簡單易懂的介面設計
 
