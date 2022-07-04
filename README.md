@@ -1,6 +1,6 @@
 # MSI Stock Manager 📊
 
-一個簡單易上手且兼具多功能便利性的股票記帳小幫手
+一個簡單上手且兼具多功能便利性的股票記帳小幫手
 
 ### 目錄
 * [👨‍🏫 APP Introduction](#-app-introduction)
