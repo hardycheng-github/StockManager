@@ -50,6 +50,22 @@
 
 ## 👀 User Guide
 
+### 帳戶總覽
+
+<img src="https://user-images.githubusercontent.com/55072235/177241041-746052a4-0358-4fc1-a9a5-2345cd3a4462.png" />
+
+### 滑動選單頁面
+
+<img src="https://user-images.githubusercontent.com/55072235/177242157-4ef4efb5-55ac-487e-b825-a1af4c6aa046.png" />
+
+### 交易紀錄編輯
+
+<img src="https://user-images.githubusercontent.com/55072235/177253702-affd5671-361c-4201-a96f-632e59ad2cc8.png" />
+
+### 歷史紀錄搜尋
+
+<img src="https://user-images.githubusercontent.com/55072235/177242175-65a7b08f-9e11-4744-9fc9-d8ab9b8d5845.png" />
+
 ### The Demo
 
 使用情境的快速展示
