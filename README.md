@@ -99,7 +99,6 @@ MPAndroidChart是最多人使用的圖表產生工具，可以輕鬆製作各種
 
 另外這個第三方庫還有[IOS版本](https://github.com/danielgindi/Charts)
 
-
 ### [Jetpack Compose](https://developer.android.com/jetpack/compose?hl=zh-tw)
 
 > Jetpack Compose 是 Android 的新型工具包，可用來建構原生 UI。這可簡化及加快 Android 平台上的 UI 開發作業。透過較少的程式碼、強大的工具和直觀的 Kotlin API，讓您的應用程式更貼近生活。
@@ -112,15 +111,17 @@ Android使用者所熟知[Play商店](https://play.google.com/)，以及非常�
 
 ### [Compose EasyForms](https://github.com/k0shk0sh/ComposeEasyForms)
 
+> Focus on building your form UI while the library do the heavy work for you.
+
 EasyForms是在Compose環境中使用的表單建構工具，幫助我們管理表單的狀態與驗證，讓開發者可以專注於設計美觀的界面。
 
 股票交易編輯就需要管理眾多輸入內容的狀態，非常適合使用EasyForms來協助表單驗證。
 
 ## 🏃‍♀️ Next Stage
 
-- [x] 交易資料的增加/刪除/修改
-- [x] 呈現庫存股票的總覽(交易資料的查詢)
-- [x] 連結股票現值(計算個股損益/總損益)
-- [ ] **財經新聞與資訊彙整**
-- [ ] **股票走勢圖與技術分析線圖**
-- [ ] **個股投資分析建議**
+- [x] `交易資料的增加/刪除/修改`
+- [x] `呈現庫存股票的總覽(交易資料的查詢)`
+- [x] `連結股票現值(計算個股損益/總損益)`
+- [ ] **`財經新聞與資訊彙整`**
+- [ ] **`股票走勢圖與技術分析線圖`**
+- [ ] **`個股投資分析建議`**
