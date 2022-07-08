@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"
             android:text="施工中"
             android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -26,8 +27,8 @@
             android:layout_width="0dp"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/filter_bg_1"
-            android:gravity="center|start"
-            android:paddingStart="@dimen/card_padding"
+            android:gravity="center"
+            android:paddingStart="@dimen/filter_padding_2"
             android:text="@string/title_filter"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,15 +64,133 @@
                     android:layout_height="match_parent"
                     android:orientation="vertical">
 
+                    <TextView
+                        android:id="@+id/textView25"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/filter_padding_2"
+                        android:text="@string/date_range"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/date_start"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/filter_padding_2"
+                        app:startIconDrawable="@drawable/ic_baseline_calendar_today_24"
+                        android:hint="@string/date_start"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/textView26"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:layout_margin="@dimen/filter_padding_2"
+                        android:visibility="gone"
+                        android:text="@string/date_to"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/date_end"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/filter_padding_2"
+                        android:layout_marginVertical="@dimen/filter_padding_2"
+                        app:startIconDrawable="@drawable/ic_baseline_calendar_today_24"
+                        android:hint="@string/date_end"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"></LinearLayout>
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="@dimen/filter_padding_2"
+                        android:orientation="horizontal">
+
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/today"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="@dimen/filter_padding_1"
+                            android:layout_marginEnd="@dimen/filter_padding_1"
+                            android:background="@drawable/ic_btn_sub"
+                            android:text="@string/date_today"/>
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/recent_week"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="@dimen/filter_padding_1"
+                            android:layout_marginStart="@dimen/filter_padding_1"
+                            android:background="@drawable/ic_btn_sub"
+                            android:text="@string/date_week" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/filter_padding_2"
+                        android:orientation="horizontal">
+
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/recent_month"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="@dimen/filter_padding_1"
+                            android:layout_marginEnd="@dimen/filter_padding_1"
+                            android:background="@drawable/ic_btn_sub"
+                            android:text="@string/date_month" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/recent_year"
+                            android:clickable="true"
+                            android:gravity="center"
+                            android:layout_weight="1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:paddingVertical="@dimen/filter_padding_1"
+                            android:layout_marginStart="@dimen/filter_padding_1"
+                            android:background="@drawable/ic_btn_sub"
+                            android:text="@string/date_year" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/divider4"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="?android:attr/listDivider"
+                        app:layout_constraintBottom_toBottomOf="@id/title_filter" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"></LinearLayout>
+                        android:orientation="vertical"></LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

@@ -12,14 +12,19 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.AccountUtil;
 import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.databinding.ActivityTransHistoryBinding;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -34,9 +39,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class TransHistoryActivity extends AppCompatActivity {
@@ -56,6 +65,16 @@ public class TransHistoryActivity extends AppCompatActivity {
     private TransHistoryAdapter mAdapter;
     private int mColumnCount = 1;
     private boolean activeSearch = false;
+
+    private TextInputLayout dateStart;
+    private TextInputLayout dateEnd;
+    private Button btnToday;
+    private Button btnRecentWeek;
+    private Button btnRecentMonth;
+    private Button btnRecentYear;
+    private Button btnReset;
+    private Button btnApply;
+    private Date selectedDate;
 
     private View.OnLayoutChangeListener mSearchLayoutChangListener = new View.OnLayoutChangeListener() {
         @Override
@@ -100,27 +119,7 @@ public class TransHistoryActivity extends AppCompatActivity {
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.toolbar);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                binding.drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-                    @Override
-                    public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-
-                    }
-
-                    @Override
-                    public void onDrawerOpened(@NonNull View drawerView) {
-//                setFilterActive(true);
-                    }
-
-                    @Override
-                    public void onDrawerClosed(@NonNull View drawerView) {
-//                setFilterActive(false);
-                    }
-
-                    @Override
-                    public void onDrawerStateChanged(int newState) {
-
-                    }
-                });
+                findView();
                 initFilter(getIntent());
                 View view = binding.getRoot();
                 Context context = view.getContext();
@@ -148,6 +147,17 @@ public class TransHistoryActivity extends AppCompatActivity {
         });
     }
 
+    private void findView(){
+        dateStart = binding.navView.findViewById(R.id.date_start);
+        dateEnd = binding.navView.findViewById(R.id.date_end);
+        btnToday = binding.navView.findViewById(R.id.today);
+        btnRecentWeek = binding.navView.findViewById(R.id.recent_week);
+        btnRecentMonth = binding.navView.findViewById(R.id.recent_month);
+        btnRecentYear = binding.navView.findViewById(R.id.recent_year);
+        btnReset = binding.navView.findViewById(R.id.reset);
+        btnApply = binding.navView.findViewById(R.id.apply);
+    }
+
     private void initFilter(Intent intent){
         try {
             String sVal = intent.getStringExtra(EXTRA_KEYWORD);
@@ -163,18 +173,106 @@ public class TransHistoryActivity extends AppCompatActivity {
         TransHistoryUtil.startTime = intent.getLongExtra(EXTRA_START_TIME, TransHistoryUtil.startTime);
         TransHistoryUtil.endTime = intent.getLongExtra(EXTRA_END_TIME, TransHistoryUtil.endTime);
 
-        Button btnReset = binding.navView.findViewById(R.id.reset);
+        dateStart.getEditText().setEnabled(false);
+        dateStart.setFocusable(false);
+        dateStart.setFocusableInTouchMode(false);
+        dateStart.setClickable(true);
+        dateStart.setOnClickListener(v -> {
+            selectedDate = new Date();
+            long timestamp = TransHistoryUtil.startTime == 0 ? System.currentTimeMillis() : TransHistoryUtil.startTime;
+            Date date = new Date(timestamp);
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                selectedDate.setYear(year);
+                selectedDate.setMonth(month);
+                selectedDate.setDate(dayOfMonth);
+                new TimePickerDialog(this, (view2, hourOfDay, minute) -> {
+                    selectedDate.setHours(hourOfDay);
+                    selectedDate.setMinutes(minute);
+                    TransHistoryUtil.startTime = selectedDate.getTime();
+                    updateFilter();
+                }, date.getHours(), date.getMinutes(), true).show();
+            }, date.getYear(), date.getMonth(), date.getDate()).show();
+        });
+        dateEnd.getEditText().setEnabled(false);
+        dateEnd.setFocusable(false);
+        dateEnd.setFocusableInTouchMode(false);
+        dateEnd.setClickable(true);
+        dateEnd.setOnClickListener(v->{
+            selectedDate = new Date();
+            long timestamp = TransHistoryUtil.endTime == Long.MAX_VALUE ? System.currentTimeMillis() : TransHistoryUtil.endTime;
+            Date date = new Date(timestamp);
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                selectedDate.setYear(year);
+                selectedDate.setMonth(month);
+                selectedDate.setDate(dayOfMonth);
+                new TimePickerDialog(this, (view2, hourOfDay, minute) -> {
+                    selectedDate.setHours(hourOfDay);
+                    selectedDate.setMinutes(minute);
+                    TransHistoryUtil.endTime = selectedDate.getTime();
+                    updateFilter();
+                }, date.getHours(), date.getMinutes(), true).show();
+            }, date.getYear(), date.getMonth(), date.getDate()).show();
+        });
+        btnToday.setOnClickListener(v->{
+            btnToday.setSelected(!btnToday.isSelected());
+            btnRecentWeek.setSelected(false);
+            btnRecentMonth.setSelected(false);
+            btnRecentYear.setSelected(false);
+            updateFilter();
+        });
+        btnRecentWeek.setOnClickListener(v->{
+            btnToday.setSelected(false);
+            btnRecentWeek.setSelected(!btnRecentWeek.isSelected());
+            btnRecentMonth.setSelected(false);
+            btnRecentYear.setSelected(false);
+            updateFilter();
+        });
+        btnRecentMonth.setOnClickListener(v->{
+            btnToday.setSelected(false);
+            btnRecentWeek.setSelected(false);
+            btnRecentMonth.setSelected(!btnRecentMonth.isSelected());
+            btnRecentYear.setSelected(false);
+            updateFilter();
+        });
+        btnRecentYear.setOnClickListener(v->{
+            btnToday.setSelected(false);
+            btnRecentWeek.setSelected(false);
+            btnRecentMonth.setSelected(false);
+            btnRecentYear.setSelected(!btnRecentYear.isSelected());
+            updateFilter();
+        });
         btnReset.setOnClickListener(v->{
             TransHistoryUtil.resetFilter();
             binding.drawer.closeDrawer(GravityCompat.END);
             reload();
         });
-        Button btnApply = binding.navView.findViewById(R.id.apply);
         btnApply.setOnClickListener(v->{
             //TODO set filter
             binding.drawer.closeDrawer(GravityCompat.END);
             reload();
         });
+        updateFilter();
+    }
+
+    private void updateFilter(){
+        updateButton(btnToday);
+        updateButton(btnRecentWeek);
+        updateButton(btnRecentMonth);
+        updateButton(btnRecentYear);
+        dateStart.getEditText().setText(TransHistoryUtil.startTime == 0 ? ""
+                : DateUtil.toDateTimeString(TransHistoryUtil.startTime));
+        dateEnd.getEditText().setText(TransHistoryUtil.endTime == Long.MAX_VALUE ? ""
+                : DateUtil.toDateTimeString(TransHistoryUtil.endTime));
+    }
+
+    private void updateButton(Button btn){
+        if(btn.isSelected()){
+            btn.setBackground(getDrawable(R.drawable.ic_btn_main));
+            btn.setTextColor(getColor(R.color.white));
+        } else {
+            btn.setBackground(getDrawable(R.drawable.ic_btn_sub));
+            btn.setTextColor(getColor(R.color.main_m));
+        }
     }
 
     private void onSearchApply(String keyword){

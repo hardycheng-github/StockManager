@@ -11,4 +11,5 @@
     <dimen name="circle_btn_padding">4dp</dimen>
     <integer name="fab_anim_int">200</integer>
     <dimen name="filter_padding_1">5dp</dimen>
+    <dimen name="filter_padding_2">10dp</dimen>
 </resources>
