@@ -104,4 +104,13 @@ public class StockApi implements IStockApi{
         task.setName("getRegularStockPrice");
         task.start();
     }
+
+    @Override
+    public void getHistoryStockData(String stock_id, String interval, String range, HistoryCallback callback) {
+        Thread task = new Thread(()->{
+            //TODO implement
+        });
+        task.setName("getHistoryStockData");
+        task.start();
+    }
 }
