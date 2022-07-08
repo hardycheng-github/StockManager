@@ -15,6 +15,7 @@ import android.widget.RadioGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransApi;
@@ -27,14 +28,14 @@ import java.util.Date;
 
 public class InputCashInOut extends AppCompatActivity {
     private final static String TAG = "InputCashInOut";
-    private RadioButton radioInCash, radioOutcash;
+    private RadioButton radioInCash, radioOutCash;
     private EditText editTextDate,editTextNumber;
     private Button transfer_btn;
     private RadioGroup radioGroup1;
     private Date date;
     private Intent intent;
     private int transId = -1;
-    ITransApi transApi = new TransApi(this);
+    ITransApi transApi = ApiUtil.transApi;
     private Transaction trans = new Transaction();
 
     @Override
@@ -54,7 +55,7 @@ public class InputCashInOut extends AppCompatActivity {
 
     void initView(){
         radioInCash  = findViewById(R.id.radioInCash);
-        radioOutcash =  findViewById(R.id.radioOutcash);
+        radioOutCash =  findViewById(R.id.radioOutcash);
         editTextDate =  findViewById(R.id.editTextDate);
         editTextNumber =  findViewById(R.id.editTextNumber);
         transfer_btn =  findViewById(R.id.transfer_btn);
@@ -68,7 +69,7 @@ public class InputCashInOut extends AppCompatActivity {
                 if (trans.trans_type == TransType.TRANS_TYPE_CASH_IN) {
                     radioInCash.toggle();
                 } else {
-                    radioOutcash.toggle();
+                    radioOutCash.toggle();
                 }
                 String dateStr = DateUtil.toDateString(trans.trans_time);
                 editTextDate.setText(dateStr);
@@ -128,7 +129,10 @@ public class InputCashInOut extends AppCompatActivity {
         trans.stock_id = "";
         trans.stock_name = "";
         trans.stock_amount = 0;
-        trans.cash_amount = Double.parseDouble(editTextNumber.getText().toString());
+        trans.cash_amount = Integer.parseInt(editTextNumber.getText().toString());
+        if(selected != R.id.radioInCash){
+            trans.cash_amount = -trans.cash_amount;
+        }
         trans.fee = 0;
         trans.tax = 0;
         trans.remark = "";
@@ -145,7 +149,10 @@ public class InputCashInOut extends AppCompatActivity {
         trans.stock_id = "";
         trans.stock_name = "";
         trans.stock_amount = 0;
-        trans.cash_amount = Double.parseDouble(editTextNumber.getText().toString());
+        trans.cash_amount = Integer.parseInt(editTextNumber.getText().toString());
+        if(selected != R.id.radioInCash){
+            trans.cash_amount = -trans.cash_amount;
+        }
         trans.fee = 0;
         trans.tax = 0;
         trans.remark = "";

@@ -1,11 +1,14 @@
 package com.msi.stockmanager.ui.main.form
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.util.Log
 import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -17,8 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -29,6 +32,7 @@ import com.msi.stockmanager.components.autocomplete.AutoCompleteBox
 import com.msi.stockmanager.components.autocomplete.utils.AutoCompleteSearchBarTag
 import com.msi.stockmanager.components.searchbar.TextSearchBar
 import com.msi.stockmanager.data.DateUtil
+import com.msi.stockmanager.data.FormatUtil
 import com.msi.stockmanager.data.stock.StockInfo
 import com.msi.stockmanager.data.stock.StockUtil
 import com.msi.stockmanager.data.transaction.TransType
@@ -40,25 +44,20 @@ val itemHeight = 70.dp
 @Composable
 fun StockIdSelector(
     easyForm: EasyForms,
-    selected: String = "",
+    searchThreshold: Int = 0,
+    list: MutableList<StockInfo> = StockUtil.stockList,
+    state:EasyFormsStockSelectorState = easyForm.addAndGetCustomState(FormKeys.STOCK_SELECTOR, EasyFormsStockSelectorState())
 ){
-    val state = easyForm.addAndGetCustomState(FormKeys.STOCK_SELECTOR, EasyFormsStockSelectorState())
-
-    var value by remember { mutableStateOf("") }
+    state.list = list
+    state.onValueChangedCallback(state.state.value)
+    var value by remember { mutableStateOf(state.state.value.getStockNameWithId()) }
     var isFocus by remember { mutableStateOf(false)}
-    if(selected.isNotEmpty()){
-        for(stock in StockUtil.stockList){
-            if(stock.stockId == selected){
-                value = stock.getStockNameWithId()
-                state.onValueChangedCallback(stock)
-            }
-        }
-    }
+
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
         TextTitle(stringResource(id = R.string.trans_stock_selector))
         AutoCompleteBox(
-            items = StockUtil.stockList,
+            items = list,
             itemContent = { stock ->
                 Column(
                     modifier = Modifier
@@ -71,7 +70,7 @@ fun StockIdSelector(
                         style = MaterialTheme.typography.subtitle2
                     )
                 }
-            }
+            },
         ) {
             val view = LocalView.current
 
@@ -87,6 +86,7 @@ fun StockIdSelector(
             TextSearchBar(
                 modifier = Modifier.testTag(AutoCompleteSearchBarTag),
                 value = value,
+                placeholder = stringResource(id = R.string.hint_stock_search),
                 onImeActionClick = {
                     view.clearFocus()
                 },
@@ -99,7 +99,7 @@ fun StockIdSelector(
                 },
                 onFocusChanged = { focusState ->
                     isFocus = focusState.isFocused
-                    if(isFocus && value.isNotEmpty()) isSearching = true;
+                    if(isFocus && value.length >= searchThreshold) isSearching = true;
                     if(!isFocus && isSearching) isSearching = false
                 },
                 onValueChanged = { query ->
@@ -108,10 +108,10 @@ fun StockIdSelector(
                     isSearching = isFocus && value.isNotEmpty()
                     state.onValueChangedCallback(StockInfo())
                 },
-                isError = {
-                    state.errorState.value == EasyFormsErrorState.INVALID
-                }
-            )
+                enabled = (list != null && list.size > 0),
+            ) {
+                state.errorState.value == EasyFormsErrorState.INVALID
+            }
         }
     }
 
@@ -119,39 +119,66 @@ fun StockIdSelector(
 
 @ExperimentalFoundationApi
 @Composable
-fun IntegerSelector(easyForm: EasyForms, title:String, default: Int = 0, range: IntRange = 0..999999, step: Int = 1, key:Any){
-    val state = easyForm.addAndGetCustomState(key, IntSelectorState(range, default))
-    val numStr = state.state
+fun IntegerSelector(
+    easyForm: EasyForms,
+    title:String,
+    default: Int = 0,
+    range: IntRange = 0..999999,
+    step: Int = 1,
+    key:Any,
+    showButtons: Boolean = true,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    readOnly: Boolean = false,
+    state:IntSelectorState = easyForm.addAndGetCustomState(key, IntSelectorState(range, default)),
+){
+    state.range = range
+    state.default = default
     val btnSize = 32.dp
     val view = LocalView.current
+    state.onValueChangedCallback(state.state.value)
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)){
         TextTitle(title)
         ConstraintLayout (modifier = Modifier.fillMaxWidth()){
             val (sub, text, add) = createRefs()
-            IconButton(onClick = {
-                try {
-                    var n = numStr.value.toInt()-step
-                    if(n < range.start) n = range.start
-                    numStr.value = n.toString()
-                } catch (e: Exception){
-                    numStr.value = range.start.toString()
+            if(showButtons) {
+                IconButton(
+                    onClick = {
+                        view.clearFocus()
+                        try {
+                            val tmp = state.state.value.toInt()
+                            var n = tmp - tmp % step - step
+                            if (n < range.start) n = range.start
+                            state.onValueChangedCallback(n.toString())
+                        } catch (e: Exception) {}
+                    },
+                    modifier = Modifier.constrainAs(sub) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        height = Dimension.fillToConstraints
+                    },
+                    enabled = when(state.state.value.toIntOrNull() == null){
+                        true -> true
+                        false -> state.state.value.toInt() > range.start
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.RemoveCircle,
+                        contentDescription = "Minus",
+                        Modifier.size(btnSize)
+                    )
                 }
-                state.onValueChangedCallback(numStr.value)
-            }, modifier = Modifier.constrainAs(sub){
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                height = Dimension.fillToConstraints
-            }, enabled = numStr.value.toIntOrNull() != null && numStr.value.toInt() > range.start){
-                Icon(imageVector = Icons.Filled.RemoveCircle, contentDescription = "Minus", Modifier.size(btnSize))
             }
             OutlinedTextField(
-                value = numStr.value,
+                trailingIcon = trailingIcon,
+                value = state.state.value,
+                readOnly = readOnly,
                 onValueChange = {
                     val maxLength = range.endInclusive.toString().length
-                    if(it.length > maxLength) numStr.value = it.substring(0, maxLength)
-                    else state.onValueChangedCallback(it)
+                    var tmpStr = it
+                    if(tmpStr.length > maxLength) tmpStr = tmpStr.substring(0, maxLength)
+                    state.onValueChangedCallback(tmpStr)
                 },
 //                trailingIcon = {
 //                    IconButton(onClick = {
@@ -162,7 +189,8 @@ fun IntegerSelector(easyForm: EasyForms, title:String, default: Int = 0, range: 
 //                    }
 //                },
                 isError = state.errorState.value == EasyFormsErrorState.INVALID,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(onDone = { view.clearFocus() }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.constrainAs(text){
                     start.linkTo(sub.end)
@@ -170,39 +198,52 @@ fun IntegerSelector(easyForm: EasyForms, title:String, default: Int = 0, range: 
                     width = Dimension.fillToConstraints
                     height = Dimension.wrapContent
                 },
-                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
             )
-            IconButton(onClick = {
-                try {
-                    var n = numStr.value.toInt()+step
-                    if(n > range.endInclusive) n = range.endInclusive
-                    numStr.value = n.toString()
-                }catch (e: Exception){
-                    numStr.value = range.start.toString()
+            if(showButtons) {
+                IconButton(
+                    onClick = {
+                        view.clearFocus()
+                        try {
+                            val tmp = state.state.value.toInt()
+                            var n = tmp - tmp % step + step
+                            if (n > range.endInclusive) n = range.endInclusive
+                            state.onValueChangedCallback(n.toString())
+                        } catch (e: Exception) {}
+                    },
+                    modifier = Modifier.constrainAs(add) {
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        height = Dimension.fillToConstraints
+                    },
+                    enabled = when(state.state.value.toIntOrNull() == null){
+                        true -> true
+                        false -> state.state.value.toInt() < range.endInclusive
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.AddCircle,
+                        contentDescription = "Add",
+                        Modifier.size(btnSize)
+                    )
                 }
-                state.onValueChangedCallback(numStr.value)
-            }, modifier = Modifier.constrainAs(add){
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                height = Dimension.fillToConstraints
-            }, enabled = numStr.value.toIntOrNull() != null && numStr.value.toInt() < range.endInclusive){
-                Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "Add", Modifier.size(btnSize))
             }
         }
     }
 
 }
 
-class IntSelectorState(var range: IntRange, val default: Int):
+class IntSelectorState(range: IntRange, default: Int):
     EasyFormsState<MutableState<String>, String>() {
-
-    override val state: MutableState<String> = mutableStateOf(default.toString())
+    var range: IntRange = range
+    var default: Int = default
+    override val state: MutableState<String> = mutableStateOf(this.default.toString())
 
     override val onValueChangedCallback: (String) -> Unit = {
         state.value = it
         var n = it.toIntOrNull()
-        errorState.value = when(n != null && n in range){
+        errorState.value = when(n != null && n in this.range){
             true -> EasyFormsErrorState.VALID
             false -> EasyFormsErrorState.INVALID
         }
@@ -214,6 +255,10 @@ class IntSelectorState(var range: IntRange, val default: Int):
             easyFormsErrorState = errorState.value,
             value = state.value,
         )
+    }
+
+    init{
+        onValueChangedCallback(state.value)
     }
 
 }
@@ -230,39 +275,67 @@ data class IntSelectorResult(
 
 @ExperimentalFoundationApi
 @Composable
-fun DoubleSelector(easyForm: EasyForms, title:String, default: Double = 0.0, range: ClosedFloatingPointRange<Double> = 0.0..999999.0, step: Double = 1.0, precision:Int = 2, key:Any){
-    val state = easyForm.addAndGetCustomState(key, DoubleSelectorState(range, default, precision))
-    val numStr = state.state
+fun DoubleSelector(
+    easyForm: EasyForms,
+    title:String,
+    default: Double = 0.0,
+    range: ClosedFloatingPointRange<Double> = 0.0..999999.0,
+    step: Double = 1.0,
+    precision:Int = 2,
+    key:Any,
+    showButtons: Boolean = true,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    readOnly: Boolean = false,
+    state:DoubleSelectorState = easyForm.addAndGetCustomState(key, DoubleSelectorState(range, default, precision))
+){
+    state.range = range
+    state.default = default
+    state.precision = precision
     val btnSize = 32.dp
     val view = LocalView.current
+    state.onValueChangedCallback(state.state.value)
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)){
         TextTitle(title)
         ConstraintLayout (modifier = Modifier.fillMaxWidth()){
             val (sub, text, add) = createRefs()
-            IconButton(onClick = {
-                try {
-                    var n = numStr.value.toDouble()-step
-                    if(n < range.start) n = range.start
-                    numStr.value = String.format("%."+precision+"f", n);
-                } catch (e: Exception){
-                    numStr.value = String.format("%."+precision+"f", range.start);
+            if(showButtons) {
+                IconButton(
+                    onClick = {
+                        view.clearFocus()
+                        try {
+                            val tmp = state.state.value.toDouble()
+                            var n = tmp - tmp % step - step
+                            if (n < range.start) n = range.start
+                            state.onValueChangedCallback(String.format("%." + precision + "f", n))
+                        } catch (e: Exception) {}
+                    },
+                    modifier = Modifier.constrainAs(sub) {
+                        start.linkTo(parent.start)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        height = Dimension.fillToConstraints
+                    },
+                    enabled = when(state.state.value.toDoubleOrNull() == null){
+                        true -> true
+                        false -> state.state.value.toDouble() > range.start
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.RemoveCircle,
+                        contentDescription = "Minus",
+                        Modifier.size(btnSize)
+                    )
                 }
-                state.onValueChangedCallback(numStr.value)
-            }, modifier = Modifier.constrainAs(sub){
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                height = Dimension.fillToConstraints
-            }, enabled = numStr.value.toDoubleOrNull() != null && numStr.value.toDouble() > range.start) {
-                Icon(imageVector = Icons.Filled.RemoveCircle, contentDescription = "Minus", Modifier.size(btnSize))
             }
             OutlinedTextField(
-                value = numStr.value,
+                trailingIcon = trailingIcon,
+                value = state.state.value,
                 onValueChange = {
                     val maxLength = String.format("%."+precision+"f", range.endInclusive).length
-                    if(it.length > maxLength) numStr.value = it.substring(0, maxLength)
-                    else state.onValueChangedCallback(it)
+                    var tmpStr = it
+                    if(tmpStr.length > maxLength) tmpStr = tmpStr.substring(0, maxLength)
+                    else state.onValueChangedCallback(tmpStr)
                 },
 //                trailingIcon = {
 //                    IconButton(onClick = {
@@ -273,7 +346,8 @@ fun DoubleSelector(easyForm: EasyForms, title:String, default: Double = 0.0, ran
 //                    }
 //                },
                 isError = state.errorState.value == EasyFormsErrorState.INVALID,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                keyboardActions = KeyboardActions(onDone = { view.clearFocus() }),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.constrainAs(text){
                     start.linkTo(sub.end)
@@ -283,37 +357,52 @@ fun DoubleSelector(easyForm: EasyForms, title:String, default: Double = 0.0, ran
                 },
                 textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
             )
-            IconButton(onClick = {
-                try {
-                    var n = numStr.value.toDouble()+step
-                    if(n > range.endInclusive) n = range.endInclusive
-                    numStr.value = String.format("%."+precision+"f", n)
-                } catch (e: Exception){
-                    numStr.value = String.format("%."+precision+"f", range.start);
+            if(showButtons) {
+                IconButton(
+                    onClick = {
+                        view.clearFocus()
+                        try {
+                            val tmp = state.state.value.toDouble()
+                            var n = tmp - tmp % step + step
+                            if (n > range.endInclusive) n = range.endInclusive
+                            state.onValueChangedCallback(String.format("%." + precision + "f", n))
+                        } catch (e: Exception) {}
+                    },
+                    modifier = Modifier.constrainAs(add) {
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        height = Dimension.fillToConstraints
+                    },
+                    enabled = when(state.state.value.toDoubleOrNull() == null){
+                        true -> true
+                        false -> state.state.value.toDouble() < range.endInclusive
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.AddCircle,
+                        contentDescription = "Add",
+                        Modifier.size(btnSize)
+                    )
                 }
-                state.onValueChangedCallback(numStr.value)
-            }, modifier = Modifier.constrainAs(add){
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                height = Dimension.fillToConstraints
-            }, enabled = numStr.value.toDoubleOrNull() != null && numStr.value.toDouble() < range.endInclusive) {
-                Icon(imageVector = Icons.Filled.AddCircle, contentDescription = "Add", Modifier.size(btnSize))
             }
         }
     }
 
 }
 
-class DoubleSelectorState(var range: ClosedFloatingPointRange<Double>, val default: Double, val precision: Int):
+class DoubleSelectorState(range: ClosedFloatingPointRange<Double>, default: Double, precision: Int):
     EasyFormsState<MutableState<String>, String>() {
+    var range: ClosedFloatingPointRange<Double> = range
+    var default: Double = default
+    var precision: Int = precision
 
-    override val state: MutableState<String> = mutableStateOf(String.format("%."+precision+"f", default))
+    override val state: MutableState<String> = mutableStateOf(String.format("%."+this.precision+"f", this.default))
 
     override val onValueChangedCallback: (String) -> Unit = {
         state.value = it
         var n = it.toDoubleOrNull()
-        errorState.value = when(n != null && n in range){
+        errorState.value = when(n != null && n in this.range){
             true -> EasyFormsErrorState.VALID
             false -> EasyFormsErrorState.INVALID
         }
@@ -325,6 +414,10 @@ class DoubleSelectorState(var range: ClosedFloatingPointRange<Double>, val defau
             easyFormsErrorState = errorState.value,
             value = state.value,
         )
+    }
+
+    init{
+        onValueChangedCallback(state.value)
     }
 
 }
@@ -341,24 +434,41 @@ data class DoubleSelectorResult(
 
 
 @Composable
-fun DatePicker(easyForm: EasyForms, title: String, default: Long = Date().time, key:Any){
-    val state = easyForm.addAndGetCustomState(key, DatePickerState(DateUtil.toDateString(default))).state
+fun DatePicker(easyForm: EasyForms, title: String, default: Long = Date().time, key:Any,
+    state:DatePickerState = easyForm.addAndGetCustomState(key, DatePickerState(default))
+){
+    state.default = default
     val defaultDate = Date(default)
+    var dateStr by remember { mutableStateOf(DateUtil.toDateTimeString(default))}
+    var selected = Date()
+    val mTimePickerDialog = TimePickerDialog(
+        LocalContext.current,
+        { _: TimePicker, h: Int, m: Int ->
+            Log.d(TAG, "time selected: $h:$m")
+            selected.hours = h
+            selected.minutes = m
+            dateStr = DateUtil.toDateTimeString(selected.time)
+            state.onValueChangedCallback(selected.time)
+        }, defaultDate.hours, defaultDate.minutes, false
+    )
     val mDatePickerDialog = DatePickerDialog(
         LocalContext.current,
-        { picker: DatePicker, y: Int, _m: Int, d: Int ->
+        { _: DatePicker, y: Int, _m: Int, d: Int ->
             val m = _m+1
             Log.d(TAG, "date selected: $y-$m-$d")
-            val selected = Date(y-1900, m-1, d)
-            state.value = DateUtil.toDateString(selected.time)
+            selected = Date(y-1900, m-1, d)
+            mTimePickerDialog.show()
+//            dateStr = DateUtil.toDateString(selected.time)
+//            state.onValueChangedCallback(selected.time)
         }, defaultDate.year+1900, defaultDate.month, defaultDate.date
     )
+    state.onValueChangedCallback(state.state.value)
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
         TextTitle(title)
         OutlinedTextField(
-            value = state.value,
+            value = dateStr,
             onValueChange = {
-                Log.d(TAG, "date text change: $it")
+                Log.d(TAG, "date onValueChange: $it")
             },
             readOnly = true,
             singleLine = true,
@@ -368,17 +478,17 @@ fun DatePicker(easyForm: EasyForms, title: String, default: Long = Date().time, 
             colors =  TextFieldDefaults.textFieldColors(
                 disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
             )
-
         )
     }
 }
 
-class DatePickerState(val default: String): EasyFormsState<MutableState<String>, String>(){
-    override val state: MutableState<String> = mutableStateOf(default)
+class DatePickerState(default: Long): EasyFormsState<MutableState<Long>, Long>(){
+    var default: Long = default
+    override val state: MutableState<Long> = mutableStateOf(this.default)
 
-    override val onValueChangedCallback: (String) -> Unit = {
+    override val onValueChangedCallback: (Long) -> Unit = {
         state.value = it
-        errorState.value = when(DateUtil.parseDate(it) > 0){
+        errorState.value = when(it > 0){
             true -> EasyFormsErrorState.VALID
             false -> EasyFormsErrorState.INVALID
         }
@@ -391,29 +501,36 @@ class DatePickerState(val default: String): EasyFormsState<MutableState<String>,
             value = state.value,
         )
     }
+
+    init{
+        onValueChangedCallback(state.value)
+    }
 }
 
 data class DatePickerResult(
     override val key: Any,
     override val easyFormsErrorState: EasyFormsErrorState,
-    override val value: String,
-) : EasyFormsResult.GenericStateResult<String>(
+    override val value: Long,
+) : EasyFormsResult.GenericStateResult<Long>(
     key = key,
     easyFormsErrorState = easyFormsErrorState,
     value = value,
 )
 
 @Composable
-fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, default: Int = items[0], key:Any){
-    val state = easyForm.addAndGetCustomState(key, TransTypeSelectorState(default)).state
+fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, default: Int = items[0], key:Any,
+    state:TransTypeSelectorState = easyForm.addAndGetCustomState(key, TransTypeSelectorState(default))
+){
+    state.default = default
+    state.onValueChangedCallback(state.state.value)
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
         TextTitle(title)
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.horizontalScroll(rememberScrollState())){
             for(type in items){
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                    .clickable { state.value = type }){
+                    .clickable { state.onValueChangedCallback(type) }){
                     RadioButton(
-                        selected = state.value == type,
+                        selected = state.state.value == type,
                         onClick = {},
                         enabled = false,
                         colors = RadioButtonDefaults.colors(
@@ -421,30 +538,16 @@ fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, defa
                         ),
                         modifier = Modifier.padding(8.dp)
                     )
-                    Text(text = transTypeToString(type), modifier = Modifier.padding(end=8.dp))
+                    Text(text = FormatUtil.transType(type), modifier = Modifier.padding(end=8.dp))
                 }
             }
         }
     }
 }
 
-@Composable
-fun transTypeToString(type: Int): String {
-    return when(type){
-        TransType.TRANS_TYPE_STOCK_BUY -> stringResource(id = R.string.TRANS_TYPE_STOCK_BUY)
-        TransType.TRANS_TYPE_STOCK_SELL -> stringResource(id = R.string.TRANS_TYPE_STOCK_SELL)
-        TransType.TRANS_TYPE_CASH_IN -> stringResource(id = R.string.TRANS_TYPE_CASH_IN)
-        TransType.TRANS_TYPE_CASH_OUT -> stringResource(id = R.string.TRANS_TYPE_CASH_OUT)
-        TransType.TRANS_TYPE_CASH_DIVIDEND -> stringResource(id = R.string.TRANS_TYPE_CASH_DIVIDEND)
-        TransType.TRANS_TYPE_STOCK_DIVIDEND -> stringResource(id = R.string.TRANS_TYPE_STOCK_DIVIDEND)
-        TransType.TRANS_TYPE_CASH_REDUCTION -> stringResource(id = R.string.TRANS_TYPE_CASH_REDUCTION)
-        TransType.TRANS_TYPE_STOCK_REDUCTION -> stringResource(id = R.string.TRANS_TYPE_STOCK_REDUCTION)
-        else -> ""
-    }
-}
-
-class TransTypeSelectorState(val default: Int): EasyFormsState<MutableState<Int>, Int>(){
-    override val state: MutableState<Int> = mutableStateOf(default)
+class TransTypeSelectorState(default: Int): EasyFormsState<MutableState<Int>, Int>(){
+    var default:Int = default
+    override val state: MutableState<Int> = mutableStateOf(this.default)
 
     override val onValueChangedCallback: (Int) -> Unit = {
         state.value = it
@@ -457,6 +560,10 @@ class TransTypeSelectorState(val default: Int): EasyFormsState<MutableState<Int>
             easyFormsErrorState = errorState.value,
             value = state.value,
         )
+    }
+
+    init{
+        onValueChangedCallback(state.value)
     }
 }
 

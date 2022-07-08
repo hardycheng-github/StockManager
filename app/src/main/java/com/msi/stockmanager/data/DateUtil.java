@@ -5,7 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class DateUtil {
-    public final static SimpleDateFormat formatDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public final static SimpleDateFormat formatDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     public final static SimpleDateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd");
 
     public static String toDateTimeString(long time){

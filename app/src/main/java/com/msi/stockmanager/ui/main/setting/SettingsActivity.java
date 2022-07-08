@@ -5,13 +5,16 @@ import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.SwitchPreference;
 
+import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.profile.Profile;
 
@@ -22,6 +25,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+        ((TextView)findViewById(R.id.version))
+                .setText(getString(R.string.version) + " " + BuildConfig.VERSION_NAME);
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -60,7 +65,6 @@ public class SettingsActivity extends AppCompatActivity {
                     return true;
                 }
                 try {
-
                     Profile.fee_discount = Double.parseDouble(newValue.toString());
                     Log.d(TAG, "setting_fee_discount: " + Profile.fee_discount);
                     return true;
@@ -73,6 +77,15 @@ public class SettingsActivity extends AppCompatActivity {
                 try {
                     Profile.fee_minimum = Integer.parseInt(newValue.toString());
                     Log.d(TAG, "setting_fee_minimum: " + Profile.fee_minimum);
+                    return true;
+                } catch (Exception e){}
+                return false;
+            });
+            SwitchPreference profit_color_reverse = findPreference("profit_color_reverse");
+            profit_color_reverse.setOnPreferenceChangeListener((preference, newValue) -> {
+                try {
+                    Profile.profit_color_reverse = Boolean.parseBoolean(newValue.toString());
+                    Log.d(TAG, "profit_color_reverse: " + Profile.profit_color_reverse);
                     return true;
                 } catch (Exception e){}
                 return false;
