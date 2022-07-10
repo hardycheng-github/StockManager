@@ -16,6 +16,8 @@ public class TransHistoryUtil {
     public static Set<Integer> targetTypes = new HashSet<>();
     public static long startTime = 0;
     public static long endTime = Long.MAX_VALUE;
+    public static final long ONE_MINUTE_MS = 60*1000;
+    public static final long ONE_DAY_MS = 24*60*ONE_MINUTE_MS;
 
     public static void resetFilter(){
         targetTypes.clear();
@@ -34,12 +36,19 @@ public class TransHistoryUtil {
             String stockName = info == null ? "" : info.getStockNameWithId();
             if((keyword != null && !keyword.isEmpty() && !stockName.contains(keyword)) ||
                     (!targetTypes.isEmpty() && !targetTypes.contains(trans.trans_type)) ||
-                    (startTime > trans.trans_time || endTime < trans.trans_time)){
+                    isInTimeRange(trans.trans_time)){
                 continue;
             }
             list.add(trans);
         }
         return list;
+    }
+
+    private static boolean isInTimeRange(long time){
+        long timeInMin = time / ONE_MINUTE_MS;
+        long startInMin = startTime / ONE_MINUTE_MS;
+        long endInMin = endTime / ONE_MINUTE_MS;
+        return timeInMin >= startInMin && timeInMin <= endInMin;
     }
 
     public static boolean isFilterActive(){
