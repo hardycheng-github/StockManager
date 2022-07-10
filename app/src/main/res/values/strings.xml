@@ -107,4 +107,5 @@
     <string name="date_week">最近一周</string>
     <string name="date_month">最近一個月</string>
     <string name="date_year">最近一年</string>
+    <string name="not_select">未選擇</string>
 </resources>

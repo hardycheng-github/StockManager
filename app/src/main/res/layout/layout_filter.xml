@@ -72,21 +72,94 @@
                         android:text="@string/date_range"
                         android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/date_start"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/filter_item_height"
                         android:layout_marginHorizontal="@dimen/filter_padding_2"
-                        app:startIconDrawable="@drawable/ic_baseline_calendar_today_24"
-                        android:hint="@string/date_start"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
+                        android:background="@drawable/ic_btn_sub"
+                        android:clickable="true">
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
+                        <ImageView
+                            android:id="@+id/imageView3"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            />
+                            android:layout_marginStart="@dimen/filter_padding_3"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_baseline_calendar_today_24"
+                            app:tint="@color/main_m" />
 
-                    </com.google.android.material.textfield.TextInputLayout>
+                        <TextView
+                            android:id="@+id/textView19"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/filter_padding_3"
+                            android:text="@string/date_start"
+                            android:textAppearance="?attr/textAppearanceButton"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imageView3"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+
+                        <TextView
+                            android:id="@+id/date_start_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/filter_padding_3"
+                            android:text="yyyy-mm-dd hh:mm"
+                            android:textAppearance="?attr/textAppearanceButton"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/date_end"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/filter_item_height"
+                        android:layout_margin="@dimen/filter_padding_2"
+                        android:background="@drawable/ic_btn_sub"
+                        android:clickable="true">
+
+                        <ImageView
+                            android:id="@+id/imageView4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/filter_padding_3"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_baseline_calendar_today_24"
+                            app:tint="@color/main_m" />
+
+                        <TextView
+                            android:id="@+id/textView21"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/filter_padding_3"
+                            android:text="@string/date_end"
+                            android:textAppearance="?attr/textAppearanceButton"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/imageView4"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+
+                        <TextView
+                            android:id="@+id/date_end_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/filter_padding_3"
+                            android:text="yyyy-mm-dd hh:mm"
+                            android:textAppearance="?attr/textAppearanceButton"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <TextView
                         android:id="@+id/textView26"
@@ -98,23 +171,6 @@
                         android:text="@string/date_to"
                         android:textAppearance="@style/TextAppearance.AppCompat.Small" />
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/date_end"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="@dimen/filter_padding_2"
-                        android:layout_marginVertical="@dimen/filter_padding_2"
-                        app:startIconDrawable="@drawable/ic_baseline_calendar_today_24"
-                        android:hint="@string/date_end"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            />
-
-                    </com.google.android.material.textfield.TextInputLayout>
-
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -124,6 +180,7 @@
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/today"
+                            android:minHeight="@dimen/filter_item_height"
                             android:clickable="true"
                             android:gravity="center"
                             android:layout_weight="1"
@@ -136,6 +193,7 @@
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/recent_week"
+                            android:minHeight="@dimen/filter_item_height"
                             android:clickable="true"
                             android:gravity="center"
                             android:layout_weight="1"
@@ -157,6 +215,7 @@
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/recent_month"
+                            android:minHeight="@dimen/filter_item_height"
                             android:clickable="true"
                             android:gravity="center"
                             android:layout_weight="1"
@@ -169,6 +228,7 @@
 
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/recent_year"
+                            android:minHeight="@dimen/filter_item_height"
                             android:clickable="true"
                             android:gravity="center"
                             android:layout_weight="1"
@@ -209,7 +269,8 @@
             android:layout_height="wrap_content"
             android:background="@color/filter_bg_1"
             android:padding="@dimen/filter_padding_1"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
 
             <androidx.appcompat.widget.AppCompatButton

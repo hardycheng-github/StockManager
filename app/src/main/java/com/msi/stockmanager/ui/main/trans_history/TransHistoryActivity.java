@@ -54,6 +54,7 @@ public class TransHistoryActivity extends AppCompatActivity {
     public static final String EXTRA_TARGET_TYPES = "EXTRA_TARGET_TYPES";
     public static final String EXTRA_START_TIME = "EXTRA_START_TIME";
     public static final String EXTRA_END_TIME = "EXTRA_END_TIME";
+    public static final long ONE_DAY_MS = 24*60*60*1000;
 
     private ActivityTransHistoryBinding binding;
     private Menu mMenu;
@@ -66,8 +67,10 @@ public class TransHistoryActivity extends AppCompatActivity {
     private int mColumnCount = 1;
     private boolean activeSearch = false;
 
-    private TextInputLayout dateStart;
-    private TextInputLayout dateEnd;
+    private View dateStart;
+    private View dateEnd;
+    private TextView dateStartValue;
+    private TextView dateEndValue;
     private Button btnToday;
     private Button btnRecentWeek;
     private Button btnRecentMonth;
@@ -150,6 +153,8 @@ public class TransHistoryActivity extends AppCompatActivity {
     private void findView(){
         dateStart = binding.navView.findViewById(R.id.date_start);
         dateEnd = binding.navView.findViewById(R.id.date_end);
+        dateStartValue = binding.navView.findViewById(R.id.date_start_value);
+        dateEndValue = binding.navView.findViewById(R.id.date_end_value);
         btnToday = binding.navView.findViewById(R.id.today);
         btnRecentWeek = binding.navView.findViewById(R.id.recent_week);
         btnRecentMonth = binding.navView.findViewById(R.id.recent_month);
@@ -173,16 +178,12 @@ public class TransHistoryActivity extends AppCompatActivity {
         TransHistoryUtil.startTime = intent.getLongExtra(EXTRA_START_TIME, TransHistoryUtil.startTime);
         TransHistoryUtil.endTime = intent.getLongExtra(EXTRA_END_TIME, TransHistoryUtil.endTime);
 
-        dateStart.getEditText().setEnabled(false);
-        dateStart.setFocusable(false);
-        dateStart.setFocusableInTouchMode(false);
-        dateStart.setClickable(true);
         dateStart.setOnClickListener(v -> {
             selectedDate = new Date();
             long timestamp = TransHistoryUtil.startTime == 0 ? System.currentTimeMillis() : TransHistoryUtil.startTime;
             Date date = new Date(timestamp);
             new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-                selectedDate.setYear(year);
+                selectedDate.setYear(year-1900);
                 selectedDate.setMonth(month);
                 selectedDate.setDate(dayOfMonth);
                 new TimePickerDialog(this, (view2, hourOfDay, minute) -> {
@@ -190,19 +191,15 @@ public class TransHistoryActivity extends AppCompatActivity {
                     selectedDate.setMinutes(minute);
                     TransHistoryUtil.startTime = selectedDate.getTime();
                     updateFilter();
-                }, date.getHours(), date.getMinutes(), true).show();
+                }, date.getHours(), date.getMinutes(), false).show();
             }, date.getYear(), date.getMonth(), date.getDate()).show();
         });
-        dateEnd.getEditText().setEnabled(false);
-        dateEnd.setFocusable(false);
-        dateEnd.setFocusableInTouchMode(false);
-        dateEnd.setClickable(true);
         dateEnd.setOnClickListener(v->{
             selectedDate = new Date();
             long timestamp = TransHistoryUtil.endTime == Long.MAX_VALUE ? System.currentTimeMillis() : TransHistoryUtil.endTime;
             Date date = new Date(timestamp);
             new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
-                selectedDate.setYear(year);
+                selectedDate.setYear(year-1900);
                 selectedDate.setMonth(month);
                 selectedDate.setDate(dayOfMonth);
                 new TimePickerDialog(this, (view2, hourOfDay, minute) -> {
@@ -210,7 +207,7 @@ public class TransHistoryActivity extends AppCompatActivity {
                     selectedDate.setMinutes(minute);
                     TransHistoryUtil.endTime = selectedDate.getTime();
                     updateFilter();
-                }, date.getHours(), date.getMinutes(), true).show();
+                }, date.getHours(), date.getMinutes(), false).show();
             }, date.getYear(), date.getMonth(), date.getDate()).show();
         });
         btnToday.setOnClickListener(v->{
@@ -218,6 +215,20 @@ public class TransHistoryActivity extends AppCompatActivity {
             btnRecentWeek.setSelected(false);
             btnRecentMonth.setSelected(false);
             btnRecentYear.setSelected(false);
+            if(v.isSelected()){
+                Date end = new Date();
+                end.setHours(23);
+                end.setMinutes(59);
+                end.setSeconds(0);
+                Date start = new Date();
+                start.setHours(0);
+                start.setMinutes(0);
+                start.setSeconds(0);
+                TransHistoryUtil.startTime = start.getTime();
+                TransHistoryUtil.endTime = end.getTime();
+            } else {
+                TransHistoryUtil.resetTime();
+            }
             updateFilter();
         });
         btnRecentWeek.setOnClickListener(v->{
@@ -225,6 +236,20 @@ public class TransHistoryActivity extends AppCompatActivity {
             btnRecentWeek.setSelected(!btnRecentWeek.isSelected());
             btnRecentMonth.setSelected(false);
             btnRecentYear.setSelected(false);
+            if(v.isSelected()){
+                Date end = new Date();
+                end.setHours(23);
+                end.setMinutes(59);
+                end.setSeconds(0);
+                Date start = new Date(System.currentTimeMillis()-7*ONE_DAY_MS);
+                start.setHours(0);
+                start.setMinutes(0);
+                start.setSeconds(0);
+                TransHistoryUtil.startTime = start.getTime();
+                TransHistoryUtil.endTime = end.getTime();
+            } else {
+                TransHistoryUtil.resetTime();
+            }
             updateFilter();
         });
         btnRecentMonth.setOnClickListener(v->{
@@ -232,6 +257,20 @@ public class TransHistoryActivity extends AppCompatActivity {
             btnRecentWeek.setSelected(false);
             btnRecentMonth.setSelected(!btnRecentMonth.isSelected());
             btnRecentYear.setSelected(false);
+            if(v.isSelected()){
+                Date end = new Date();
+                end.setHours(23);
+                end.setMinutes(59);
+                end.setSeconds(0);
+                Date start = new Date();
+                start.setHours(0);
+                start.setMinutes(0);
+                start.setSeconds(0);
+                TransHistoryUtil.startTime = start.getTime();
+                TransHistoryUtil.endTime = end.getTime();
+            } else {
+                TransHistoryUtil.resetTime();
+            }
             updateFilter();
         });
         btnRecentYear.setOnClickListener(v->{
@@ -239,6 +278,20 @@ public class TransHistoryActivity extends AppCompatActivity {
             btnRecentWeek.setSelected(false);
             btnRecentMonth.setSelected(false);
             btnRecentYear.setSelected(!btnRecentYear.isSelected());
+            if(v.isSelected()){
+                Date end = new Date();
+                end.setHours(23);
+                end.setMinutes(59);
+                end.setSeconds(0);
+                Date start = new Date();
+                start.setHours(0);
+                start.setMinutes(0);
+                start.setSeconds(0);
+                TransHistoryUtil.startTime = start.getTime();
+                TransHistoryUtil.endTime = end.getTime();
+            } else {
+                TransHistoryUtil.resetTime();
+            }
             updateFilter();
         });
         btnReset.setOnClickListener(v->{
@@ -259,9 +312,9 @@ public class TransHistoryActivity extends AppCompatActivity {
         updateButton(btnRecentWeek);
         updateButton(btnRecentMonth);
         updateButton(btnRecentYear);
-        dateStart.getEditText().setText(TransHistoryUtil.startTime == 0 ? ""
+        dateStartValue.setText(TransHistoryUtil.startTime == 0 ? getString(R.string.not_select)
                 : DateUtil.toDateTimeString(TransHistoryUtil.startTime));
-        dateEnd.getEditText().setText(TransHistoryUtil.endTime == Long.MAX_VALUE ? ""
+        dateEndValue.setText(TransHistoryUtil.endTime == Long.MAX_VALUE ? getString(R.string.not_select)
                 : DateUtil.toDateTimeString(TransHistoryUtil.endTime));
     }
 

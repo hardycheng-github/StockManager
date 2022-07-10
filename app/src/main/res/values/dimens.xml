@@ -12,4 +12,6 @@
     <integer name="fab_anim_int">200</integer>
     <dimen name="filter_padding_1">5dp</dimen>
     <dimen name="filter_padding_2">10dp</dimen>
+    <dimen name="filter_padding_3">15dp</dimen>
+    <dimen name="filter_item_height">40dp</dimen>
 </resources>
