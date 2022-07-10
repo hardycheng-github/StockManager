@@ -45,6 +45,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -54,7 +55,6 @@ public class TransHistoryActivity extends AppCompatActivity {
     public static final String EXTRA_TARGET_TYPES = "EXTRA_TARGET_TYPES";
     public static final String EXTRA_START_TIME = "EXTRA_START_TIME";
     public static final String EXTRA_END_TIME = "EXTRA_END_TIME";
-    public static final long ONE_DAY_MS = 24*60*60*1000;
 
     private ActivityTransHistoryBinding binding;
     private Menu mMenu;
@@ -216,16 +216,20 @@ public class TransHistoryActivity extends AppCompatActivity {
             btnRecentMonth.setSelected(false);
             btnRecentYear.setSelected(false);
             if(v.isSelected()){
-                Date end = new Date();
-                end.setHours(23);
-                end.setMinutes(59);
-                end.setSeconds(0);
-                Date start = new Date();
-                start.setHours(0);
-                start.setMinutes(0);
-                start.setSeconds(0);
-                TransHistoryUtil.startTime = start.getTime();
-                TransHistoryUtil.endTime = end.getTime();
+                Calendar end = Calendar.getInstance();
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 0);
+                end.set(Calendar.MILLISECOND, 0);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY, 0);
+                start.set(Calendar.MINUTE, 0);
+                start.set(Calendar.SECOND, 0);
+                start.set(Calendar.MILLISECOND, 0);
+
+                TransHistoryUtil.startTime = start.getTime().getTime();
+                TransHistoryUtil.endTime = end.getTime().getTime();
             } else {
                 TransHistoryUtil.resetTime();
             }
@@ -237,16 +241,21 @@ public class TransHistoryActivity extends AppCompatActivity {
             btnRecentMonth.setSelected(false);
             btnRecentYear.setSelected(false);
             if(v.isSelected()){
-                Date end = new Date();
-                end.setHours(23);
-                end.setMinutes(59);
-                end.setSeconds(0);
-                Date start = new Date(System.currentTimeMillis()-7*ONE_DAY_MS);
-                start.setHours(0);
-                start.setMinutes(0);
-                start.setSeconds(0);
-                TransHistoryUtil.startTime = start.getTime();
-                TransHistoryUtil.endTime = end.getTime();
+                Calendar end = Calendar.getInstance();
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 0);
+                end.set(Calendar.MILLISECOND, 0);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY, 0);
+                start.set(Calendar.MINUTE, 0);
+                start.set(Calendar.SECOND, 0);
+                start.set(Calendar.MILLISECOND, 0);
+                start.add(Calendar.DATE, -7);
+
+                TransHistoryUtil.startTime = start.getTime().getTime();
+                TransHistoryUtil.endTime = end.getTime().getTime();
             } else {
                 TransHistoryUtil.resetTime();
             }
@@ -258,16 +267,21 @@ public class TransHistoryActivity extends AppCompatActivity {
             btnRecentMonth.setSelected(!btnRecentMonth.isSelected());
             btnRecentYear.setSelected(false);
             if(v.isSelected()){
-                Date end = new Date();
-                end.setHours(23);
-                end.setMinutes(59);
-                end.setSeconds(0);
-                Date start = new Date();
-                start.setHours(0);
-                start.setMinutes(0);
-                start.setSeconds(0);
-                TransHistoryUtil.startTime = start.getTime();
-                TransHistoryUtil.endTime = end.getTime();
+                Calendar end = Calendar.getInstance();
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 0);
+                end.set(Calendar.MILLISECOND, 0);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY, 0);
+                start.set(Calendar.MINUTE, 0);
+                start.set(Calendar.SECOND, 0);
+                start.set(Calendar.MILLISECOND, 0);
+                start.add(Calendar.MONTH, -1);
+
+                TransHistoryUtil.startTime = start.getTime().getTime();
+                TransHistoryUtil.endTime = end.getTime().getTime();
             } else {
                 TransHistoryUtil.resetTime();
             }
@@ -279,16 +293,21 @@ public class TransHistoryActivity extends AppCompatActivity {
             btnRecentMonth.setSelected(false);
             btnRecentYear.setSelected(!btnRecentYear.isSelected());
             if(v.isSelected()){
-                Date end = new Date();
-                end.setHours(23);
-                end.setMinutes(59);
-                end.setSeconds(0);
-                Date start = new Date();
-                start.setHours(0);
-                start.setMinutes(0);
-                start.setSeconds(0);
-                TransHistoryUtil.startTime = start.getTime();
-                TransHistoryUtil.endTime = end.getTime();
+                Calendar end = Calendar.getInstance();
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 0);
+                end.set(Calendar.MILLISECOND, 0);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY, 0);
+                start.set(Calendar.MINUTE, 0);
+                start.set(Calendar.SECOND, 0);
+                start.set(Calendar.MILLISECOND, 0);
+                start.add(Calendar.YEAR, -1);
+
+                TransHistoryUtil.startTime = start.getTime().getTime();
+                TransHistoryUtil.endTime = end.getTime().getTime();
             } else {
                 TransHistoryUtil.resetTime();
             }
