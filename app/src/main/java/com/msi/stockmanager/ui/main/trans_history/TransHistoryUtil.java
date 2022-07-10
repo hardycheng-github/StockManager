@@ -19,6 +19,10 @@ public class TransHistoryUtil {
 
     public static void resetFilter(){
         targetTypes.clear();
+        resetTime();
+    }
+
+    public static void resetTime(){
         startTime = 0;
         endTime = Long.MAX_VALUE;
     }
