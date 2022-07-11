@@ -36,6 +36,8 @@ public class NewsFragment extends Fragment {
     private NewsAdapter mAdapter;
     //    private NewsAdapter mAdapter;
     private FragmentNewsBinding binding;
+    private boolean isRefresh = false;
+    private boolean isInit = false;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -74,10 +76,15 @@ public class NewsFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.list);
 
         binding.refresh.setOnRefreshListener(()->{
-            refresh();
+            refresh(true);
         });
 
-        refresh();
+        isInit = true;
+        if(isRefresh){
+            refresh(false);
+        } else {
+            binding.getRoot().setVisibility(View.INVISIBLE);
+        }
 
         // Set the adapter
         if (recyclerView != null) {
@@ -92,13 +99,22 @@ public class NewsFragment extends Fragment {
         return view;
     }
 
-    private void refresh(){
+    public void showContent(){
+        if(isInit) binding.getRoot().setVisibility(View.VISIBLE);
+        if(!isRefresh) refresh(false);
+    }
+
+
+
+    private void refresh(boolean force){
+        isRefresh = true;
+        if(!isInit) return;
         binding.refresh.setRefreshing(false);
         binding.loading.setVisibility(View.VISIBLE);
         binding.list.setVisibility(View.INVISIBLE);
         binding.noData.setVisibility(View.INVISIBLE);
 
-        ApiUtil.newsApi.getNewsList(newsType, new INewsApi.ResultCallback() {
+        ApiUtil.newsApi.getNewsList(newsType, force, new INewsApi.ResultCallback() {
             @Override
             public void onResult(List<INewsApi.NewsItem> newsItemList) {
                 binding.list.setVisibility(View.VISIBLE);

@@ -38,7 +38,8 @@ public interface INewsApi {
     /**
      * 取得新聞列表
      * @param type 新聞類型, ex: TYPE_STOCK,TYPE_BULLETIN,TYPE_EXCHANGE,TYPE_CRYPTO
-     * @param callback 回傳
+     * @param force 強制要求刷新
+     * @param callback 回調
      */
-    void getNewsList(int type, ResultCallback callback);
+    void getNewsList(int type, boolean force, ResultCallback callback);
 }
