@@ -9,7 +9,7 @@
     <color name="ripple">#33FFFFFF</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="gray_1">#999</color>
+    <color name="btn_sub_act">#eee</color>
     <color name="error">#FFFF0000</color>
     <color name="bg_1">#F6F6F6</color>
     <color name="bg_2">#ccc</color>

@@ -27,5 +27,6 @@ public interface IStockApi {
 
     interface HistoryCallback {
         void onResult(List<StockHistory> data);
+        void onException(Exception e);
     }
 }
