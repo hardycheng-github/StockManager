@@ -13,10 +13,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StockManager">
         <activity
+            android:name=".ui.main.analysis.AnalysisActivity"
+            android:label="@string/title_activity_analysis"
+            android:exported="false" />
+        <activity
+            android:name=".ui.main.news.NewsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_news"
+            android:theme="@style/Theme.StockManager.NoActionBar" />
+        <activity
             android:name=".ui.main.trans_history.TransHistoryActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_list"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.StockManager.NoActionBar" />
         <activity
             android:name=".ui.main.LaunchActivity"
@@ -45,17 +54,13 @@
             android:name=".ui.main.overview.OverviewActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.StockManager.NoActionBar"></activity>
+            android:theme="@style/Theme.StockManager.NoActionBar" />
         <activity
             android:name=".ui.main.pager.PagerActivity"
             android:exported="true"
             android:label="@string/title_activity_pager"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.StockManager.NoActionBar" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:screenOrientation="portrait" />
         <activity
             android:name=".DatabaseDemoActivity"
             android:exported="true"

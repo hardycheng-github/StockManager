@@ -108,4 +108,12 @@
     <string name="date_month">最近一個月</string>
     <string name="date_year">最近一年</string>
     <string name="not_select">未選擇</string>
+    <string name="title_activity_news">新聞情報</string>
+    <string name="news_type_all">全部</string>
+    <string name="news_type_stock">股市</string>
+    <string name="news_type_bulletin">公告</string>
+    <string name="news_type_exchange">外匯</string>
+    <string name="news_type_crypto">加密貨幣</string>
+    <string name="cannot_open_url">無法開啟連結</string>
+    <string name="title_activity_analysis">智慧分析</string>
 </resources>

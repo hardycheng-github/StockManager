@@ -10,9 +10,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 
 public class StockApi implements IStockApi{
+    private static final String TAG = StockApi.class.getSimpleName();
     private Context parentsContext;
     public StockApi(Context context) {
         parentsContext = context;
@@ -108,7 +112,19 @@ public class StockApi implements IStockApi{
     @Override
     public void getHistoryStockData(String stock_id, String interval, String range, HistoryCallback callback) {
         Thread task = new Thread(()->{
-            //TODO implement
+            try {
+                List<StockHistory> data = new ArrayList<>();
+                // TODO implement
+                // https://query1.finance.yahoo.com/v8/finance/chart/2330.TW?interval=1d&range=1mo
+
+
+
+                // data.sort((i1, i2) -> (int)(i1.date_timestamp - i2.date_timestamp));
+                callback.onResult(data);
+            } catch (Exception e){
+                Log.e(TAG, "getHistoryStockData err: " + e.getMessage());
+                callback.onException(e);
+            }
         });
         task.setName("getHistoryStockData");
         task.start();
