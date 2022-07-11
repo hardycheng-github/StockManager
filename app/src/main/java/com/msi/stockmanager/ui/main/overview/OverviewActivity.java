@@ -33,7 +33,9 @@ import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.data.transaction.Transaction;
 import com.msi.stockmanager.databinding.ActivityOverviewBinding;
+import com.msi.stockmanager.ui.main.analysis.AnalysisActivity;
 import com.msi.stockmanager.ui.main.form.FormActivity;
+import com.msi.stockmanager.ui.main.news.NewsActivity;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.ui.main.setting.SettingsActivity;
@@ -178,9 +180,10 @@ public class OverviewActivity extends AppCompatActivity {
                 binding.colorInvest.setBackgroundColor(color_invest);
 //                binding.profitValueTitle.setText(getString(R.string.stock_value_calc) + " (" + getString(R.string.profit_calc)+")");
 
+                binding.btnNews.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, NewsActivity.class)));
                 binding.btnHttp.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class)));
                 binding.btnSqlTest.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, DatabaseDemoActivity.class)));
-                binding.btnPager.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
+//                binding.btnPager.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
                 binding.overviewCard.setOnClickListener(v->startActivity(new Intent(OverviewActivity.this, PagerActivity.class)));
                 binding.fabOverviewAddCash.setOnClickListener(v -> {
                     Intent intent = new Intent(OverviewActivity.this, FormActivity.class);
@@ -283,9 +286,16 @@ public class OverviewActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.menu_setting) {
-            startActivity(new Intent(OverviewActivity.this, SettingsActivity.class));
-            return true;
+        switch (id){
+            case R.id.menu_setting:
+                startActivity(new Intent(OverviewActivity.this, SettingsActivity.class));
+                return true;
+            case R.id.menu_analysis:
+                startActivity(new Intent(OverviewActivity.this, AnalysisActivity.class));
+                return true;
+            case R.id.menu_news:
+                startActivity(new Intent(OverviewActivity.this, NewsActivity.class));
+                return true;
         }
 
         return super.onOptionsItemSelected(item);

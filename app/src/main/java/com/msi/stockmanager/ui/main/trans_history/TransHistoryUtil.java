@@ -1,6 +1,7 @@
 package com.msi.stockmanager.ui.main.trans_history;
 
 import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.data.transaction.Transaction;
@@ -21,10 +22,6 @@ public class TransHistoryUtil {
 
     public static void resetFilter(){
         targetTypes.clear();
-        resetTime();
-    }
-
-    public static void resetTime(){
         startTime = 0;
         endTime = Long.MAX_VALUE;
     }
@@ -36,7 +33,7 @@ public class TransHistoryUtil {
             String stockName = info == null ? "" : info.getStockNameWithId();
             if((keyword != null && !keyword.isEmpty() && !stockName.contains(keyword)) ||
                     (!targetTypes.isEmpty() && !targetTypes.contains(trans.trans_type)) ||
-                    isInTimeRange(trans.trans_time)){
+                    !isInTimeRange(trans.trans_time)){
                 continue;
             }
             list.add(trans);
@@ -45,10 +42,14 @@ public class TransHistoryUtil {
     }
 
     private static boolean isInTimeRange(long time){
-        long timeInMin = time / ONE_MINUTE_MS;
-        long startInMin = startTime / ONE_MINUTE_MS;
-        long endInMin = endTime / ONE_MINUTE_MS;
-        return timeInMin >= startInMin && timeInMin <= endInMin;
+        String timeStr = DateUtil.toDateString(time);
+        String startStr = DateUtil.toDateString(startTime);
+        String endStr = DateUtil.toDateString(endTime);
+        return timeStr.compareTo(startStr) >= 0 && timeStr.compareTo(endStr) <= 0;
+//        long timeUnit = time / ONE_DAY_MS;
+//        long startUnit = startTime / ONE_DAY_MS;
+//        long endUnit = endTime / ONE_DAY_MS;
+//        return timeUnit >= startUnit && timeUnit <= endUnit;
     }
 
     public static boolean isFilterActive(){
