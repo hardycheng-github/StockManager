@@ -26,15 +26,23 @@ public class NewsApi implements INewsApi {
     }
 
     @Override
-    public void getNewsList(int type, ResultCallback callback) {
+    public void getNewsList(int type, boolean force, ResultCallback callback) {
         Thread task = new Thread(()->{
             try {
-                List<NewsItem> newsItemList = new ArrayList<>();
                 // TODO implement
+
+                if(!force){
+                    // TODO 如果已經取得過資料，直接回傳舊資料並中斷
+
+                    // 如果沒有資料，繼續下一步
+                }
+
+                List<NewsItem> newsItemList = new ArrayList<>();
 
                 // *****************
                 // Sample Test Start
                 // *****************
+                Thread.sleep(2000);
                 NewsItem item;
                 item = new NewsItem();
                 item.type = INewsApi.TYPE_CRYPTO;
