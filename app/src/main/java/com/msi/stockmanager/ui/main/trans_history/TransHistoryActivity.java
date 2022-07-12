@@ -12,14 +12,20 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.AccountUtil;
 import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
+import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.databinding.ActivityTransHistoryBinding;
 
 import android.annotation.SuppressLint;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -34,9 +40,14 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.TimePicker;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class TransHistoryActivity extends AppCompatActivity {
@@ -57,6 +68,26 @@ public class TransHistoryActivity extends AppCompatActivity {
     private int mColumnCount = 1;
     private boolean activeSearch = false;
 
+    private View dateStart;
+    private View dateEnd;
+    private TextView dateStartValue;
+    private TextView dateEndValue;
+    private Button btnToday;
+    private Button btnRecentWeek;
+    private Button btnRecentMonth;
+    private Button btnRecentYear;
+    private Button btnReset;
+    private Button btnApply;
+    private Button btnTypeStockBuy;
+    private Button btnTypeStockSell;
+    private Button btnTypeCashIn;
+    private Button btnTypeCashOut;
+    private Button btnTypeDividendStock;
+    private Button btnTypeDividendCash;
+    private Button btnTypeReductionStock;
+    private Button btnTypeReductionCash;
+    private Date selectedDate;
+
     private View.OnLayoutChangeListener mSearchLayoutChangListener = new View.OnLayoutChangeListener() {
         @Override
         public void onLayoutChange(View v, int left, int top, int right, int bottom,
@@ -76,6 +107,7 @@ public class TransHistoryActivity extends AppCompatActivity {
 
     private void reload(){
         if(binding != null && mMenu != null) {
+            updateFilter();
             String keyword = TransHistoryUtil.keyword;
             if (keyword != null && !keyword.isEmpty()) {
                 getSupportActionBar().setTitle(getString(R.string.search) + ": " + keyword);
@@ -100,27 +132,7 @@ public class TransHistoryActivity extends AppCompatActivity {
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.toolbar);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-                binding.drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
-                    @Override
-                    public void onDrawerSlide(@NonNull View drawerView, float slideOffset) {
-
-                    }
-
-                    @Override
-                    public void onDrawerOpened(@NonNull View drawerView) {
-//                setFilterActive(true);
-                    }
-
-                    @Override
-                    public void onDrawerClosed(@NonNull View drawerView) {
-//                setFilterActive(false);
-                    }
-
-                    @Override
-                    public void onDrawerStateChanged(int newState) {
-
-                    }
-                });
+                findView();
                 initFilter(getIntent());
                 View view = binding.getRoot();
                 Context context = view.getContext();
@@ -148,6 +160,28 @@ public class TransHistoryActivity extends AppCompatActivity {
         });
     }
 
+    private void findView(){
+        dateStart = binding.navView.findViewById(R.id.date_start);
+        dateEnd = binding.navView.findViewById(R.id.date_end);
+        dateStartValue = binding.navView.findViewById(R.id.date_start_value);
+        dateEndValue = binding.navView.findViewById(R.id.date_end_value);
+        btnToday = binding.navView.findViewById(R.id.today);
+        btnRecentWeek = binding.navView.findViewById(R.id.recent_week);
+        btnRecentMonth = binding.navView.findViewById(R.id.recent_month);
+        btnRecentYear = binding.navView.findViewById(R.id.recent_year);
+        btnReset = binding.navView.findViewById(R.id.reset);
+        btnApply = binding.navView.findViewById(R.id.apply);
+
+        btnTypeStockBuy = binding.navView.findViewById(R.id.TRANS_TYPE_STOCK_BUY);
+        btnTypeStockSell = binding.navView.findViewById(R.id.TRANS_TYPE_STOCK_SELL);
+        btnTypeCashIn = binding.navView.findViewById(R.id.TRANS_TYPE_CASH_IN);
+        btnTypeCashOut = binding.navView.findViewById(R.id.TRANS_TYPE_CASH_OUT);
+        btnTypeDividendStock = binding.navView.findViewById(R.id.TRANS_TYPE_STOCK_DIVIDEND);
+        btnTypeDividendCash = binding.navView.findViewById(R.id.TRANS_TYPE_CASH_DIVIDEND);
+        btnTypeReductionStock = binding.navView.findViewById(R.id.TRANS_TYPE_STOCK_REDUCTION);
+        btnTypeReductionCash = binding.navView.findViewById(R.id.TRANS_TYPE_CASH_REDUCTION);
+    }
+
     private void initFilter(Intent intent){
         try {
             String sVal = intent.getStringExtra(EXTRA_KEYWORD);
@@ -163,18 +197,208 @@ public class TransHistoryActivity extends AppCompatActivity {
         TransHistoryUtil.startTime = intent.getLongExtra(EXTRA_START_TIME, TransHistoryUtil.startTime);
         TransHistoryUtil.endTime = intent.getLongExtra(EXTRA_END_TIME, TransHistoryUtil.endTime);
 
-        Button btnReset = binding.navView.findViewById(R.id.reset);
+        dateStart.setOnClickListener(v -> {
+            selectedDate = new Date();
+            long timestamp = TransHistoryUtil.startTime == 0 ? System.currentTimeMillis() : TransHistoryUtil.startTime;
+            Date date = new Date(timestamp);
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                selectedDate.setYear(year-1900);
+                selectedDate.setMonth(month);
+                selectedDate.setDate(dayOfMonth);
+                dateStartValue.setText(DateUtil.toDateString(selectedDate.getTime()));
+//                new TimePickerDialog(this, (view2, hourOfDay, minute) -> {
+//                    selectedDate.setHours(hourOfDay);
+//                    selectedDate.setMinutes(minute);
+//                    dateStartValue.setText(DateUtil.toDateTimeString(selectedDate.getTime()));
+//                }, date.getHours(), date.getMinutes(), false).show();
+            }, date.getYear()+1900, date.getMonth(), date.getDate()).show();
+        });
+        dateEnd.setOnClickListener(v->{
+            selectedDate = new Date();
+            long timestamp = TransHistoryUtil.endTime == Long.MAX_VALUE ? System.currentTimeMillis() : TransHistoryUtil.endTime;
+            Date date = new Date(timestamp);
+            new DatePickerDialog(this, (view, year, month, dayOfMonth) -> {
+                selectedDate.setYear(year-1900);
+                selectedDate.setMonth(month);
+                selectedDate.setDate(dayOfMonth);
+                dateEndValue.setText(DateUtil.toDateString(selectedDate.getTime()));
+//                new TimePickerDialog(this, (view2, hourOfDay, minute) -> {
+//                    selectedDate.setHours(hourOfDay);
+//                    selectedDate.setMinutes(minute);
+//                    dateEndValue.setText(DateUtil.toDateTimeString(selectedDate.getTime()));
+//                }, date.getHours(), date.getMinutes(), false).show();
+            }, date.getYear()+1900, date.getMonth(), date.getDate()).show();
+        });
+        btnToday.setOnClickListener(v->{
+            updateButton(btnToday, !btnToday.isSelected());
+            updateButton(btnRecentWeek, false);
+            updateButton(btnRecentMonth, false);
+            updateButton(btnRecentYear, false);
+            if(v.isSelected()){
+                Calendar end = Calendar.getInstance();
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 0);
+                end.set(Calendar.MILLISECOND, 0);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY, 0);
+                start.set(Calendar.MINUTE, 0);
+                start.set(Calendar.SECOND, 0);
+                start.set(Calendar.MILLISECOND, 0);
+
+                dateStartValue.setText(DateUtil.toDateString(start.getTimeInMillis()));
+                dateEndValue.setText(DateUtil.toDateString(end.getTimeInMillis()));
+            } else {
+                dateStartValue.setText(getString(R.string.not_select));
+                dateEndValue.setText(getString(R.string.not_select));
+            }
+        });
+        btnRecentWeek.setOnClickListener(v->{
+            updateButton(btnToday, false);
+            updateButton(btnRecentWeek, !btnRecentWeek.isSelected());
+            updateButton(btnRecentMonth, false);
+            updateButton(btnRecentYear, false);
+            if(v.isSelected()){
+                Calendar end = Calendar.getInstance();
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 0);
+                end.set(Calendar.MILLISECOND, 0);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY, 0);
+                start.set(Calendar.MINUTE, 0);
+                start.set(Calendar.SECOND, 0);
+                start.set(Calendar.MILLISECOND, 0);
+                start.add(Calendar.DATE, -7);
+
+                dateStartValue.setText(DateUtil.toDateString(start.getTimeInMillis()));
+                dateEndValue.setText(DateUtil.toDateString(end.getTimeInMillis()));
+            } else {
+                dateStartValue.setText(getString(R.string.not_select));
+                dateEndValue.setText(getString(R.string.not_select));
+            }
+        });
+        btnRecentMonth.setOnClickListener(v->{
+            updateButton(btnToday, false);
+            updateButton(btnRecentWeek, false);
+            updateButton(btnRecentMonth, !btnRecentMonth.isSelected());
+            updateButton(btnRecentYear, false);
+            if(v.isSelected()){
+                Calendar end = Calendar.getInstance();
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 0);
+                end.set(Calendar.MILLISECOND, 0);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY, 0);
+                start.set(Calendar.MINUTE, 0);
+                start.set(Calendar.SECOND, 0);
+                start.set(Calendar.MILLISECOND, 0);
+                start.add(Calendar.MONTH, -1);
+
+                dateStartValue.setText(DateUtil.toDateString(start.getTimeInMillis()));
+                dateEndValue.setText(DateUtil.toDateString(end.getTimeInMillis()));
+            } else {
+                dateStartValue.setText(getString(R.string.not_select));
+                dateEndValue.setText(getString(R.string.not_select));
+            }
+        });
+        btnRecentYear.setOnClickListener(v->{
+            updateButton(btnToday, false);
+            updateButton(btnRecentWeek, false);
+            updateButton(btnRecentMonth, false);
+            updateButton(btnRecentYear, !btnRecentYear.isSelected());
+            if(v.isSelected()){
+                Calendar end = Calendar.getInstance();
+                end.set(Calendar.HOUR_OF_DAY, 23);
+                end.set(Calendar.MINUTE, 59);
+                end.set(Calendar.SECOND, 0);
+                end.set(Calendar.MILLISECOND, 0);
+
+                Calendar start = Calendar.getInstance();
+                start.set(Calendar.HOUR_OF_DAY, 0);
+                start.set(Calendar.MINUTE, 0);
+                start.set(Calendar.SECOND, 0);
+                start.set(Calendar.MILLISECOND, 0);
+                start.add(Calendar.YEAR, -1);
+
+                dateStartValue.setText(DateUtil.toDateString(start.getTimeInMillis()));
+                dateEndValue.setText(DateUtil.toDateString(end.getTimeInMillis()));
+            } else {
+                dateStartValue.setText(getString(R.string.not_select));
+                dateEndValue.setText(getString(R.string.not_select));
+            }
+        });
         btnReset.setOnClickListener(v->{
+            updateButton(btnToday, false);
+            updateButton(btnRecentWeek, false);
+            updateButton(btnRecentMonth, false);
+            updateButton(btnRecentYear, false);
             TransHistoryUtil.resetFilter();
             binding.drawer.closeDrawer(GravityCompat.END);
             reload();
         });
-        Button btnApply = binding.navView.findViewById(R.id.apply);
         btnApply.setOnClickListener(v->{
-            //TODO set filter
+            TransHistoryUtil.startTime = DateUtil.parseDate(dateStartValue.getText().toString());
+            TransHistoryUtil.endTime = DateUtil.parseDate(dateEndValue.getText().toString());
+            if(TransHistoryUtil.endTime == 0) TransHistoryUtil.endTime = Long.MAX_VALUE;
+            TransHistoryUtil.targetTypes.clear();
+            if(btnTypeStockBuy.isSelected()) TransHistoryUtil.targetTypes.add(TransType.TRANS_TYPE_STOCK_BUY);
+            if(btnTypeStockSell.isSelected()) TransHistoryUtil.targetTypes.add(TransType.TRANS_TYPE_STOCK_SELL);
+            if(btnTypeCashIn.isSelected()) TransHistoryUtil.targetTypes.add(TransType.TRANS_TYPE_CASH_IN);
+            if(btnTypeCashOut.isSelected()) TransHistoryUtil.targetTypes.add(TransType.TRANS_TYPE_CASH_OUT);
+            if(btnTypeDividendCash.isSelected()) TransHistoryUtil.targetTypes.add(TransType.TRANS_TYPE_CASH_DIVIDEND);
+            if(btnTypeDividendStock.isSelected()) TransHistoryUtil.targetTypes.add(TransType.TRANS_TYPE_STOCK_DIVIDEND);
+            if(btnTypeReductionCash.isSelected()) TransHistoryUtil.targetTypes.add(TransType.TRANS_TYPE_CASH_REDUCTION);
+            if(btnTypeReductionStock.isSelected()) TransHistoryUtil.targetTypes.add(TransType.TRANS_TYPE_STOCK_REDUCTION);
             binding.drawer.closeDrawer(GravityCompat.END);
             reload();
         });
+
+        btnTypeStockBuy.setOnClickListener(v->updateButton((Button)v, !v.isSelected()));
+        btnTypeStockSell.setOnClickListener(v->updateButton((Button)v, !v.isSelected()));
+        btnTypeCashIn.setOnClickListener(v->updateButton((Button)v, !v.isSelected()));
+        btnTypeCashOut.setOnClickListener(v->updateButton((Button)v, !v.isSelected()));
+        btnTypeDividendStock.setOnClickListener(v->updateButton((Button)v, !v.isSelected()));
+        btnTypeDividendCash.setOnClickListener(v->updateButton((Button)v, !v.isSelected()));
+        btnTypeReductionStock.setOnClickListener(v->updateButton((Button)v, !v.isSelected()));
+        btnTypeReductionCash.setOnClickListener(v->updateButton((Button)v, !v.isSelected()));
+        updateButton(btnToday, false);
+        updateButton(btnRecentWeek, false);
+        updateButton(btnRecentMonth, false);
+        updateButton(btnRecentYear, false);
+        updateFilter();
+    }
+
+    private void updateFilter(){
+        dateStartValue.setText(TransHistoryUtil.startTime == 0 ? getString(R.string.not_select)
+                : DateUtil.toDateString(TransHistoryUtil.startTime));
+        dateEndValue.setText(TransHistoryUtil.endTime == Long.MAX_VALUE ? getString(R.string.not_select)
+                : DateUtil.toDateString(TransHistoryUtil.endTime));
+
+        updateButton(btnTypeStockBuy, TransHistoryUtil.targetTypes.contains(TransType.TRANS_TYPE_STOCK_BUY));
+        updateButton(btnTypeStockSell, TransHistoryUtil.targetTypes.contains(TransType.TRANS_TYPE_STOCK_SELL));
+        updateButton(btnTypeCashIn, TransHistoryUtil.targetTypes.contains(TransType.TRANS_TYPE_CASH_IN));
+        updateButton(btnTypeCashOut, TransHistoryUtil.targetTypes.contains(TransType.TRANS_TYPE_CASH_OUT));
+        updateButton(btnTypeDividendStock, TransHistoryUtil.targetTypes.contains(TransType.TRANS_TYPE_STOCK_DIVIDEND));
+        updateButton(btnTypeDividendCash, TransHistoryUtil.targetTypes.contains(TransType.TRANS_TYPE_CASH_DIVIDEND));
+        updateButton(btnTypeReductionStock, TransHistoryUtil.targetTypes.contains(TransType.TRANS_TYPE_STOCK_REDUCTION));
+        updateButton(btnTypeReductionCash, TransHistoryUtil.targetTypes.contains(TransType.TRANS_TYPE_CASH_REDUCTION));
+    }
+
+    private void updateButton(Button btn, boolean isSelected){
+        if(isSelected){
+            btn.setSelected(true);
+            btn.setBackground(getDrawable(R.drawable.ic_btn_main));
+            btn.setTextColor(getColor(R.color.white));
+        } else {
+            btn.setSelected(false);
+            btn.setBackground(getDrawable(R.drawable.ic_btn_sub));
+            btn.setTextColor(getColor(R.color.main_m));
+        }
     }
 
     private void onSearchApply(String keyword){
