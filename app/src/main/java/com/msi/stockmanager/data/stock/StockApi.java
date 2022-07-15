@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 
@@ -154,6 +155,7 @@ public class StockApi implements IStockApi{
     public void getHistoryStockData(String stock_id, String interval, String range, HistoryCallback callback) {
         Thread task = new Thread(()->{
             HttpURLConnection connection = null;
+
             try {
                 List<StockHistory> data = new ArrayList<>();
                 // TODO implement
