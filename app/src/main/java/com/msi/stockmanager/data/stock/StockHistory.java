@@ -1,11 +1,11 @@
 package com.msi.stockmanager.data.stock;
 
 public class StockHistory {
-    String stock_id;
-    long date_timestamp;
-    double price_open;
-    double price_close;
-    double price_high;
-    double price_low;
-    double price_volume;
+    public String stock_id;
+    public long date_timestamp;
+    public double price_open;
+    public double price_close;
+    public double price_high;
+    public double price_low;
+    public double price_volume;
 }

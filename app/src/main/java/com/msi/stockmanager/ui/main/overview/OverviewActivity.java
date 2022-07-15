@@ -291,7 +291,8 @@ public class OverviewActivity extends AppCompatActivity {
                 startActivity(new Intent(OverviewActivity.this, SettingsActivity.class));
                 return true;
             case R.id.menu_analysis:
-                startActivity(new Intent(OverviewActivity.this, AnalysisActivity.class));
+                //startActivity(new Intent(OverviewActivity.this, AnalysisActivity.class));
+                startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class));
                 return true;
             case R.id.menu_news:
                 startActivity(new Intent(OverviewActivity.this, NewsActivity.class));

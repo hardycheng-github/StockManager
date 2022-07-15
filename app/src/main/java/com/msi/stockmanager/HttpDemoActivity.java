@@ -8,26 +8,39 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.msi.stockmanager.data.stock.IStockApi;
 import com.msi.stockmanager.data.stock.StockApi;
+import com.msi.stockmanager.data.stock.StockHistory;
 import com.msi.stockmanager.data.stock.StockInfo;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class HttpDemoActivity extends AppCompatActivity {
 
-    public static final int MESSAGE_SHOW_RESULT = 0;
-    public static final int MESSAGE_SHOW_PRICE  = 1;
+    public static final int MESSAGE_SHOW_RESULT   = 0;
+    public static final int MESSAGE_SHOW_PRICE    = 1;
+    public static final int MESSAGE_APPEND_RESULT = 2;
 
+    private String TAG = "HttpDemoActivity";
     private EditText stockCodeInput = null;
     private Button btnTest = null;
     private TextView showPrice = null;
+    private Spinner spinnerInterval = null;
+    private Spinner spinnerRanges = null;
+    private Button btnHistory = null;
     private TextView showResult = null;
 
     @Override
@@ -39,11 +52,37 @@ public class HttpDemoActivity extends AppCompatActivity {
         stockCodeInput.setInputType(EditorInfo.TYPE_CLASS_PHONE);
         btnTest = (Button) findViewById(R.id.btn_http_test);
         showPrice = (TextView) findViewById(R.id.show_price);
+        showPrice.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+
+        spinnerInterval = (Spinner) findViewById(R.id.spinner_interval);
+        ArrayAdapter adapterInterval = ArrayAdapter.createFromResource(this
+                ,R.array.history_interval_string, android.R.layout.simple_dropdown_item_1line);
+        spinnerInterval.setAdapter(adapterInterval);
+        spinnerInterval.setSelection(8);
+        spinnerRanges = (Spinner) findViewById(R.id.spinner_ranges);
+        ArrayAdapter adapterRanges = ArrayAdapter.createFromResource(this
+                ,R.array.history_valid_ranges_string, android.R.layout.simple_dropdown_item_1line);
+        spinnerRanges.setAdapter(adapterRanges);
+        spinnerRanges.setSelection(2);
+        btnHistory = (Button) findViewById(R.id.btn_http_history);
+
         showResult = (TextView) findViewById(R.id.show_result);
         showResult.setMovementMethod(ScrollingMovementMethod.getInstance());
         setListener();
         setCloseKeyboardListener();
     }
+
+    private String getInterval() {
+        String[] array = getResources().getStringArray(R.array.history_interval);
+        int pos = spinnerInterval.getSelectedItemPosition();
+        return array[pos];
+    };
+
+    private String getRanges() {
+        String[] array = getResources().getStringArray(R.array.history_valid_ranges);
+        int pos = spinnerRanges.getSelectedItemPosition();
+        return array[pos];
+    };
 
     public Handler handler = new Handler(new Handler.Callback() {
         @Override
@@ -51,6 +90,9 @@ public class HttpDemoActivity extends AppCompatActivity {
             switch(message.what) {
                 case MESSAGE_SHOW_RESULT:
                     showResult.setText((String) message.obj);
+                    break;
+                case MESSAGE_APPEND_RESULT:
+                    showResult.append((String) message.obj);
                     break;
                 case MESSAGE_SHOW_PRICE:
                     showPrice.setText((String) message.obj);
@@ -72,12 +114,47 @@ public class HttpDemoActivity extends AppCompatActivity {
                     @Override
                     public void onResult(StockInfo info) {
                         if(info == null){
-                            handler.sendMessage(handler.obtainMessage(0, "ERROR"));
-                            handler.sendMessage(handler.obtainMessage(1, String.format("ERROR")));
+                            handler.sendMessage(handler.obtainMessage(MESSAGE_SHOW_RESULT, "ERROR"));
+                            handler.sendMessage(handler.obtainMessage(MESSAGE_SHOW_PRICE, String.format("ERROR")));
                         } else {
-                            handler.sendMessage(handler.obtainMessage(0, info.toString()));
-                            handler.sendMessage(handler.obtainMessage(1, String.valueOf(info.getLastPrice())));
+                            handler.sendMessage(handler.obtainMessage(MESSAGE_SHOW_RESULT, info.toString()));
+                            handler.sendMessage(handler.obtainMessage(MESSAGE_SHOW_PRICE, String.valueOf(info.getLastPrice())));
                         }
+                    }
+                });
+            }
+        });
+        btnHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String code = stockCodeInput.getText().toString();
+                String interval = getInterval();
+                String ranges = getRanges();
+                showResult.setText("查詢 " + code + " (interval=" + interval + ", ranges=" + ranges + ")\n");
+                showResult.scrollTo(0 ,0);
+                StockApi stock = new StockApi(getApplicationContext());
+                stock.getHistoryStockData(code, interval, ranges, new IStockApi.HistoryCallback() {
+                    @Override
+                    public void onResult(List<StockHistory> data) {
+                        if (data.isEmpty()) {
+                            handler.sendMessage(handler.obtainMessage(MESSAGE_APPEND_RESULT, "EMPTY\n"));
+                            return;
+                        }
+                        handler.sendMessage(handler.obtainMessage(MESSAGE_APPEND_RESULT, "DATE                    OPEN  CLOSE   HIGH   LOW        VOLUME\n"));
+                        handler.sendMessage(handler.obtainMessage(MESSAGE_APPEND_RESULT, "===================== ====== ====== ====== ====== ============\n"));
+                        for (StockHistory a : data) {
+                            String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(a.date_timestamp * 1000));
+                            handler.sendMessage(handler.obtainMessage(MESSAGE_APPEND_RESULT, "[" + timestamp + "] " +
+                                    String.format("%6.1f", a.price_open) + " " + String.format("%6.1f", a.price_close) + " " +
+                                    String.format("%6.1f", a.price_high) + " " + String.format("%6.1f", a.price_low) + " " +
+                                    String.format("%12.1f", a.price_volume) + "\n"));
+                        }
+                    }
+
+                    @Override
+                    public void onException(Exception e) {
+                        //Log.e(TAG, "getHistoryStockData err: " + e.getMessage());
+                        handler.sendMessage(handler.obtainMessage(MESSAGE_APPEND_RESULT, "ERROR: " + e.getMessage() + "\n"));
                     }
                 });
             }
