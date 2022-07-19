@@ -7,60 +7,100 @@
     tools:context=".HttpDemoActivity">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_margin="3dp"
+        android:orientation="horizontal">
+
         <TextView
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:textSize="25dp"
-            android:text="股票代碼"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="股票代碼:"
+            android:textSize="18dp" />
+
         <EditText
             android:id="@+id/input_stock_code"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:layout_marginTop="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:digits="1234567890"
-            android:hint="2330" />
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-        <TextView
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:textSize="25dp"
-            android:text="股票現值: "/>
+            android:hint="2330(台積電)" />
+
         <TextView
             android:id="@+id/show_price"
-            android:layout_width="200dp"
-            android:layout_height="40dp"
-            android:textSize="25dp"
-            android:text="NULL"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:layout_marginRight="8dp"
+            android:textStyle="bold"
+            android:text="NULL"
+            android:textSize="18dp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp">
+        android:orientation="horizontal">
         <Button
             android:id="@+id/btn_http_test"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:paddingTop="0dp"
-            android:text="TEST"
+            android:text="查詢最新股價"
+            android:textSize="12dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:orientation="horizontal" >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18dp"
+            android:text="查詢: "/>
+        <Spinner
+            android:id="@+id/spinner_ranges"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="2"/>
+        <Spinner
+            android:id="@+id/spinner_interval"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_weight="3" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_http_history"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="查詢歷史股價"
+            android:textSize="12dp" />
+
+        <Button
+            android:id="@+id/btn_Kline"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="K線圖"
             android:textSize="12dp" />
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="30dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
         android:text="RESULT"
-        android:textSize="25dp"
+        android:textSize="12dp"
+        android:typeface="monospace"
+        android:textStyle="bold"
         android:background="#DDD"/>
     <TextView
         android:id="@+id/show_result"
@@ -68,7 +108,9 @@
         android:layout_height="match_parent"
         android:background="#EEE"
         android:hint="Test Result here"
-        android:textSize="20dp"
+        android:textSize="10dp"
+        android:typeface="monospace"
+        android:textStyle="bold"
         android:scrollbars="vertical"/>
 
 </LinearLayout>

@@ -116,4 +116,61 @@
     <string name="news_type_crypto">加密貨幣</string>
     <string name="cannot_open_url">無法開啟連結</string>
     <string name="title_activity_analysis">智慧分析</string>
+    <string-array name="history_interval">
+        <item>1m</item>
+        <item>2m</item>
+        <item>5m</item>
+        <item>15m</item>
+        <item>30m</item>
+        <item>60m</item>
+        <item>90m</item>
+        <item>1h</item>
+        <item>1d</item>
+        <item>5d</item>
+        <item>1wk</item>
+        <item>1mo</item>
+        <item>3mo</item>
+    </string-array>
+    <string-array name="history_interval_string">
+        <item>每1分鐘的交易量</item>
+        <item>每2分鐘的交易量</item>
+        <item>每5分鐘的交易量</item>
+        <item>每15分鐘的交易量</item>
+        <item>每15分鐘的交易量</item>
+        <item>每60分鐘的交易量</item>
+        <item>每90分鐘的交易量</item>
+        <item>每小時鐘的交易量</item>
+        <item>每一天的交易量</item>
+        <item>每五天的交易量</item>
+        <item>每一周的交易量</item>
+        <item>每一個月的交易量</item>
+        <item>每三個月的交易量</item>
+    </string-array>
+    <string-array name="history_valid_ranges">
+        <item>1d</item>
+        <item>5d</item>
+        <item>1mo</item>
+        <item>3mo</item>
+        <item>6mo</item>
+        <item>1y</item>
+        <item>2y</item>
+        <item>5y</item>
+        <item>10y</item>
+        <item>ytd</item>
+        <item>max</item>
+    </string-array>
+    <string-array name="history_valid_ranges_string">
+        <item>過去一天</item>
+        <item>過去五天</item>
+        <item>過去一個月</item>
+        <item>過去三個月</item>
+        <item>過去六個月</item>
+        <item>過去一年</item>
+        <item>過去兩年</item>
+        <item>過去五年</item>
+        <item>過去十年</item>
+        <item>今年到現在</item>
+        <item>最大</item>
+    </string-array>
+    <string name="title_activity_kline_view">KlineViewActivity</string>
 </resources>
