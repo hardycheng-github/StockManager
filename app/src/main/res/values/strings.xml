@@ -172,4 +172,5 @@
         <item>今年到現在</item>
         <item>最大</item>
     </string-array>
+    <string name="title_activity_kline_view">KlineViewActivity</string>
 </resources>
