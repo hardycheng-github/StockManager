@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.facebook.stetho.Stetho;
+//import com.facebook.stetho.Stetho;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.transaction.ITransApi;
 import com.msi.stockmanager.data.transaction.TransApi;
@@ -49,7 +49,7 @@ public class DemoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_demo);
 
-        Stetho.initializeWithDefaults(this);
+//        Stetho.initializeWithDefaults(this);
 
         initView();
         setListener();
@@ -207,7 +207,7 @@ public class DemoActivity extends AppCompatActivity {
             trans.stock_id = code;
             trans.stock_name = "unknown";
             trans.stock_amount = 1000;
-            trans.cash_amount = Double.parseDouble(cash);
+            trans.cash_amount = Integer.parseInt(cash);
             trans.fee = 20;
             trans.tax = 400;
             trans.remark = "";
@@ -258,7 +258,7 @@ public class DemoActivity extends AppCompatActivity {
             if(record.trans_id == id) {
                 try {
                     record.stock_id = code;
-                    record.cash_amount = Double.parseDouble(cash);
+                    record.cash_amount = Integer.parseInt(cash);
                     Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(transDate +" 00:00:00");
                     record.trans_time = date.getTime();
 

@@ -6,13 +6,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.database.DBDefine;
 import com.msi.stockmanager.database.DBHelper;
+import com.msi.stockmanager.ui.main.pager.PagerActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TransApi implements ITransApi{
     private final static String TAG = TransApi.class.getSimpleName();
@@ -20,6 +25,17 @@ public class TransApi implements ITransApi{
     private DBHelper dbHelper = null;
     public TransApi(Context context){
         dbHelper = new DBHelper(context);
+    }
+    private List<TransUpdateListener> listenerList = new ArrayList<>();
+
+    @Override
+    public boolean addTransUpdateListener(TransUpdateListener listener) {
+        return listenerList.add(listener);
+    }
+
+    @Override
+    public boolean removeTransUpdateListener(TransUpdateListener listener) {
+        return listenerList.remove(listener);
     }
 
     @Override
@@ -45,11 +61,24 @@ public class TransApi implements ITransApi{
 
         List holdingStockList = new ArrayList<String>();
         while(cursor.moveToNext()) {
-            holdingStockList.add(cursor.getString(
-                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_CODE)));
+            String stockId = cursor.getString(cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_CODE));
+            if(stockId != null && !stockId.isEmpty()) holdingStockList.add(stockId);
         }
 
         return holdingStockList;
+    }
+
+    @Override
+    public Map<String, Integer> getHoldingStockAmount() {
+        Map<String, Integer> holdingStockAmount = new HashMap<>();
+        for(Transaction trans: ApiUtil.transApi.getHistoryTransList()){
+            if(!trans.stock_id.isEmpty()) {
+                int amount = holdingStockAmount.getOrDefault(trans.stock_id, 0) + trans.stock_amount;
+                if(amount != 0) holdingStockAmount.put(trans.stock_id, amount);
+                else holdingStockAmount.remove(trans.stock_id);
+            }
+        }
+        return holdingStockAmount;
     }
 
     @Override
@@ -58,7 +87,8 @@ public class TransApi implements ITransApi{
 
         // How you want the results sorted in the resulting Cursor
         String sortOrder =
-                DBDefine.TB_TransactionRecord._ID + " ASC";
+                DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME + ", " +
+                DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TYPE + " ASC";
 
         Cursor cursor = db.query(
                 DBDefine.TB_TransactionRecord.TABLE_NAME,   // The table to query
@@ -87,11 +117,13 @@ public class TransApi implements ITransApi{
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME));
             trans.stock_amount = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT));
-            trans.cash_amount = cursor.getDouble(
+            trans.stock_price = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE));
+            trans.cash_amount = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT));
-            trans.fee = cursor.getDouble(
+            trans.fee = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE));
-            trans.tax = cursor.getDouble(
+            trans.tax = cursor.getInt(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX));
             trans.create_time = cursor.getLong(
                     cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CREATE_TIME));
@@ -103,6 +135,63 @@ public class TransApi implements ITransApi{
         cursor.close();
 
         return transList;
+    }
+
+    @Override
+    public Transaction getTransaction(int trans_id) {
+        try {
+            SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+            // How you want the results sorted in the resulting Cursor
+            String sortOrder =
+                    DBDefine.TB_TransactionRecord._ID + " ASC";
+            String selection = DBDefine.TB_TransactionRecord._ID + " = ?";
+            String[] selectionArgs = {String.valueOf(trans_id)};
+
+            Cursor cursor = db.query(
+                    DBDefine.TB_TransactionRecord.TABLE_NAME,   // The table to query
+                    null,             // The array of columns to return (pass null to get all)
+                    selection,              // The columns for the WHERE clause
+                    selectionArgs,          // The values for the WHERE clause
+                    null,                   // don't group the rows
+                    null,                   // don't filter by row groups
+                    sortOrder               // The sort order
+            );
+            cursor.moveToFirst();
+
+            Transaction trans = new Transaction();
+            trans.trans_id = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord._ID));
+            trans.stock_name = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_NAME));
+            trans.stock_id = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_CODE));
+            trans.trans_type = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TYPE));
+            trans.trans_type_other_desc = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TYPE_OTHER_DESCRIPTION));
+            trans.trans_time = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME));
+            trans.stock_amount = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT));
+            trans.stock_price = cursor.getDouble(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE));
+            trans.cash_amount = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT));
+            trans.fee = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE));
+            trans.tax = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX));
+            trans.create_time = cursor.getLong(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_CREATE_TIME));
+            trans.remark = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DBDefine.TB_TransactionRecord.COLUMN_NAME_REMARK));
+
+            return trans;
+        } catch (Exception e) {
+            Log.e(TAG, "getTransaction fail: " + e.getMessage());
+        }
+        return new Transaction();
     }
 
     @Override
@@ -119,6 +208,7 @@ public class TransApi implements ITransApi{
                 trans.trans_type_other_desc);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME, trans.trans_time);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT, trans.stock_amount);
+        values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE, trans.stock_price);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT, trans.cash_amount);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE, trans.fee);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX, trans.tax);
@@ -128,6 +218,10 @@ public class TransApi implements ITransApi{
         // Insert the new row, returning the primary key value of the new row
         long trans_id = db.insert(DBDefine.TB_TransactionRecord.TABLE_NAME, null, values);
         // if insert failed, will return -1
+        if(trans_id < 0) return -1;
+        for(TransUpdateListener listener: listenerList){
+            listener.onAdd(trans);
+        }
         return trans_id;
     }
 
@@ -144,6 +238,7 @@ public class TransApi implements ITransApi{
                 trans.trans_type_other_desc);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME, trans.trans_time);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT, trans.stock_amount);
+        values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE, trans.stock_price);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT, trans.cash_amount);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE, trans.fee);
         values.put(DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX, trans.tax);
@@ -162,6 +257,9 @@ public class TransApi implements ITransApi{
         if (result == 0){
             return false;
         }
+        for(TransUpdateListener listener: listenerList){
+            listener.onEdit(trans_id, trans);
+        }
         return true;
     }
 
@@ -176,6 +274,9 @@ public class TransApi implements ITransApi{
         int deletedRows = db.delete(DBDefine.TB_TransactionRecord.TABLE_NAME, selection, selectionArgs);
         if (deletedRows <= 0){
             return false;
+        }
+        for(TransUpdateListener listener: listenerList){
+            listener.onRemove(trans_id);
         }
         return true;
     }

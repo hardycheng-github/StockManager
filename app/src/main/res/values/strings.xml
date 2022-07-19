@@ -8,11 +8,11 @@
     <string name="title_activity_overview">帳戶總覽</string>
 
     <string name="add_trans">新增交易</string>
-    <string name="add_trans_cash">轉帳紀錄</string>
-    <string name="add_trans_stock">股票買賣</string>
-    <string name="add_trans_other">股利或減資</string>
-    <string name="add_trans_dividend">股利</string>
-    <string name="add_trans_reduction">減資</string>
+    <string name="title_trans_cash">轉帳紀錄</string>
+    <string name="title_trans_stock">股票買賣</string>
+    <string name="title_trans_other">股利或減資</string>
+    <string name="title_trans_dividend">股利</string>
+    <string name="title_trans_reduction">減資</string>
     <string name="title_activity_test_form">TestFormActivity</string>
     <string name="title_activity_form">FormActivity</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -31,6 +31,146 @@
     <string name="title_activity_compose">ComposeActivity</string>
 
     <string name="trans_stock_selector">股票選擇</string>
-    <string name="trans_stock_amount">交易數量(股)</string>
+    <string name="trans_stock_name">股票標的</string>
+    <string name="trans_stock_amount">成交股數</string>
+    <string name="trans_stock_price">成交價格</string>
+    <string name="trans_stock_fee">手續費</string>
+    <string name="trans_stock_tax">證交稅</string>
+    <string name="trans_cash_total_in">總存入金額</string>
+    <string name="trans_cash_total_out">總提領金額</string>
+    <string name="trans_date">交易日期</string>
+    <string name="trans_type">交易類型</string>
+    <string name="trans_cash">交易金額</string>
+    <string name="trans_remark">交易備註</string>
+    <string name="trans_stock_earn">發放股數</string>
+    <string name="trans_cash_earn">發放金額</string>
+    <string name="trans_stock_lose">減少股數</string>
 
+    <string name="TRANS_TYPE_STOCK_BUY">股票買入</string>
+    <string name="TRANS_TYPE_STOCK_SELL">股票賣出</string>
+    <string name="TRANS_TYPE_CASH_IN">現金轉入</string>
+    <string name="TRANS_TYPE_CASH_OUT">現金轉出</string>
+    <string name="TRANS_TYPE_CASH_DIVIDEND">現金股利</string>
+    <string name="TRANS_TYPE_STOCK_DIVIDEND">股票股利</string>
+    <string name="TRANS_TYPE_CASH_REDUCTION">現金減資</string>
+    <string name="TRANS_TYPE_STOCK_REDUCTION">股票減資</string>
+    <string name="title_activity_settings">帳戶設定</string>
+    <string name="setting_fee_discount">手續費優惠</string>
+    <string name="setting_fee_minimum">最低手續費</string>
+    <string name="hint_stock_search">請輸入股票代碼或名稱</string>
+    <string name="syncing">同步中</string>
+    <string name="title_activity_http_request_demo">HttpRequestDemo</string>
+    <string name="invested_cost">投入成本</string>
+    <string name="profit_calc">損益試算</string>
+    <string name="profit_rate">報酬率</string>
+    <string name="ROI">投資報酬率</string>
+    <string name="stock_value_calc">股票市值</string>
+    <string name="account_calc">帳戶現值</string>
+    <string name="account_total">帳戶總額</string>
+    <string name="account_balance">可用餘額</string>
+    <string name="no_holding_stock">未持有任何股票</string>
+    <string name="account_detail">進入帳戶</string>
+    <string name="profit_color_reverse">綠漲紅跌</string>
+    <string name="holding_amount">庫存股數</string>
+    <string name="holding_cost">持股成本</string>
+    <string name="holding_calc">持股現值</string>
+    <string name="holding_profit">損益試算</string>
+    <string name="average_buy">買入平均價</string>
+    <string name="average_sell">賣出平均價</string>
+    <string name="history_cost">平均成本</string>
+    <string name="history_profit">已實現損益</string>
+    <string name="realtime_price">即時股價</string>
+    <string name="dialog_remove_stock_msg">刪除所有【%s】的紀錄?</string>
+    <string name="dialog_remove_stock_dividend_reduction_msg">刪除所有【%s】的股利與減資紀錄?</string>
+    <string name="confirm">確定</string>
+    <string name="cancel">取消</string>
+    <string name="copyright_msg">Copyright © 2022 MSI</string>
+    <string name="search_stock">股票搜尋</string>
+    <string name="filter">過濾器</string>
+    <string name="title_activity_list">歷史紀錄</string>
+    <string name="no_data">尚無資料</string>
+    <string name="dividend_cash">現金股利</string>
+    <string name="dividend_stock">股票股利</string>
+    <string name="reduction_cash">減資返現</string>
+    <string name="reduction_stock">減資股數</string>
+    <string name="reset_filter">清除所有</string>
+    <string name="apply_filter">應用篩選</string>
+    <string name="title_filter">進階篩選</string>>
+    <string name="search">搜尋</string>
+    <string name="version">版本</string>
+    <string name="about">關於</string>
+    <string name="date_range">日期範圍</string>
+    <string name="date_start">開始日期</string>
+    <string name="date_end">結束日期</string>
+    <string name="date_to">至</string>
+    <string name="date_today">今天</string>
+    <string name="date_week">最近一周</string>
+    <string name="date_month">最近一個月</string>
+    <string name="date_year">最近一年</string>
+    <string name="not_select">未選擇</string>
+    <string name="title_activity_news">新聞情報</string>
+    <string name="news_type_all">全部</string>
+    <string name="news_type_stock">股市</string>
+    <string name="news_type_bulletin">公告</string>
+    <string name="news_type_exchange">外匯</string>
+    <string name="news_type_crypto">加密貨幣</string>
+    <string name="cannot_open_url">無法開啟連結</string>
+    <string name="title_activity_analysis">智慧分析</string>
+    <string-array name="history_interval">
+        <item>1m</item>
+        <item>2m</item>
+        <item>5m</item>
+        <item>15m</item>
+        <item>30m</item>
+        <item>60m</item>
+        <item>90m</item>
+        <item>1h</item>
+        <item>1d</item>
+        <item>5d</item>
+        <item>1wk</item>
+        <item>1mo</item>
+        <item>3mo</item>
+    </string-array>
+    <string-array name="history_interval_string">
+        <item>每1分鐘的交易量</item>
+        <item>每2分鐘的交易量</item>
+        <item>每5分鐘的交易量</item>
+        <item>每15分鐘的交易量</item>
+        <item>每15分鐘的交易量</item>
+        <item>每60分鐘的交易量</item>
+        <item>每90分鐘的交易量</item>
+        <item>每小時鐘的交易量</item>
+        <item>每一天的交易量</item>
+        <item>每五天的交易量</item>
+        <item>每一周的交易量</item>
+        <item>每一個月的交易量</item>
+        <item>每三個月的交易量</item>
+    </string-array>
+    <string-array name="history_valid_ranges">
+        <item>1d</item>
+        <item>5d</item>
+        <item>1mo</item>
+        <item>3mo</item>
+        <item>6mo</item>
+        <item>1y</item>
+        <item>2y</item>
+        <item>5y</item>
+        <item>10y</item>
+        <item>ytd</item>
+        <item>max</item>
+    </string-array>
+    <string-array name="history_valid_ranges_string">
+        <item>過去一天</item>
+        <item>過去五天</item>
+        <item>過去一個月</item>
+        <item>過去三個月</item>
+        <item>過去六個月</item>
+        <item>過去一年</item>
+        <item>過去兩年</item>
+        <item>過去五年</item>
+        <item>過去十年</item>
+        <item>今年到現在</item>
+        <item>最大</item>
+    </string-array>
+    <string name="title_activity_kline_view">KlineViewActivity</string>
 </resources>

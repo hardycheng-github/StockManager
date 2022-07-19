@@ -1,0 +1,25 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <EditTextPreference
+        android:inputType="numberDecimal"
+        android:key="setting_fee_discount"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/setting_fee_discount"
+        app:useSimpleSummaryProvider="true" />
+
+    <EditTextPreference
+        android:defaultValue="20"
+        android:inputType="numberSigned"
+        android:key="setting_fee_minimum"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/setting_fee_minimum"
+        app:useSimpleSummaryProvider="true" />
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="profit_color_reverse"
+        android:title="@string/profit_color_reverse" />
+
+</PreferenceScreen>

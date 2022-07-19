@@ -1,6 +1,7 @@
 package com.msi.stockmanager.ui.main.pager.cash;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -13,6 +14,20 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.AccountUtil;
+import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.ColorUtil;
+import com.msi.stockmanager.data.FormatUtil;
+import com.msi.stockmanager.data.transaction.ITransApi;
+import com.msi.stockmanager.data.transaction.TransType;
+import com.msi.stockmanager.data.transaction.Transaction;
+import com.msi.stockmanager.databinding.ActivityOverviewBinding;
+import com.msi.stockmanager.databinding.FragmentCashBinding;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A fragment representing a list of Items.
@@ -23,6 +38,36 @@ public class CashFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+    private CashAdapter mAdapter;
+    //    private CashAdapter mAdapter;
+    private FragmentCashBinding binding;
+    private AccountUtil.AccountUpdateListener accountListener = accountValue -> {
+        if(binding != null){
+            binding.accountTotal.setText(FormatUtil.number(accountValue.accountTotal));
+            binding.accountBalance.setText(FormatUtil.number(accountValue.cashBalance));
+
+            if(accountValue.cashInTotal > 0) {
+                binding.CashIn.setTextColor(ColorUtil.getProfitEarn());
+            } else {
+                binding.CashIn.setTextColor(ColorUtil.getProfitNone());
+            }
+            binding.CashIn.setText(FormatUtil.number(accountValue.cashInTotal));
+
+            if(accountValue.cashOutTotal > 0) {
+                binding.CashOut.setTextColor(ColorUtil.getProfitLose());
+            } else {
+                binding.CashOut.setTextColor(ColorUtil.getProfitNone());
+            }
+            binding.CashOut.setText(FormatUtil.number(accountValue.cashOutTotal));
+
+            mAdapter.reloadList();
+            if(mAdapter.getItemCount() > 0){
+                binding.noData.setVisibility(View.INVISIBLE);
+            } else {
+                binding.noData.setVisibility(View.VISIBLE);
+            }
+        }
+    };
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -48,24 +93,44 @@ public class CashFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+//        ApiUtil.transApi.addTransUpdateListener(listener);
+//        onTitleValueChange();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_cash, container, false);
+
+        binding = FragmentCashBinding.inflate(getLayoutInflater());
+        View view = binding.getRoot();
+        Context context = view.getContext();
+        RecyclerView recyclerView = view.findViewById(R.id.list);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+        if (recyclerView != null) {
             if (mColumnCount <= 1) {
                 recyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new CashAdapter(CashContent.ITEMS));
+//            mAdapter = new CashAdapter();
+//            recyclerView.setAdapter(mAdapter);
+//            mAdapter.reloadList();
+            mAdapter = new CashAdapter();
+            recyclerView.setAdapter(mAdapter);
         }
         return view;
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        AccountUtil.addListener(accountListener);
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        AccountUtil.removeListener(accountListener);
     }
 }

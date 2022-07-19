@@ -32,34 +32,47 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusState
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import com.msi.stockmanager.R
 
 @Composable
 fun TextSearchBar(
+    enabled: Boolean = true,
     modifier: Modifier = Modifier,
     value: String,
-    label: String,
+    placeholder: String? = null,
+    label: String? = null,
     onImeActionClick: () -> Unit = {},
     onClearClick: () -> Unit = {},
     onFocusChanged: (FocusState) -> Unit = {},
     onValueChanged: (String) -> Unit,
     isError: () -> Boolean,
 ){
+    var placeholderFun:@Composable (() -> Unit)? = null
+    if(placeholder != null) placeholderFun = {Text(text = placeholder)}
+    var labelFun:@Composable (() -> Unit)? = null
+    if(label != null) labelFun = {Text(text = label)}
+
     OutlinedTextField(
         modifier = modifier
             .fillMaxWidth()
             .onFocusChanged { onFocusChanged(it) },
-        value = value,
-        onValueChange = { query ->
-            onValueChanged(query)
+        value = when(enabled){
+            true -> value
+            false -> stringResource(id = R.string.no_holding_stock)
         },
-        label = { Text(text = label) },
+        onValueChange = {
+            onValueChanged(it)
+        },
         textStyle = MaterialTheme.typography.subtitle1,
         singleLine = true,
         trailingIcon = {
-            IconButton(onClick = { onClearClick() }) {
-                Icon(imageVector = Icons.Filled.Clear, contentDescription = "Clear")
+            if(enabled) {
+                IconButton(onClick = { onClearClick() }) {
+                    Icon(imageVector = Icons.Filled.Clear, contentDescription = "Clear")
+                }
             }
         },
         keyboardActions = KeyboardActions(onDone = {
@@ -70,5 +83,8 @@ fun TextSearchBar(
             keyboardType = KeyboardType.Text
         ),
         isError = isError(),
+        placeholder = placeholderFun,
+        label = labelFun,
+        enabled = enabled,
     )
 }

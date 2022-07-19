@@ -15,7 +15,7 @@ import java.util.List;
 
 public class DBHelper extends SQLiteOpenHelper {
     private static final String TAG = DBHelper.class.getSimpleName();
-    private final static int _DBVersion = 2;
+    private final static int _DBVersion = 3;
     private final static String _DBName = "stockAccounting.db";
 
     public DBHelper(@Nullable Context context) {
@@ -33,9 +33,10 @@ public class DBHelper extends SQLiteOpenHelper {
                 DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TYPE_OTHER_DESCRIPTION + " TEXT, " +
                 DBDefine.TB_TransactionRecord.COLUMN_NAME_TRANSACTION_TIME + " INTEGER, " +
                 DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_AMOUNT + " INTEGER, " +
-                DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT + " REAL, " +
-                DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE + " REAL, " +
-                DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX + " REAL, " +
+                DBDefine.TB_TransactionRecord.COLUMN_NAME_STOCK_PRICE + " REAL, " +
+                DBDefine.TB_TransactionRecord.COLUMN_NAME_CASH_AMOUNT + " INTEGER, " +
+                DBDefine.TB_TransactionRecord.COLUMN_NAME_FEE + " INTEGER, " +
+                DBDefine.TB_TransactionRecord.COLUMN_NAME_TAX + " INTEGER, " +
                 DBDefine.TB_TransactionRecord.COLUMN_NAME_CREATE_TIME + " INTEGER, " +
                 DBDefine.TB_TransactionRecord.COLUMN_NAME_REMARK + " TEXT " +
                 ");";

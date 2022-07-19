@@ -11,6 +11,7 @@ public final class DBDefine {
         public static final String COLUMN_NAME_TRANSACTION_TYPE_OTHER_DESCRIPTION = "tr_transaction_type_other_desc";
         public static final String COLUMN_NAME_TRANSACTION_TIME = "tr_transaction_time"; //交易時間
         public static final String COLUMN_NAME_STOCK_AMOUNT = "tr_stock_amount"; //股數
+        public static final String COLUMN_NAME_STOCK_PRICE = "tr_stock_price"; //股數
         public static final String COLUMN_NAME_CASH_AMOUNT = "tr_cash_amount"; //現金轉入(正值), 轉出(負值)
         public static final String COLUMN_NAME_FEE = "tr_fee"; //手續費
         public static final String COLUMN_NAME_TAX = "tr_tax"; //證交稅
