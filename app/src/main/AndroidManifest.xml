@@ -3,8 +3,8 @@
     package="com.msi.stockmanager">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="true"
@@ -13,11 +13,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.StockManager">
-
         <activity
             android:name=".ui.main.analysis.AnalysisActivity"
-            android:exported="false"
-            android:label="@string/title_activity_analysis" />
+            android:label="@string/title_activity_analysis"
+            android:exported="false" />
         <activity
             android:name=".ui.main.news.NewsActivity"
             android:exported="false"
@@ -74,10 +73,6 @@
         <activity
             android:name=".HttpDemoActivity"
             android:screenOrientation="portrait" />
-        <activity
-            android:name=".KlineViewActivity"
-            android:screenOrientation="portrait"/>
-
     </application>
 
 </manifest>
