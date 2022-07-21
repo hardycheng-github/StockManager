@@ -2232,12 +2232,14 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
             return setPrecision(num, 4);
         } else if (num < 100) {
             return setPrecision(num, 3);
-        } else if (num < 10000) {
+        } else if (num < 1000) {
             return setPrecision(num, 2);
-        } else if (num < 100000000) {
-            return setPrecision(num / 10000, 2) + "万";
+        } else if (num < 1000000) {
+            return setPrecision(num / 1000, 2) + "K";
+        } else if (num < 1000000000){
+            return setPrecision(num / 1000000, 2) + "M";
         } else {
-            return setPrecision(num / 100000000, 2) + "亿";
+            return setPrecision(num / 1000000000, 2) + "B";
         }
     }
 
@@ -2245,12 +2247,14 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
      * 按量级格式化数量
      */
     private String formatVolNum(double num) {
-        if (num < 10000) {
+        if (num < 1000) {
             return setPrecision(num, 2);
-        } else if (num < 100000000) {
-            return setPrecision(num / 10000, 2) + "万";
+        } else if (num < 1000000) {
+            return setPrecision(num / 1000, 2) + "K";
+        } else if (num < 1000000000){
+            return setPrecision(num / 1000000, 2) + "M";
         } else {
-            return setPrecision(num / 100000000, 2) + "亿";
+            return setPrecision(num / 1000000000, 2) + "B";
         }
     }
 

@@ -16,6 +16,7 @@ public interface INewsApi {
 
     String SOURCE_CNYES = "鉅亨新聞";
     String SOURCE_YAHOO = "Yahoo財經";
+    String SOURCE_CHINATIMES = "中時新聞網";
 
     class NewsItem {
         public int type; //news type, ex: TYPE_STOCK,TYPE_BULLETIN,TYPE_EXCHANGE,TYPE_CRYPTO
@@ -26,7 +27,16 @@ public interface INewsApi {
         public String link; //news link
 
         public String getSubtitle(){
-            return String.format("%s / %s", source, DateUtil.toDateString(timestamp));
+            long diffTime = System.currentTimeMillis() - timestamp;
+            String timeStr = DateUtil.toDateString(timestamp);
+            if(diffTime < 1000*60) {
+                timeStr = "現在"; // 1分內
+            } else if(diffTime < 1000*60*60) {
+                timeStr = (diffTime / (1000*60)) + "分鐘前"; //1小時內
+            } else if(diffTime < 1000*60*60*24){
+                timeStr = (diffTime / (1000*60*60)) + "小時前"; //1天內
+            }
+            return String.format("%s / %s", source, timeStr);
         }
     }
 
