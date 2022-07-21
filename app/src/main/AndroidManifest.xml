@@ -73,6 +73,9 @@
         <activity
             android:name=".HttpDemoActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".KlineViewActivity"
+            android:screenOrientation="portrait">
+        </activity>
     </application>
 
 </manifest>
