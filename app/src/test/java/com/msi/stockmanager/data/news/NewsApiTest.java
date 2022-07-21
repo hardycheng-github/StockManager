@@ -36,7 +36,8 @@ public class NewsApiTest {
         this.newsApi = new NewsApi();
     }
 
-    //測試NewsApi - NewsCrawler
+    //測試NewsApi - NewsCrawler(改成thread方式之後不可用)
+    /*
     @Test
     public void NewsCrawlerApiTest() throws Exception {
         Method method = this.newsApi.getClass().getDeclaredMethod("NewsCrawler", int.class);
@@ -57,6 +58,7 @@ public class NewsApiTest {
             System.out.println(item.type);
         }
     }
+     */
 
     //調用NewsApi各個網站爬蟲的函式，針對SOURCE_INFO的Url各別測試
     @Test

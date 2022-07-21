@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -45,7 +46,7 @@ public class NewsApi implements INewsApi {
             {"CNYES","2","https://news.cnyes.com/news/cat/announcement"},          //鉅亨 - 公告
             {"CNYES","3","https://news.cnyes.com/news/cat/forex",},                //鉅亨 - 外匯
             {"CNYES","4","https://news.cnyes.com/news/cat/bc_crypto"},             //鉅亨 - 虛擬貨幣
-            {"YAHOO","1","https://tw.stock.yahoo.com/tw-market"},                  //奇摩 - 台股
+            //{"YAHOO","1","https://tw.stock.yahoo.com/tw-market"},                  //奇摩 - 台股
             {"CHINATIMES","1","https://wantrich.chinatimes.com/newslist/420101/1"},   //中時新聞網 - 台股(上市櫃)
             {"CHINATIMES","3","https://www.chinatimes.com/Search/%E5%A4%96%E5%8C%AF?chdtv"},   //中時新聞網 - 搜尋(外匯)
             {"CHINATIMES","4","https://www.chinatimes.com/search/%E5%8A%A0%E5%AF%86%E8%B2%A8%E5%B9%A3?chdtv"}   //中時新聞網 - 搜尋(加密貨幣)
@@ -68,12 +69,12 @@ public class NewsApi implements INewsApi {
                         Log.d(TAG, "NewsApi Info : Return already exist news data!");
                         newsItemList = newsRecord.get(type);
                     }else{
-                        Log.d(TAG, "NewsApi Info : News data not found, crawler data!");
+                        Log.d(TAG, "NewsApi Info : News data not found, crawler new data!");
                         newsItemList = NewsCrawler(type);
                         newsRecord.put(type, newsItemList);
                     }
                 }else{
-                    Log.d(TAG, "NewsApi Info : Force refresh news data, crawler data!");
+                    Log.d(TAG, "NewsApi Info : Force refresh news data, crawler new data!");
                     newsItemList = NewsCrawler(type);
                     newsRecord.put(type, newsItemList);
                 }
@@ -112,40 +113,45 @@ public class NewsApi implements INewsApi {
     private static List<NewsItem> NewsCrawler(int type){
 
         List<NewsItem> newsItemList = new ArrayList<>();
+        CountDownLatch countDownLatch = new CountDownLatch(SOURCE_INFO.length);
+        Log.d(TAG, "NewsApi Info : Thread sum = " + SOURCE_INFO.length);
         for(int x=0; x<SOURCE_INFO.length; x++) {
-            // 挑選出type相符的 or type:0 全部
-            if (Integer.parseInt(SOURCE_INFO[x][1]) == type || 0 == type){
-                List<NewsItem> itemList = new ArrayList<>();
-                switch (SOURCE_INFO[x][0]) {
-                    case "CNYES":
-                        itemList = CrawlerWithCNYES(SOURCE_INFO[x][2]);
-                        break;
-                    case "YAHOO":
-                        itemList = CrawlerWithYahoo(SOURCE_INFO[x][2]);
-                        break;
-                    case "CHINATIMES":
-                        itemList = CrawlerWithChinatimes(SOURCE_INFO[x][2]);
-                        break;
-                }
-
-                for (NewsItem item : itemList) {
-                    item.type = type;
-
-                    switch (SOURCE_INFO[x][0]) {
+            int finalX = x;
+            new Thread(() -> {
+                // 挑選出type相符的 or type:0 全部
+                if (Integer.parseInt(SOURCE_INFO[finalX][1]) == type || 0 == type){
+                    List<NewsItem> itemList = new ArrayList<>();
+                    switch (SOURCE_INFO[finalX][0]) {
                         case "CNYES":
-                            item.source = SOURCE_CNYES;
+                            itemList = CrawlerWithCNYES(SOURCE_INFO[finalX][2]);
                             break;
                         case "YAHOO":
-                            item.source = SOURCE_YAHOO;
+                            itemList = CrawlerWithYahoo(SOURCE_INFO[finalX][2]);
                             break;
                         case "CHINATIMES":
-                            item.source = SOURCE_CHINATIMES;
+                            itemList = CrawlerWithChinatimes(SOURCE_INFO[finalX][2]);
                             break;
                     }
 
-                    newsItemList.add(item);
+                    for (NewsItem item : itemList) {
+                        item.type = type;
+
+                        //避免多個執行緒同時操作List
+                        synchronized(newsItemList) {
+                            newsItemList.add(item);
+                        }
+                    }
                 }
-            }
+                Log.d(TAG, "NewsApi Info : Thread finished index : " + finalX);
+                countDownLatch.countDown();
+            }).start();
+
+        }
+
+        try {
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return newsItemList;
@@ -210,6 +216,7 @@ public class NewsApi implements INewsApi {
             for (Element el : newsListByCrawler) {
                 NewsItem item;
                 item = new NewsItem();
+                item.source = SOURCE_YAHOO;
 
                 //獲取標題及連結，若獲取失敗 - 跳出
                 try {
@@ -255,6 +262,7 @@ public class NewsApi implements INewsApi {
             for (Element el : newsListByCrawler) {
                 NewsItem item;
                 item = new NewsItem();
+                item.source = SOURCE_CHINATIMES;
 
                 //獲取標題及連結，若獲取失敗 - 跳出
                 try {
