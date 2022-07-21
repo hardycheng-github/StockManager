@@ -79,6 +79,8 @@ public class NewsApi implements INewsApi {
                     newsRecord.put(type, newsItemList);
                 }
 
+                newsItemList.sort((a, b) -> (int)(b.timestamp - a.timestamp));
+
                 ((Activity)parentsContext).runOnUiThread(()->callback.onResult(newsItemList));
             } catch (Exception e){
                 Log.e(TAG, "getNewsList err: " + e.getMessage());

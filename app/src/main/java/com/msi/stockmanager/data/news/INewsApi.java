@@ -27,7 +27,16 @@ public interface INewsApi {
         public String link; //news link
 
         public String getSubtitle(){
-            return String.format("%s / %s", source, DateUtil.toDateString(timestamp));
+            long diffTime = System.currentTimeMillis() - timestamp;
+            String timeStr = DateUtil.toDateString(timestamp);
+            if(diffTime < 1000*60) {
+                timeStr = "現在"; // 1分內
+            } else if(diffTime < 1000*60*60) {
+                timeStr = (diffTime / (1000*60)) + "分鐘前"; //1小時內
+            } else if(diffTime < 1000*60*60*24){
+                timeStr = (diffTime / (1000*60*60)) + "小時前"; //1天內
+            }
+            return String.format("%s / %s", source, timeStr);
         }
     }
 
