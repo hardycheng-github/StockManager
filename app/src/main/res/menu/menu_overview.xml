@@ -4,8 +4,9 @@
     <item
         android:id="@+id/menu_analysis"
         android:orderInCategory="1"
-        android:icon="@drawable/ic_baseline_area_chart_24"
+        android:icon="@drawable/query_stats"
         android:title="@string/title_activity_analysis"
+        android:iconTint="@color/white"
         app:showAsAction="ifRoom"/>
     <item
         android:id="@+id/menu_news"

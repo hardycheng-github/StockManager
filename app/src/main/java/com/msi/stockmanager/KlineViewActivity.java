@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.kline.KData;
 import com.msi.stockmanager.kline.KLineView;
 
@@ -66,7 +67,7 @@ public class KlineViewActivity extends AppCompatActivity implements View.OnClick
         //初始化控件加载数据，仅限于首次初始化赋值，不可用于更新数据
         kLineView.initKDataList(getKDataList(10));
         //设置十字线移动模式，默认为0：固定指向收盘价
-        kLineView.setCrossHairMoveMode(KLineView.CROSS_HAIR_MOVE_OPEN);
+        kLineView.setCrossHairMoveMode(KLineView.CROSS_HAIR_MOVE_CLOSE);
 
         mHandler = new Handler();
         dataListAddRunnable = new Runnable() {
@@ -131,7 +132,7 @@ public class KlineViewActivity extends AppCompatActivity implements View.OnClick
         kLineView.setOnRequestDataListListener(new KLineView.OnRequestDataListListener() {
             @Override
             public void requestData() {
-                mHandler.postDelayed(dataListAddRunnable, 3000);
+                dataListAddRunnable.run();
             }
         });
     }
@@ -181,17 +182,15 @@ public class KlineViewActivity extends AppCompatActivity implements View.OnClick
         double minPrice = 0;
         double volume = 0;
 
-
-
         ArrayList<String> stringList = getIntent().getStringArrayListExtra("stock_history_price");
 
         for (int i = 0; i < stringList.size(); i++) {
             String[] stock_data_sp = stringList.get(i).split("\t");
             try {
-                start = new SimpleDateFormat("yyyy-MM-dd").parse(stock_data_sp[0]).getTime();
+                start = DateUtil.parseDateTime(stock_data_sp[0]);
                 dataList.add(new KData(start, Double.parseDouble(stock_data_sp[1]), Double.parseDouble(stock_data_sp[2]), Double.parseDouble(stock_data_sp[3]),
                         Double.parseDouble(stock_data_sp[4]), Double.parseDouble(stock_data_sp[5])));
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

@@ -1,31 +1,24 @@
 package com.msi.stockmanager.ui.main.trans_history;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
 import androidx.core.view.MenuItemCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.AccountUtil;
-import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.DateUtil;
-import com.msi.stockmanager.data.stock.StockInfo;
-import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.data.transaction.TransType;
 import com.msi.stockmanager.databinding.ActivityTransHistoryBinding;
+import com.msi.stockmanager.ui.main.StockFilterAdapter;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.DataSetObserver;
@@ -37,13 +30,9 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.TimePicker;
 
 import java.util.ArrayList;
 import java.util.Calendar;

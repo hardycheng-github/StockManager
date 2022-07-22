@@ -222,7 +222,7 @@ public class StockApi implements IStockApi{
                         for (int i=0; i<timestamp.length(); i++) {
                             StockHistory history   = new StockHistory();
                             history.stock_id       = stock_id;
-                            history.date_timestamp = ((timestamp == null)? 0 : timestamp.getLong(i));
+                            history.date_timestamp = ((timestamp == null)? 0 : timestamp.getLong(i)*1000);
                             history.price_open     = ((open == null)? 0 : open.getDouble(i));
                             history.price_close    = ((close == null)? 0 : close.getDouble(i));
                             history.price_high     = ((high == null)? 0 : high.getDouble(i));

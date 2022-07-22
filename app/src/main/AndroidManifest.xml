@@ -16,7 +16,8 @@
         <activity
             android:name=".ui.main.analysis.AnalysisActivity"
             android:label="@string/title_activity_analysis"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.StockManager.NoActionBar" />
         <activity
             android:name=".ui.main.news.NewsActivity"
             android:exported="false"

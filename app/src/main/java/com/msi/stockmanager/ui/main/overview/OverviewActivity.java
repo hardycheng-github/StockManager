@@ -291,8 +291,10 @@ public class OverviewActivity extends AppCompatActivity {
                 startActivity(new Intent(OverviewActivity.this, SettingsActivity.class));
                 return true;
             case R.id.menu_analysis:
-                //startActivity(new Intent(OverviewActivity.this, AnalysisActivity.class));
-                startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class));
+                Intent intent = new Intent(OverviewActivity.this, AnalysisActivity.class);
+//                intent.putExtra("EXTRA_STOCK_ID", "2330");
+                startActivity(intent);
+//                startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class));
                 return true;
             case R.id.menu_news:
                 startActivity(new Intent(OverviewActivity.this, NewsActivity.class));
