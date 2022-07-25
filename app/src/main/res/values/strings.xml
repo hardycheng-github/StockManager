@@ -173,4 +173,9 @@
         <item>最大</item>
     </string-array>
     <string name="title_activity_kline_view">KlineViewActivity</string>
+    <string name="today_open">今日開盤價</string>
+    <string name="today_high">今日最高價</string>
+    <string name="today_low">今日最低價</string>
+    <string name="today_close">今日收盤價</string>
+    <string name="today_volume">今日成交量</string>
 </resources>

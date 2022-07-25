@@ -13,6 +13,9 @@
         android:id="@+id/anue"
         android:title="Anue 鉅亨網" />
     <item
+        android:id="@+id/cmoney_forum"
+        android:title="股市爆料同學會" />
+    <item
         android:id="@+id/twse"
         android:title="證交所每日報表" />
 </menu>

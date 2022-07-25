@@ -2,6 +2,7 @@ package com.msi.stockmanager.ui.main.analysis;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
 import androidx.lifecycle.Lifecycle;
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.ColorUtil;
+import com.msi.stockmanager.data.FormatUtil;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.data.stock.IStockApi;
 import com.msi.stockmanager.data.stock.StockHistory;
@@ -21,13 +24,17 @@ import com.msi.stockmanager.databinding.ActivityAnalysisBinding;
 import com.msi.stockmanager.kline.KData;
 import com.msi.stockmanager.kline.KLineView;
 import com.msi.stockmanager.ui.main.StockFilterAdapter;
+import com.msi.stockmanager.ui.main.pager.PagerActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.DataSetObserver;
+import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +47,13 @@ public class AnalysisActivity extends AppCompatActivity {
     public static final String TAG = AnalysisActivity.class.getSimpleName();
     public static final String EXTRA_STOCK_ID = "EXTRA_STOCK_ID";
 
+    public static final String URL_GOODINFO = "https://goodinfo.tw/tw/StockDetail.asp?STOCK_ID={STOCK_ID}";
+    public static final String URL_WANTGOO = "https://www.wantgoo.com/stock/{STOCK_ID}";
+    public static final String URL_YAHOO = "https://tw.stock.yahoo.com/quote/{STOCK_ID}";
+    public static final String URL_ANUE = "https://invest.cnyes.com/twstock/TWS/{STOCK_ID}";
+    public static final String URL_TWSE = "https://www.twse.com.tw/pdf/ch/{STOCK_ID}_ch.pdf";
+    public static final String URL_CMONEY_FORUM = "https://www.cmoney.tw/forum/stock/{STOCK_ID}";
+
     private ActivityAnalysisBinding binding;
     private Menu mMenu;
     private MenuItem mSearchItem;
@@ -51,26 +65,6 @@ public class AnalysisActivity extends AppCompatActivity {
     private boolean isKlineInit = false;
     private String targetStockId = "";
     private StockInfo targetStockInfo = null;
-    private IStockApi.HistoryCallback historyCallback = new IStockApi.HistoryCallback() {
-        @Override
-        public void onResult(List<StockHistory> data) {
-            runOnUiThread(()->{
-                setKlineData(data);
-                binding.dataContainer.setVisibility(View.VISIBLE);
-                binding.loading.setVisibility(View.INVISIBLE);
-                binding.noData.setVisibility(View.INVISIBLE);
-            });
-        }
-
-        @Override
-        public void onException(Exception e) {
-            runOnUiThread(()-> {
-                binding.dataContainer.setVisibility(View.INVISIBLE);
-                binding.loading.setVisibility(View.INVISIBLE);
-                binding.noData.setVisibility(View.VISIBLE);
-            });
-        }
-    };
 
     private View.OnLayoutChangeListener mSearchLayoutChangListener = new View.OnLayoutChangeListener() {
         @Override
@@ -119,8 +113,13 @@ public class AnalysisActivity extends AppCompatActivity {
         if(targetStockInfo != null && !targetStockId.equals(targetStockInfo.getStockId()) &&
                 binding != null && mMenu != null) {
             targetStockId = targetStockInfo.getStockId();
-            getSupportActionBar().setTitle(getString(R.string.title_activity_analysis) +
-                    "：" + targetStockInfo.getStockNameWithId());
+//            getSupportActionBar().setTitle(getString(R.string.title_activity_analysis) +
+//                    "：" + targetStockInfo.getStockNameWithId());
+            binding.include.stockName.setText(targetStockInfo.getStockNameWithId());
+            binding.include.stockPrice.setTextColor(ColorUtil.getProfitNone());
+            binding.include.stockPrice.setText(R.string.syncing);
+            binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
+            binding.include.stockProfit.setText(R.string.syncing);
             requestAsync();
         }
     }
@@ -131,7 +130,64 @@ public class AnalysisActivity extends AppCompatActivity {
         binding.loading.setVisibility(View.VISIBLE);
         binding.noData.setVisibility(View.INVISIBLE);
         ApiUtil.stockApi.getHistoryStockData(targetStockId,
-                "1d", "1y", historyCallback);
+                "1d", "1y", new IStockApi.HistoryCallback() {
+                    @Override
+                    public void onResult(List<StockHistory> data) {
+                        runOnUiThread(()->{
+                            setKlineData(data);
+                            binding.dataContainer.setVisibility(View.VISIBLE);
+                            binding.loading.setVisibility(View.INVISIBLE);
+                            binding.noData.setVisibility(View.INVISIBLE);
+                        });
+                    }
+
+                    @Override
+                    public void onException(Exception e) {
+                        runOnUiThread(()-> {
+                            binding.dataContainer.setVisibility(View.INVISIBLE);
+                            binding.loading.setVisibility(View.INVISIBLE);
+                            binding.noData.setVisibility(View.VISIBLE);
+                        });
+                    }
+                });
+        ApiUtil.stockApi.getRegularStockPrice(targetStockId, info -> {
+            if(info != null) {
+                runOnUiThread(()->{
+                    if(info.getLastChange() > 0){
+                        binding.include.stockPrice.setTextColor(ColorUtil.getProfitEarn());
+                        binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                        binding.include.stockProfit.setTextColor(ColorUtil.getProfitEarn());
+                        binding.include.stockProfit.setText(String.format("▲ %s (%s)"
+                                , FormatUtil.number(Math.abs(info.getLastChange()))
+                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+                    } else if(info.getLastChange() < 0){
+                        binding.include.stockPrice.setTextColor(ColorUtil.getProfitLose());
+                        binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                        binding.include.stockProfit.setTextColor(ColorUtil.getProfitLose());
+                        binding.include.stockProfit.setText(String.format("▼ %s (%s)"
+                                , FormatUtil.number(Math.abs(info.getLastChange()))
+                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+                    } else {
+                        binding.include.stockPrice.setTextColor(ColorUtil.getProfitNone());
+                        binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                        binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
+                        binding.include.stockProfit.setText(String.format("%s (%s)"
+                                , FormatUtil.number(Math.abs(info.getLastChange()))
+                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+                    }
+                    binding.include.open.setText(FormatUtil.number(info.getLastOpen()));
+                    binding.include.high.setText(FormatUtil.number(info.getLastHigh()));
+                    binding.include.low.setText(FormatUtil.number(info.getLastLow()));
+                    binding.include.volume.setText(FormatUtil.number(info.getLastVolume()));
+                });
+            }
+        });
+    }
+
+    private void toUrl(String link){
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(link));
+        startActivity(i);
     }
 
     public AnalysisActivity(){
@@ -145,6 +201,41 @@ public class AnalysisActivity extends AppCompatActivity {
                 View view = binding.getRoot();
                 Context context = view.getContext();
                 RecyclerView recyclerView = view.findViewById(R.id.list);
+                binding.include.cardView.setOnClickListener(v -> {
+                    PopupMenu popupMenu = new PopupMenu(context, v, Gravity.RIGHT);
+
+                    // Inflating popup menu from popup_menu.xml file
+                    popupMenu.getMenuInflater().inflate(R.menu.stock_more, popupMenu.getMenu());
+                    popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem item) {
+                            switch(item.getItemId())
+                            {
+                                case R.id.goodinfo:
+                                    toUrl(URL_GOODINFO.replace("{STOCK_ID}", targetStockId));
+                                    return true;
+                                case R.id.wantgoo:
+                                    toUrl(URL_WANTGOO.replace("{STOCK_ID}", targetStockId));
+                                    return true;
+                                case R.id.yahoo:
+                                    toUrl(URL_YAHOO.replace("{STOCK_ID}", targetStockId));
+                                    return true;
+                                case R.id.anue:
+                                    toUrl(URL_ANUE.replace("{STOCK_ID}", targetStockId));
+                                    return true;
+                                case R.id.cmoney_forum:
+                                    toUrl(URL_CMONEY_FORUM.replace("{STOCK_ID}", targetStockId));
+                                    return true;
+                                case R.id.twse:
+                                    toUrl(URL_TWSE.replace("{STOCK_ID}", targetStockId));
+                                    return true;
+                            }
+                            return onMenuItemClick(item);
+                        }
+                    });
+                    // Showing the popup menu
+                    popupMenu.show();
+                });
 
                 try {
                     String sVal = getIntent().getStringExtra(EXTRA_STOCK_ID);

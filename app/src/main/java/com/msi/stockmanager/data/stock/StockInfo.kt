@@ -20,6 +20,13 @@ class StockInfo(
     var companyType = cType
     var cfiCode = cfi
     var lastPrice = 0.0
+    var lastOpen = 0.0
+    var lastHigh = 0.0
+    var lastLow = 0.0
+    var lastVolume = 0.0
+    var lastChange = 0.0
+    var lastChangePercent = 0.0
+    var previosClose = 0.0
     var lastUpdateTime: Long = 0
 
     override fun filter(query: String): Boolean {
