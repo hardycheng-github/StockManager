@@ -87,7 +87,7 @@ public class StockApi implements IStockApi{
                     info.setLastVolume(object.getDouble("regularMarketVolume"));
                     info.setPreviosClose(object.getDouble("regularMarketPreviousClose"));
                     info.setLastChange(object.getDouble("regularMarketChange"));
-                    info.setLastChangePercent(object.getDouble("regularMarketChangePercent"));
+                    info.setLastChangePercent(object.getDouble("regularMarketChangePercent") / 100.0);
                     // 取得股價更新時間
                     info.setLastUpdateTime(object.getLong("regularMarketTime")*1000);
                     try {

@@ -65,6 +65,7 @@ public class AnalysisActivity extends AppCompatActivity {
     private boolean isKlineInit = false;
     private String targetStockId = "";
     private StockInfo targetStockInfo = null;
+    private AnalysisAdapter mAdatper;
 
     private View.OnLayoutChangeListener mSearchLayoutChangListener = new View.OnLayoutChangeListener() {
         @Override
@@ -110,25 +111,42 @@ public class AnalysisActivity extends AppCompatActivity {
     }
 
     private void reload(){
-        if(targetStockInfo != null && !targetStockId.equals(targetStockInfo.getStockId()) &&
-                binding != null && mMenu != null) {
-            targetStockId = targetStockInfo.getStockId();
-//            getSupportActionBar().setTitle(getString(R.string.title_activity_analysis) +
-//                    "：" + targetStockInfo.getStockNameWithId());
-            binding.include.stockName.setText(targetStockInfo.getStockNameWithId());
-            binding.include.stockPrice.setTextColor(ColorUtil.getProfitNone());
-            binding.include.stockPrice.setText(R.string.syncing);
-            binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
-            binding.include.stockProfit.setText(R.string.syncing);
-            requestAsync();
+        if(binding != null && mMenu != null) {
+            if (targetStockInfo != null) {
+                if(!targetStockId.equals(targetStockInfo.getStockId())) {
+                    getSupportActionBar().setTitle(targetStockInfo.getStockNameWithId());
+                    binding.dataContainer.setVisibility(View.INVISIBLE);
+                    binding.loading.setVisibility(View.VISIBLE);
+                    binding.list.setVisibility(View.INVISIBLE);
+                    binding.noData.setVisibility(View.INVISIBLE);
+                    targetStockId = targetStockInfo.getStockId();
+                    binding.include.stockName.setText(targetStockInfo.getStockNameWithId());
+                    binding.include.stockPrice.setTextColor(ColorUtil.getProfitNone());
+                    binding.include.stockPrice.setText(R.string.syncing);
+                    binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
+                    binding.include.stockProfit.setText(R.string.syncing);
+                    requestAsync();
+                }
+            } else {
+                targetStockId = "";
+                getSupportActionBar().setTitle(R.string.title_activity_analysis);
+                if(mAdatper.getItemCount() > 0){
+                    binding.dataContainer.setVisibility(View.INVISIBLE);
+                    binding.loading.setVisibility(View.INVISIBLE);
+                    binding.list.setVisibility(View.VISIBLE);
+                    binding.noData.setVisibility(View.INVISIBLE);
+                } else {
+                    binding.dataContainer.setVisibility(View.INVISIBLE);
+                    binding.loading.setVisibility(View.INVISIBLE);
+                    binding.list.setVisibility(View.INVISIBLE);
+                    binding.noData.setVisibility(View.VISIBLE);
+                }
+            }
         }
     }
 
     private void requestAsync(){
         if(targetStockInfo == null || targetStockId == null || targetStockId.isEmpty()) return;
-        binding.dataContainer.setVisibility(View.INVISIBLE);
-        binding.loading.setVisibility(View.VISIBLE);
-        binding.noData.setVisibility(View.INVISIBLE);
         ApiUtil.stockApi.getHistoryStockData(targetStockId,
                 "1d", "1y", new IStockApi.HistoryCallback() {
                     @Override
@@ -137,6 +155,7 @@ public class AnalysisActivity extends AppCompatActivity {
                             setKlineData(data);
                             binding.dataContainer.setVisibility(View.VISIBLE);
                             binding.loading.setVisibility(View.INVISIBLE);
+                            binding.list.setVisibility(View.INVISIBLE);
                             binding.noData.setVisibility(View.INVISIBLE);
                         });
                     }
@@ -146,6 +165,7 @@ public class AnalysisActivity extends AppCompatActivity {
                         runOnUiThread(()-> {
                             binding.dataContainer.setVisibility(View.INVISIBLE);
                             binding.loading.setVisibility(View.INVISIBLE);
+                            binding.list.setVisibility(View.INVISIBLE);
                             binding.noData.setVisibility(View.VISIBLE);
                         });
                     }
@@ -201,6 +221,7 @@ public class AnalysisActivity extends AppCompatActivity {
                 View view = binding.getRoot();
                 Context context = view.getContext();
                 RecyclerView recyclerView = view.findViewById(R.id.list);
+                binding.include.img.setImageDrawable(getDrawable(R.drawable.ic_baseline_read_more_24));
                 binding.include.cardView.setOnClickListener(v -> {
                     PopupMenu popupMenu = new PopupMenu(context, v, Gravity.RIGHT);
 
@@ -236,6 +257,14 @@ public class AnalysisActivity extends AppCompatActivity {
                     // Showing the popup menu
                     popupMenu.show();
                 });
+                mAdatper = new AnalysisAdapter() {
+                    @Override
+                    public void onStockSelected(StockInfo target) {
+                        onSearchApply(target.getStockId());
+                    }
+                };
+//                binding.list.setLayoutManager(new LinearLayoutManager(this));
+                binding.list.setAdapter(mAdatper);
 
                 try {
                     String sVal = getIntent().getStringExtra(EXTRA_STOCK_ID);
@@ -260,13 +289,11 @@ public class AnalysisActivity extends AppCompatActivity {
         StockInfo info = StockUtilKt.getStockInfoOrNull(keyword);
         if(info != null){
             targetStockInfo = info;
-            reload();
         } else {
-            binding.dataContainer.setVisibility(View.INVISIBLE);
-            binding.loading.setVisibility(View.INVISIBLE);
-            binding.noData.setVisibility(View.VISIBLE);
+            targetStockInfo = null;
         }
         mSearchView.onActionViewCollapsed();
+        reload();
     }
 
     public int getListPreferredItemHeightInPixels() {
@@ -361,6 +388,8 @@ public class AnalysisActivity extends AppCompatActivity {
             mSearchView.onActionViewCollapsed();
             mSearchItem.collapseActionView();
             MenuItemCompat.collapseActionView(mSearchItem);
+        } else if (targetStockInfo != null) {
+            onSearchApply("");
         } else {
             super.onBackPressed();
         }
