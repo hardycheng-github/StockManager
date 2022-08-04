@@ -17,8 +17,28 @@ public class ColorUtil {
         return mContext.getColor(Profile.profit_color_reverse ? R.color.stock_lose : R.color.stock_earn);
     }
 
+    public static int getProfitEarn(int percent){
+        if(percent < 0) percent = 0;
+        else if(percent > 100) percent = 100;
+        double rate = percent / 100.0;
+        int color1 = getProfitEarn();
+        int color2 = getProfitNone();
+        int color = (int)((color1 * rate + color2 * (1.-rate)) / 2);
+        return color;
+    }
+
     public static int getProfitLose(){
         return mContext.getColor(!Profile.profit_color_reverse ? R.color.stock_lose : R.color.stock_earn);
+    }
+
+    public static int getProfitLose(int percent){
+        if(percent < 0) percent = 0;
+        else if(percent > 100) percent = 100;
+        double rate = percent / 100.0;
+        int color1 = getProfitLose();
+        int color2 = getProfitNone();
+        int color = (int)((color1 * rate + color2 * (1.-rate)) / 2);
+        return color;
     }
 
     public static int getProfitNone(){

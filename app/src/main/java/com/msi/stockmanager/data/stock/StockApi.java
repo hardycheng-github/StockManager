@@ -3,6 +3,8 @@ package com.msi.stockmanager.data.stock;
 import android.content.Context;
 import android.util.Log;
 
+import com.msi.stockmanager.data.DateUtil;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -227,16 +229,20 @@ public class StockApi implements IStockApi{
                     //Log.d("HttpRequest", "adjclose=" + adj_close.toString());
                     if (timestamp.length() > 0) {
                         for (int i=0; i<timestamp.length(); i++) {
-                            StockHistory history   = new StockHistory();
-                            history.stock_id       = stock_id;
-                            history.date_timestamp = ((timestamp == null)? 0 : timestamp.getLong(i)*1000);
-                            history.price_open     = ((open == null)? 0 : open.getDouble(i));
-                            history.price_close    = ((close == null)? 0 : close.getDouble(i));
-                            history.price_high     = ((high == null)? 0 : high.getDouble(i));
-                            history.price_low      = ((low == null)? 0 : low.getDouble(i));
-                            history.price_volume   = ((volume == null)? 0 : volume.getDouble(i));
-                            //history.price_adjclose = ((adj_close == null)? 0 : adj_close.getDouble(i));
-                            data.add(history);
+                            StockHistory history = new StockHistory();
+                            try {
+                                history.stock_id = stock_id;
+                                history.date_timestamp = ((timestamp == null) ? 0 : timestamp.getLong(i) * 1000);
+                                history.price_open = ((open == null) ? 0 : open.getDouble(i));
+                                history.price_close = ((close == null) ? 0 : close.getDouble(i));
+                                history.price_high = ((high == null) ? 0 : high.getDouble(i));
+                                history.price_low = ((low == null) ? 0 : low.getDouble(i));
+                                history.price_volume = ((volume == null) ? 0 : volume.getDouble(i));
+                                //history.price_adjclose = ((adj_close == null)? 0 : adj_close.getDouble(i));
+                                data.add(history);
+                            } catch (Exception e){
+                                Log.w(TAG, "getHistoryStockData err: " + stock_id + " parse err at time " + DateUtil.toDateTimeString(history.date_timestamp));
+                            }
                         }
                     }
                 }

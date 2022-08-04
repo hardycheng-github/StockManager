@@ -12,9 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.AccountUtil;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.ColorUtil;
 import com.msi.stockmanager.data.FormatUtil;
+import com.msi.stockmanager.data.analytics.ITaApi;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.data.stock.IStockApi;
 import com.msi.stockmanager.data.stock.StockHistory;
@@ -24,7 +26,6 @@ import com.msi.stockmanager.databinding.ActivityAnalysisBinding;
 import com.msi.stockmanager.kline.KData;
 import com.msi.stockmanager.kline.KLineView;
 import com.msi.stockmanager.ui.main.StockFilterAdapter;
-import com.msi.stockmanager.ui.main.pager.PagerActivity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -42,6 +43,7 @@ import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AnalysisActivity extends AppCompatActivity {
     public static final String TAG = AnalysisActivity.class.getSimpleName();
@@ -125,7 +127,20 @@ public class AnalysisActivity extends AppCompatActivity {
                     binding.include.stockPrice.setText(R.string.syncing);
                     binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
                     binding.include.stockProfit.setText(R.string.syncing);
-                    requestAsync();
+
+                    AccountUtil.StockValue value = AccountUtil.getAccount().stockValueMap.getOrDefault(targetStockId, null);
+                    if(value != null){
+                        onHistoryListUpdated(value.dataList);
+                    } else {
+                        requestAsync();
+                    }
+                    if(System.currentTimeMillis() - value.info.getLastUpdateTime() < 60*60*1000) {
+                        onRegularPriceUpdated(value.info);
+                    } else {
+                        ApiUtil.stockApi.getRegularStockPrice(targetStockId, info -> {
+                            onRegularPriceUpdated(info);
+                        });
+                    }
                 }
             } else {
                 targetStockId = "";
@@ -145,63 +160,77 @@ public class AnalysisActivity extends AppCompatActivity {
         }
     }
 
+    private void onHistoryListUpdated(List<StockHistory> dataList){
+        runOnUiThread(()->{
+            if(dataList != null){
+                setKlineData(dataList);
+                binding.dataContainer.setVisibility(View.VISIBLE);
+                binding.loading.setVisibility(View.INVISIBLE);
+                binding.list.setVisibility(View.INVISIBLE);
+                binding.noData.setVisibility(View.INVISIBLE);
+            } else {
+                binding.dataContainer.setVisibility(View.INVISIBLE);
+                binding.loading.setVisibility(View.INVISIBLE);
+                binding.list.setVisibility(View.INVISIBLE);
+                binding.noData.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    private void onRegularPriceUpdated(StockInfo info){
+        if(info == null) return;
+        runOnUiThread(()->{
+            if(info.getLastChange() > 0){
+                binding.include.stockPrice.setTextColor(ColorUtil.getProfitEarn());
+                binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                binding.include.stockProfit.setTextColor(ColorUtil.getProfitEarn());
+                binding.include.stockProfit.setText(String.format("▲ %s (%s)"
+                        , FormatUtil.number(Math.abs(info.getLastChange()))
+                        , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+            } else if(info.getLastChange() < 0){
+                binding.include.stockPrice.setTextColor(ColorUtil.getProfitLose());
+                binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                binding.include.stockProfit.setTextColor(ColorUtil.getProfitLose());
+                binding.include.stockProfit.setText(String.format("▼ %s (%s)"
+                        , FormatUtil.number(Math.abs(info.getLastChange()))
+                        , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+            } else {
+                binding.include.stockPrice.setTextColor(ColorUtil.getProfitNone());
+                binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
+                binding.include.stockProfit.setText(String.format("%s (%s)"
+                        , FormatUtil.number(Math.abs(info.getLastChange()))
+                        , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+            }
+            binding.include.open.setText(FormatUtil.number(info.getLastOpen()));
+            binding.include.high.setText(FormatUtil.number(info.getLastHigh()));
+            binding.include.low.setText(FormatUtil.number(info.getLastLow()));
+            binding.include.volume.setText(FormatUtil.number(info.getLastVolume()));
+        });
+    }
+
+    private void onTechnologyAnalysisUpdated(Map<String, Integer> taMap){
+        if(taMap == null) return;
+        int rsi = taMap.getOrDefault(ITaApi.KEY_RSI, ITaApi.SCORE_ERR);
+        int ppo = taMap.getOrDefault(ITaApi.KEY_PPO, ITaApi.SCORE_ERR);
+        int wr = taMap.getOrDefault(ITaApi.KEY_WILLIAMS_R, ITaApi.SCORE_ERR);
+        int total = taMap.getOrDefault(ITaApi.KEY_TOTAL, ITaApi.SCORE_ERR);
+    }
+
     private void requestAsync(){
         if(targetStockInfo == null || targetStockId == null || targetStockId.isEmpty()) return;
         ApiUtil.stockApi.getHistoryStockData(targetStockId,
                 "1d", "1y", new IStockApi.HistoryCallback() {
                     @Override
                     public void onResult(List<StockHistory> data) {
-                        runOnUiThread(()->{
-                            setKlineData(data);
-                            binding.dataContainer.setVisibility(View.VISIBLE);
-                            binding.loading.setVisibility(View.INVISIBLE);
-                            binding.list.setVisibility(View.INVISIBLE);
-                            binding.noData.setVisibility(View.INVISIBLE);
-                        });
+                        onHistoryListUpdated(data);
                     }
 
                     @Override
                     public void onException(Exception e) {
-                        runOnUiThread(()-> {
-                            binding.dataContainer.setVisibility(View.INVISIBLE);
-                            binding.loading.setVisibility(View.INVISIBLE);
-                            binding.list.setVisibility(View.INVISIBLE);
-                            binding.noData.setVisibility(View.VISIBLE);
-                        });
+                        onHistoryListUpdated(null);
                     }
                 });
-        ApiUtil.stockApi.getRegularStockPrice(targetStockId, info -> {
-            if(info != null) {
-                runOnUiThread(()->{
-                    if(info.getLastChange() > 0){
-                        binding.include.stockPrice.setTextColor(ColorUtil.getProfitEarn());
-                        binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
-                        binding.include.stockProfit.setTextColor(ColorUtil.getProfitEarn());
-                        binding.include.stockProfit.setText(String.format("▲ %s (%s)"
-                                , FormatUtil.number(Math.abs(info.getLastChange()))
-                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
-                    } else if(info.getLastChange() < 0){
-                        binding.include.stockPrice.setTextColor(ColorUtil.getProfitLose());
-                        binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
-                        binding.include.stockProfit.setTextColor(ColorUtil.getProfitLose());
-                        binding.include.stockProfit.setText(String.format("▼ %s (%s)"
-                                , FormatUtil.number(Math.abs(info.getLastChange()))
-                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
-                    } else {
-                        binding.include.stockPrice.setTextColor(ColorUtil.getProfitNone());
-                        binding.include.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
-                        binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
-                        binding.include.stockProfit.setText(String.format("%s (%s)"
-                                , FormatUtil.number(Math.abs(info.getLastChange()))
-                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
-                    }
-                    binding.include.open.setText(FormatUtil.number(info.getLastOpen()));
-                    binding.include.high.setText(FormatUtil.number(info.getLastHigh()));
-                    binding.include.low.setText(FormatUtil.number(info.getLastLow()));
-                    binding.include.volume.setText(FormatUtil.number(info.getLastVolume()));
-                });
-            }
-        });
     }
 
     private void toUrl(String link){

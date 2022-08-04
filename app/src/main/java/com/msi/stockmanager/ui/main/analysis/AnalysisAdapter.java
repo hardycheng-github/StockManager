@@ -9,12 +9,14 @@ import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.AccountUtil;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.ColorUtil;
 import com.msi.stockmanager.data.FormatUtil;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.databinding.ActivityAnalysisItemBinding;
+import com.msi.stockmanager.ui.main.pager.PagerActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,38 +58,47 @@ public abstract class AnalysisAdapter extends RecyclerView.Adapter<AnalysisAdapt
         holder.binding.stockPrice.setText(R.string.syncing);
         holder.binding.stockProfit.setTextColor(ColorUtil.getProfitNone());
         holder.binding.stockProfit.setText(R.string.syncing);
-        ApiUtil.stockApi.getRegularStockPrice(holder.mValue.getStockId(), info -> {
-            if(info != null) {
-                activity.runOnUiThread(()->{
-                    if(info.getLastChange() > 0){
-                        holder.binding.stockPrice.setTextColor(ColorUtil.getProfitEarn());
-                        holder.binding.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
-                        holder.binding.stockProfit.setTextColor(ColorUtil.getProfitEarn());
-                        holder.binding.stockProfit.setText(String.format("▲ %s (%s)"
-                                , FormatUtil.number(Math.abs(info.getLastChange()))
-                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
-                    } else if(info.getLastChange() < 0){
-                        holder.binding.stockPrice.setTextColor(ColorUtil.getProfitLose());
-                        holder.binding.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
-                        holder.binding.stockProfit.setTextColor(ColorUtil.getProfitLose());
-                        holder.binding.stockProfit.setText(String.format("▼ %s (%s)"
-                                , FormatUtil.number(Math.abs(info.getLastChange()))
-                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
-                    } else {
-                        holder.binding.stockPrice.setTextColor(ColorUtil.getProfitNone());
-                        holder.binding.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
-                        holder.binding.stockProfit.setTextColor(ColorUtil.getProfitNone());
-                        holder.binding.stockProfit.setText(String.format("%s (%s)"
-                                , FormatUtil.number(Math.abs(info.getLastChange()))
-                                , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
-                    }
-                    holder.binding.open.setText(FormatUtil.number(info.getLastOpen()));
-                    holder.binding.high.setText(FormatUtil.number(info.getLastHigh()));
-                    holder.binding.low.setText(FormatUtil.number(info.getLastLow()));
-                    holder.binding.volume.setText(FormatUtil.number(info.getLastVolume()));
-                });
-            }
-        });
+        onRegularPriceUpdated(activity, holder, item);
+        if(System.currentTimeMillis() - item.getLastUpdateTime() < 60*60*1000) {
+            onRegularPriceUpdated(activity, holder, item);
+        } else {
+            ApiUtil.stockApi.getRegularStockPrice(holder.mValue.getStockId(), info -> {
+                onRegularPriceUpdated(activity, holder, info);
+            });
+        }
+    }
+
+    private void onRegularPriceUpdated(Activity activity, ViewHolder holder, StockInfo info){
+        if(info != null) {
+            activity.runOnUiThread(()->{
+                if(info.getLastChange() > 0){
+                    holder.binding.stockPrice.setTextColor(ColorUtil.getProfitEarn());
+                    holder.binding.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                    holder.binding.stockProfit.setTextColor(ColorUtil.getProfitEarn());
+                    holder.binding.stockProfit.setText(String.format("▲ %s (%s)"
+                            , FormatUtil.number(Math.abs(info.getLastChange()))
+                            , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+                } else if(info.getLastChange() < 0){
+                    holder.binding.stockPrice.setTextColor(ColorUtil.getProfitLose());
+                    holder.binding.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                    holder.binding.stockProfit.setTextColor(ColorUtil.getProfitLose());
+                    holder.binding.stockProfit.setText(String.format("▼ %s (%s)"
+                            , FormatUtil.number(Math.abs(info.getLastChange()))
+                            , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+                } else {
+                    holder.binding.stockPrice.setTextColor(ColorUtil.getProfitNone());
+                    holder.binding.stockPrice.setText(FormatUtil.number(info.getLastPrice()));
+                    holder.binding.stockProfit.setTextColor(ColorUtil.getProfitNone());
+                    holder.binding.stockProfit.setText(String.format("%s (%s)"
+                            , FormatUtil.number(Math.abs(info.getLastChange()))
+                            , FormatUtil.percent(Math.abs(info.getLastChangePercent()))));
+                }
+                holder.binding.open.setText(FormatUtil.number(info.getLastOpen()));
+                holder.binding.high.setText(FormatUtil.number(info.getLastHigh()));
+                holder.binding.low.setText(FormatUtil.number(info.getLastLow()));
+                holder.binding.volume.setText(FormatUtil.number(info.getLastVolume()));
+            });
+        }
     }
 
     @Override
