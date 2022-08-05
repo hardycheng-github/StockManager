@@ -66,23 +66,25 @@ class TaApi : ITaApi {
                 val ppo = PPOIndicator(closes)
                 val wr = WilliamsRIndicator(series, DEFAULT_INDICATOR_COUNT)
                 val endIdx = series.endIndex
-                val extRSI = getMinMaxValue(rsi)
-                val minRSI = getScore(ITaApi.KEY_RSI, extRSI.first)
-                val maxRSI = getScore(ITaApi.KEY_RSI, extRSI.second)
-                val extPPO = getMinMaxValue(ppo)
-                val minPPO = getScore(ITaApi.KEY_PPO, extPPO.first)
-                val maxPPO = getScore(ITaApi.KEY_PPO, extPPO.second)
-                val extWR = getMinMaxValue(wr)
-                val minWR = getScore(ITaApi.KEY_WILLIAMS_R, extWR.first)
-                val maxWR = getScore(ITaApi.KEY_WILLIAMS_R, extWR.second)
+//                val extRSI = getMinMaxValue(rsi)
+//                val minRSI = getScore(ITaApi.KEY_RSI, extRSI.first)
+//                val maxRSI = getScore(ITaApi.KEY_RSI, extRSI.second)
+//                val extPPO = getMinMaxValue(ppo)
+//                val minPPO = getScore(ITaApi.KEY_PPO, extPPO.first)
+//                val maxPPO = getScore(ITaApi.KEY_PPO, extPPO.second)
+//                val extWR = getMinMaxValue(wr)
+//                val minWR = getScore(ITaApi.KEY_WILLIAMS_R, extWR.first)
+//                val maxWR = getScore(ITaApi.KEY_WILLIAMS_R, extWR.second)
                 val lastRSI = getScore(ITaApi.KEY_RSI, rsi.getValue(endIdx).doubleValue())
                 val lastPPO = getScore(ITaApi.KEY_PPO, ppo.getValue(endIdx).doubleValue())
                 val lastWR = getScore(ITaApi.KEY_WILLIAMS_R, wr.getValue(endIdx).doubleValue())
                 val total = (lastRSI + lastPPO*2 + lastWR) / 4
-                Log.d(TAG, "getAllIndicatorScores result: id ${dataList[0].stock_id}, total $total\n" +
-                        "RSI ($lastRSI, $minRSI~$maxRSI)\n" +
-                        "PPO ($lastPPO, $minPPO~$maxPPO)\n" +
-                        "WR ($lastWR, $minWR~$maxWR)\n"
+                Log.d(TAG, "getAllIndicatorScores result: id ${dataList[0].stock_id}, total $total" +
+                        ", RSI $lastRSI, PPO $lastPPO, WR $lastWR"
+//                        "\nRSI ($lastRSI, $minRSI~$maxRSI)" +
+//                        "\nPPO ($lastPPO, $minPPO~$maxPPO)" +
+//                        "\nWR ($lastWR, $minWR~$maxWR)"
+
                 )
 
                         val map = mutableMapOf<String, Int>()

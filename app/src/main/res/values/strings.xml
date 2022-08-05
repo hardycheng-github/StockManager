@@ -178,12 +178,15 @@
     <string name="today_low">今日最低價</string>
     <string name="today_close">今日收盤價</string>
     <string name="today_volume">今日成交量</string>
-    <string name="long_score">趨勢走向分析</string>
-    <string name="short_score">買賣壓力分析</string>
-    <string name="total_score">綜合分析結果</string>
-    <string name="score_0">強烈建議賣出</string>
-    <string name="score_1">建議賣出</string>
-    <string name="score_2">建議持有</string>
-    <string name="score_3">建議買入</string>
-    <string name="score_4">強烈建議買入</string>
+    <string name="advice">智慧分析</string>
+    <string name="long_score">趨勢走向</string>
+    <string name="short_score">買賣壓力</string>
+    <string name="total_score">綜合分數</string>
+    <string-array name="score_list">
+        <item>強勢下跌</item>
+        <item>下跌趨勢</item>
+        <item>建議觀望</item>
+        <item>上漲趨勢</item>
+        <item>強勢上漲</item>
+    </string-array>
 </resources>

@@ -170,6 +170,11 @@ public class OverviewActivity extends AppCompatActivity {
 //                ColorUtil.init(this);
 //                AccountUtil.init(this);
 
+//                int color0 = ColorUtil.getColorWithAlpha(0xFFFF0000, 0);
+//                int color1 = ColorUtil.getColorWithAlpha(0xFFFF0000, 0.2);
+//                int color2 = ColorUtil.getColorWithAlpha(0xFFFF0000, 0.4);
+//                int color3 = ColorUtil.getColorWithAlpha(0xFFFF0000, 1);
+
                 binding = ActivityOverviewBinding.inflate(getLayoutInflater());
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.overviewToolbar);
