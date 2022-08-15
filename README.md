@@ -17,6 +17,8 @@
 * [漲跌顏色客製](#漲跌顏色客製)
 * [實時股價對接](#實時股價對接)
 * [財經新聞彙整](#財經新聞彙整)
+* [走勢與技術線圖]#(走勢與技術線圖)
+* [智慧分析建議](#智慧分析建議)
 
 ### 簡單易懂的介面設計
 
@@ -52,7 +54,18 @@
 ### 財經新聞彙整
 整合多方新聞來源，隨時掌握最新情報
 
-<img width="360" src="https://user-images.githubusercontent.com/55072235/184613572-582fb654-6768-401b-a227-839819e4b943.jpg" />
+<img width="360" src="https://github.com/hardycheng-github/StockManager/blob/demo/demo/Screenshot_2022-08-15-16-03-21-830_com.msi.stockmanager.jpg" />
+
+### 走勢與技術線圖
+歷史走勢與技術指標呈現，綜觀局勢專業分析
+
+<img width="360" src="https://github.com/hardycheng-github/StockManager/blob/demo/demo/20220815_175607.gif" />
+
+### 智慧分析建議
+創新個股智慧分析，懶人投資福音
+
+<img width="360" src="https://github.com/hardycheng-github/StockManager/blob/demo/demo/Screenshot_2022-08-15-15-58-40-562_com.msi.stockmanager.jpg" />
+
 
 ## 👀 User Guide
 
