@@ -104,7 +104,7 @@
 * [MPAndroidChart](#mpandroidchart)
 * [Jetpack Compose](#jetpack-compose)
 * [Compose EasyForms](#compose-easyforms)
-* [Ta4j](#Ta4j)
+* [Ta4j](#ta4j)
 
 ### [Kotlin](https://kotlinlang.org/)
 
