@@ -136,7 +136,7 @@ public class AccountUtil {
                         }
                     }
                 });
-                if(System.currentTimeMillis() - stockValue.info.getLastUpdateTime() > 60*60*1000) {
+                if(stockValue.dataList == null || stockValue.dataList.isEmpty()) {
                     ApiUtil.stockApi.getHistoryStockData(stockId, "1d", "1y", new IStockApi.HistoryCallback() {
                         @Override
                         public void onResult(List<StockHistory> data) {
@@ -184,6 +184,13 @@ public class AccountUtil {
                             }
                         }
                     });
+                } else {
+                    lockCount -= 2; //skip ta calc
+                    if (lockCount <= 0) {
+                        synchronized (lock) {
+                            lock.notifyAll();
+                        }
+                    }
                 }
             }
             if(lockCount > 0) {
@@ -226,6 +233,7 @@ public class AccountUtil {
     }
 
     public static void init(Context context){
+        if(mContext != null) return;
         mContext = context;
         ApiUtil.transApi.addTransUpdateListener(transUpdateListener);
         onDataChanged();

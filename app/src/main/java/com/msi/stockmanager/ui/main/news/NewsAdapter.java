@@ -69,10 +69,30 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
         INewsApi.NewsItem item = mItems.get(position);
         holder.mValue = item;
         if(item.image != null){
-            holder.binding.img.setVisibility(View.VISIBLE);
+//            holder.binding.img.setVisibility(View.VISIBLE);
             holder.binding.img.setImageBitmap(item.image);
+            holder.binding.imgText.setVisibility(View.INVISIBLE);
         } else {
-            holder.binding.img.setVisibility(View.GONE);
+//            holder.binding.img.setVisibility(View.GONE);
+            holder.binding.img.setImageResource(R.drawable.gradient_s);
+            switch (item.type){
+                case INewsApi.TYPE_ALL:
+                    holder.binding.imgText.setText(R.string.news_type_all);
+                    break;
+                case INewsApi.TYPE_STOCK:
+                    holder.binding.imgText.setText(R.string.news_type_stock);
+                    break;
+                case INewsApi.TYPE_BULLETIN:
+                    holder.binding.imgText.setText(R.string.news_type_bulletin);
+                    break;
+                case INewsApi.TYPE_EXCHANGE:
+                    holder.binding.imgText.setText(R.string.news_type_exchange);
+                    break;
+                case INewsApi.TYPE_CRYPTO:
+                    holder.binding.imgText.setText(R.string.news_type_crypto);
+                    break;
+            }
+            holder.binding.imgText.setVisibility(View.VISIBLE);
         }
         holder.binding.title.setText(item.title);
         holder.binding.cardView.setOnClickListener(v->openUrl(item.link));

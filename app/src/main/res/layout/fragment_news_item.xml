@@ -41,6 +41,22 @@
                 app:srcCompat="@drawable/gradient_s" />
 
             <TextView
+                android:id="@+id/imgText"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:padding="16dp"
+                android:gravity="center"
+                android:visibility="invisible"
+                android:textStyle="bold"
+                android:text="加密貨幣"
+                android:textColor="@color/black"
+                android:autoSizeTextType="uniform"
+                app:layout_constraintBottom_toBottomOf="@+id/img"
+                app:layout_constraintEnd_toEndOf="@+id/img"
+                app:layout_constraintStart_toStartOf="@+id/img"
+                app:layout_constraintTop_toTopOf="@+id/img"/>
+
+            <TextView
                 android:id="@+id/title"
                 android:layout_width="0dp"
                 android:layout_height="0dp"

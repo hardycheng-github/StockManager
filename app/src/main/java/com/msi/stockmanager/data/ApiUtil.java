@@ -16,8 +16,11 @@ public class ApiUtil {
     public static ITransApi transApi;
     public static INewsApi newsApi;
     public static ITaApi taApi;
+    private static Context mContext;
 
     public static void init(Context context){
+        if(mContext != null) return;
+        mContext = context;
         stockApi = new StockApi(context);
         transApi = new TransApi(context);
         newsApi = new NewsApi(context);

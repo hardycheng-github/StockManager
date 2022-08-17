@@ -23,13 +23,17 @@ import com.msi.stockmanager.data.stock.StockHistory;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.databinding.ActivityAnalysisBinding;
+import com.msi.stockmanager.databinding.ActivityAnalysisItemBinding;
+import com.msi.stockmanager.databinding.ViewTaItemBinding;
 import com.msi.stockmanager.kline.KData;
 import com.msi.stockmanager.kline.KLineView;
 import com.msi.stockmanager.ui.main.StockFilterAdapter;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.database.DataSetObserver;
 import android.net.Uri;
 import android.util.DisplayMetrics;
@@ -42,8 +46,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class AnalysisActivity extends AppCompatActivity {
     public static final String TAG = AnalysisActivity.class.getSimpleName();
@@ -128,6 +135,8 @@ public class AnalysisActivity extends AppCompatActivity {
                     binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
                     binding.include.stockProfit.setText(R.string.syncing);
 
+                    initAnalytics(binding.include);
+
                     AccountUtil.StockValue value = AccountUtil.getAccount().stockValueMap.getOrDefault(targetStockId, null);
                     if(value != null){
                         onHistoryListUpdated(value.dataList);
@@ -209,12 +218,101 @@ public class AnalysisActivity extends AppCompatActivity {
         });
     }
 
-    private void onTechnologyAnalysisUpdated(Map<String, Integer> taMap){
+    private void initAnalytics(ActivityAnalysisItemBinding binding){
+        binding.analyticsBtnOn.setVisibility(View.GONE);
+        binding.analyticsBtnOff.setVisibility(View.GONE);
+        binding.analyticsContainer.setVisibility(View.VISIBLE);
+        binding.taTotal.title.setText(R.string.total_score);
+        binding.taShort.title.setText(R.string.short_score);
+        binding.taLong.title.setText(R.string.long_score);
+        binding.taTotal.indicator.setIndicatorColor(ColorUtil.getProfitEarnSoft());
+        binding.taTotal.indicator.setTrackColor(ColorUtil.getProfitLoseSoft());
+        binding.taLong.indicator.setIndicatorColor(ColorUtil.getProfitEarnSoft());
+        binding.taLong.indicator.setTrackColor(ColorUtil.getProfitLoseSoft());
+        binding.taShort.indicator.setIndicatorColor(ColorUtil.getProfitEarnSoft());
+        binding.taShort.indicator.setTrackColor(ColorUtil.getProfitLoseSoft());
+        AccountUtil.StockValue stockValue = AccountUtil.getAccount().stockValueMap.getOrDefault(targetStockId, null);
+        if(stockValue != null && stockValue.taMap != null && !stockValue.taMap.isEmpty()){
+            onTechnologyAnalysisUpdated(binding, stockValue.taMap);
+        } else if(stockValue != null && stockValue.dataList != null && !stockValue.dataList.isEmpty()){
+            Log.d(TAG, targetStockId + " initAnalytics: calc technology analysis");
+            ApiUtil.taApi.getAllIndicatorScores(stockValue.dataList, new ITaApi.Callback() {
+                @Override
+                public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {}
+
+                @Override
+                public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Map<String, ? extends Integer> stringMap) {
+                    Map<String, Integer> taMap = new HashMap<String, Integer>();
+                    taMap.putAll(stringMap);
+                    onTechnologyAnalysisUpdated(binding, taMap);
+                }
+
+                @Override
+                public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                    Log.e(TAG, targetStockId + " initAnalytics err: fail to calc technology analysis");
+                }
+            });
+        } else {
+            Log.d(TAG, targetStockId + " initAnalytics: get history data");
+            ApiUtil.stockApi.getHistoryStockData(targetStockId, "1d", "1mo", new IStockApi.HistoryCallback() {
+                @Override
+                public void onResult(List<StockHistory> data) {
+                    Log.d(TAG, targetStockId + " initAnalytics: calc technology analysis");
+                    ApiUtil.taApi.getAllIndicatorScores(stockValue.dataList, new ITaApi.Callback() {
+                        @Override
+                        public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {}
+
+                        @Override
+                        public void onSuccess(@io.reactivex.rxjava3.annotations.NonNull Map<String, ? extends Integer> stringMap) {
+                            Map<String, Integer> taMap = new HashMap<String, Integer>();
+                            taMap.putAll(stringMap);
+                            onTechnologyAnalysisUpdated(binding, taMap);
+                        }
+
+                        @Override
+                        public void onError(@io.reactivex.rxjava3.annotations.NonNull Throwable e) {
+                            Log.e(TAG, targetStockId + " initAnalytics err: fail to calc technology analysis");
+                        }
+                    });
+                }
+
+                @Override
+                public void onException(Exception e) {
+                    Log.e(TAG, targetStockId + " initAnalytics err: fail to get history data");
+                }
+            });
+        }
+    }
+
+    private void onTechnologyAnalysisUpdated(ActivityAnalysisItemBinding binding, Map<String, Integer> taMap){
         if(taMap == null) return;
+        Log.d(TAG, "onTechnologyAnalysisUpdated: size " + taMap.size());
         int rsi = taMap.getOrDefault(ITaApi.KEY_RSI, ITaApi.SCORE_ERR);
         int ppo = taMap.getOrDefault(ITaApi.KEY_PPO, ITaApi.SCORE_ERR);
         int wr = taMap.getOrDefault(ITaApi.KEY_WILLIAMS_R, ITaApi.SCORE_ERR);
-        int total = taMap.getOrDefault(ITaApi.KEY_TOTAL, ITaApi.SCORE_ERR);
+        int totalScore = taMap.getOrDefault(ITaApi.KEY_TOTAL, ITaApi.SCORE_ERR);
+        int shortScore = (rsi + wr) / 2;
+        int longScore = ppo;
+        int totalLevel = Math.min(totalScore / 20, 4);
+        int totalBg = ColorUtil.getProfitColor(totalLevel-2);
+        runOnUiThread(()->{
+            String[] scoreList = getResources().getStringArray(R.array.score_list);
+            binding.analyticsResult.setText(scoreList[totalLevel]);
+            binding.analyticsResult.setBackgroundColor(totalBg);
+            updateTaView(binding.taShort, shortScore);
+            updateTaView(binding.taLong, longScore);
+            updateTaView(binding.taTotal, totalScore);
+        });
+    }
+
+    private void updateTaView(ViewTaItemBinding binding, int score){
+//        int color = ColorUtil.getProfitScore(score);
+        double alpha = (Math.abs(score-50) / 50.0) * 0.6;
+        int bgColor = ColorUtil.getColorWithAlpha(ColorUtil.getProfitColorSoft(score-50), alpha);
+//        binding.score.setTextColor(color);
+        binding.score.setText(score+"");
+        binding.indicator.setProgress(score);
+        binding.indicator.setBackgroundTintList(ColorStateList.valueOf(bgColor));
     }
 
     private void requestAsync(){

@@ -10,6 +10,7 @@ public class ColorUtil {
     private static Context mContext;
 
     public static void init(Context context){
+        if(mContext != null) return;
         mContext = context;
     }
 
