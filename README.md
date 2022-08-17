@@ -104,6 +104,7 @@
 * [MPAndroidChart](#mpandroidchart)
 * [Jetpack Compose](#jetpack-compose)
 * [Compose EasyForms](#compose-easyforms)
+* [KLineView](#klineview)
 * [Ta4j](#ta4j)
 
 ### [Kotlin](https://kotlinlang.org/)
@@ -153,11 +154,20 @@ EasyForms是在Compose環境中使用的表單建構工具，幫助我們管理�
 
 股票交易編輯就需要管理眾多輸入內容的狀態，非常適合使用EasyForms來協助表單驗證。
 
+### [KLineView](https://github.com/xiesuichao/KLineView)
+
+KLineView是一個繪製K線圖的第三方庫：
+
+* 基本K線走勢圖呈現優化，可載入十萬筆以上數據且操作流暢
+* 内建主圖與副圖技術指標呈現
+* 主圖技術指標：MA、EMA、BOLL
+* 副圖技術指標：MACD、KDJ、RSI
+
 ### [Ta4j](https://github.com/ta4j/ta4j)
 
 > Ta4j is an open source Java library for technical analysis. It provides the basic components for creation, evaluation and execution of trading strategies.
 
-Ta4j是非常方便的投資工具，開發者可以在java環境中簡單的計算超過130種技術指標，在製作與分析技術線圖時搭配ta4j，可以大大提升開發效率。
+Ta4j是非常方便的投資工具，開發者可以在java環境中簡單的計算超過130種技術指標，在製作與分析技術線圖時搭配ta4j，大大提升開發效率。
 
 ## 🏃‍♀️ Next Stage
 
