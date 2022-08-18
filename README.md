@@ -93,7 +93,7 @@
 * 新增/編輯交易紀錄
 * 歷史紀錄搜尋
 
-[MSI Stock Manager Stage-2 Demo](https://github.com/hardycheng-github/StockManager/blob/demo/demo/msi-stock-manager-stage-2-demo.mov)
+[MSI Stock Manager Stage-2 Demo](https://user-images.githubusercontent.com/55072235/185306766-34f6393f-a432-4935-b45f-1a33c95cf2e8.mp4)
 
 ## 🛠 Development Notes
 
