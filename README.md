@@ -71,7 +71,7 @@
 
 ### 帳戶總覽
 
-<img src="https://user-images.githubusercontent.com/55072235/177241041-746052a4-0358-4fc1-a9a5-2345cd3a4462.png" />
+![帳戶總覽](https://user-images.githubusercontent.com/55072235/185320585-b7a8910e-e6ab-4b72-9fd6-84a3534b4157.png)
 
 ### 滑動選單頁面
 
@@ -84,6 +84,18 @@
 ### 歷史紀錄搜尋
 
 <img src="https://user-images.githubusercontent.com/55072235/177242175-65a7b08f-9e11-4744-9fc9-d8ab9b8d5845.png" />
+
+### 財經新聞彙整
+
+![財經新聞彙整](https://user-images.githubusercontent.com/55072235/185322960-288e9bfa-0613-4ef0-95e6-1f9a42d222e3.png)
+
+### 智慧分析總覽
+
+![智慧分析總覽](https://user-images.githubusercontent.com/55072235/185323561-996d001c-0633-417d-9f90-5334c280e2e4.png)
+
+### 個股智慧分析
+
+![個股智慧分析](https://user-images.githubusercontent.com/55072235/185323325-ae7a04df-4b7d-4aad-b6da-b0c015edd060.png)
 
 ### The Demo
 
