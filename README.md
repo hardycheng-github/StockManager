@@ -108,7 +108,7 @@
 * 財經新聞
 * 智慧分析
 
-[MSI Stock Manager Stage-2 Demo](https://user-images.githubusercontent.com/55072235/185306766-34f6393f-a432-4935-b45f-1a33c95cf2e8.mp4)
+[MSI Stock Manager Stage-2 Demo](https://user-images.githubusercontent.com/55072235/185537117-59f51a5f-3430-4d8e-849a-ff7384a36633.mov)
 
 ## 🛠 Development Notes
 
