@@ -5,7 +5,7 @@
 * [APP Introduction](#-app-introduction)
 * [User Guide](#-user-guide)
 * [Development Notes](#-development-notes)
-* [The Demo](#the-demo)
+* [The Demo](#-the-demo)
 * [Next Stage](#%EF%B8%8F-next-stage)
 
 ## 👨‍🏫 APP Introduction
