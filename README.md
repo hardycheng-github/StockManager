@@ -5,6 +5,7 @@
 * [APP Introduction](#-app-introduction)
 * [User Guide](#-user-guide)
 * [Development Notes](#-development-notes)
+* [The Demo](#the-demo)
 * [Next Stage](#%EF%B8%8F-next-stage)
 
 ## 👨‍🏫 APP Introduction
@@ -67,7 +68,7 @@
 <img width="360" src="https://github.com/hardycheng-github/StockManager/blob/demo/demo/Screenshot_2022-08-15-15-58-40-562_com.msi.stockmanager.jpg" />
 
 
-## 👀 User Guide
+## 📑 User Guide
 
 ### 帳戶總覽
 
@@ -97,7 +98,7 @@
 
 ![個股智慧分析](https://user-images.githubusercontent.com/55072235/185323325-ae7a04df-4b7d-4aad-b6da-b0c015edd060.png)
 
-### The Demo
+## 👀 The Demo
 
 使用情境的快速展示
 * 視覺化總覽
