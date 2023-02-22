@@ -17,5 +17,5 @@ interface ITaApi {
 
     interface Callback: SingleObserver<Map<String, Int>>
 
-    fun getAllIndicatorScores(data: List<StockHistory>, callback: Callback)
+    fun getAllIndicatorLastScores(data: List<StockHistory>, callback: Callback)
 }

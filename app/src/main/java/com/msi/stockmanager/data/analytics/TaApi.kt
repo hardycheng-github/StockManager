@@ -52,7 +52,7 @@ class TaApi : ITaApi {
             , ITaApi.SCORE_MIN)
     }
 
-    override fun getAllIndicatorScores(dataList: List<StockHistory>, callback: ITaApi.Callback) {
+    override fun getAllIndicatorLastScores(dataList: List<StockHistory>, callback: ITaApi.Callback) {
         if(dataList == null || dataList.isEmpty()){
             callback.onError(Exception("data list is null or empty"))
             return

@@ -14,9 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.StockManager">
         <activity
+            android:name=".TaTestActivity"
+            android:exported="true" />
+        <activity
             android:name=".ui.main.analysis.AnalysisActivity"
-            android:label="@string/title_activity_analysis"
             android:exported="false"
+            android:label="@string/title_activity_analysis"
             android:theme="@style/Theme.StockManager.NoActionBar" />
         <activity
             android:name=".ui.main.news.NewsActivity"
@@ -74,9 +77,9 @@
         <activity
             android:name=".HttpDemoActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".KlineViewActivity"
-            android:screenOrientation="portrait">
-        </activity>
+        <activity
+            android:name=".KlineViewActivity"
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

@@ -30,7 +30,6 @@ import com.msi.stockmanager.kline.KLineView;
 import com.msi.stockmanager.ui.main.StockFilterAdapter;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -236,7 +235,7 @@ public class AnalysisActivity extends AppCompatActivity {
             onTechnologyAnalysisUpdated(binding, stockValue.taMap);
         } else if(stockValue != null && stockValue.dataList != null && !stockValue.dataList.isEmpty()){
             Log.d(TAG, targetStockId + " initAnalytics: calc technology analysis");
-            ApiUtil.taApi.getAllIndicatorScores(stockValue.dataList, new ITaApi.Callback() {
+            ApiUtil.taApi.getAllIndicatorLastScores(stockValue.dataList, new ITaApi.Callback() {
                 @Override
                 public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {}
 
@@ -258,7 +257,7 @@ public class AnalysisActivity extends AppCompatActivity {
                 @Override
                 public void onResult(List<StockHistory> data) {
                     Log.d(TAG, targetStockId + " initAnalytics: calc technology analysis");
-                    ApiUtil.taApi.getAllIndicatorScores(stockValue.dataList, new ITaApi.Callback() {
+                    ApiUtil.taApi.getAllIndicatorLastScores(stockValue.dataList, new ITaApi.Callback() {
                         @Override
                         public void onSubscribe(@io.reactivex.rxjava3.annotations.NonNull Disposable d) {}
 

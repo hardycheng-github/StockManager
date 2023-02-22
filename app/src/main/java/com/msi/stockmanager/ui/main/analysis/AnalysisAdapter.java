@@ -95,7 +95,7 @@ public abstract class AnalysisAdapter extends RecyclerView.Adapter<AnalysisAdapt
             onTechnologyAnalysisUpdated(activity, holder, stockValue.taMap);
         } else if(stockValue != null && stockValue.dataList != null && !stockValue.dataList.isEmpty()){
             Log.d(TAG, info.getStockId() + " initAnalytics: calc technology analysis");
-            ApiUtil.taApi.getAllIndicatorScores(stockValue.dataList, new ITaApi.Callback() {
+            ApiUtil.taApi.getAllIndicatorLastScores(stockValue.dataList, new ITaApi.Callback() {
                 @Override
                 public void onSubscribe(@NonNull Disposable d) {}
 
@@ -117,7 +117,7 @@ public abstract class AnalysisAdapter extends RecyclerView.Adapter<AnalysisAdapt
                 @Override
                 public void onResult(List<StockHistory> data) {
                     Log.d(TAG, info.getStockId() + " initAnalytics: calc technology analysis");
-                    ApiUtil.taApi.getAllIndicatorScores(stockValue.dataList, new ITaApi.Callback() {
+                    ApiUtil.taApi.getAllIndicatorLastScores(stockValue.dataList, new ITaApi.Callback() {
                         @Override
                         public void onSubscribe(@NonNull Disposable d) {}
 

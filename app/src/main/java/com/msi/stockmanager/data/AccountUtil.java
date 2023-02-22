@@ -141,7 +141,7 @@ public class AccountUtil {
                         @Override
                         public void onResult(List<StockHistory> data) {
                             stockValue.dataList = data;
-                            ApiUtil.taApi.getAllIndicatorScores(data, new ITaApi.Callback() {
+                            ApiUtil.taApi.getAllIndicatorLastScores(data, new ITaApi.Callback() {
                                 @Override
                                 public void onSubscribe(@NonNull Disposable d) {
                                 }
