@@ -60,14 +60,26 @@ public class StockApi implements IStockApi{
                 String httRequestUrl = String.format("https://query1.finance.yahoo.com/v6/finance/quote?symbols=" + stock_id + ".TW");
                 URL url = new URL(httRequestUrl);
                 connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
                 connection.setRequestMethod("GET");
                 connection.setDoInput(true);
-                InputStream inputStream = connection.getInputStream();
                 int status = connection.getResponseCode();
-                if ((status != 200) || (inputStream == null)) {
+                if (status != 200) {
+                    String errMsg = "";
+                    try {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
+                        StringBuilder sb = new StringBuilder();
+                        String line = "";
+                        while ((line = in.readLine()) != null) {
+                            sb.append(line + "\n");
+                        }
+                        in.close();
+                        errMsg = sb.toString().trim();
+                    } catch (Exception e){}
                     throw new Exception("HTTP error fetching URL (status=" + String.valueOf(status)
-                            + ", URL=" + httRequestUrl + ")");
+                            + ", URL=" + httRequestUrl + ", msg="+errMsg+")");
                 } else {
+                    InputStream inputStream = connection.getInputStream();
                     // 讀取 JSON RESPONSE --> sb
                     InputStreamReader reader = new InputStreamReader(inputStream,"UTF-8");
                     BufferedReader in = new BufferedReader(reader);
@@ -172,14 +184,26 @@ public class StockApi implements IStockApi{
                 String httRequestUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/"+stock_id+".TW?interval="+interval+"&range="+range);
                 URL url = new URL(httRequestUrl);
                 connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
                 connection.setRequestMethod("GET");
                 connection.setDoInput(true);
-                InputStream inputStream = connection.getInputStream();
                 int status = connection.getResponseCode();
-                if ((status != 200) || (inputStream == null)) {
+                if (status != 200) {
+                    String errMsg = "";
+                    try {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
+                        StringBuilder sb = new StringBuilder();
+                        String line = "";
+                        while ((line = in.readLine()) != null) {
+                            sb.append(line + "\n");
+                        }
+                        in.close();
+                        errMsg = sb.toString().trim();
+                    } catch (Exception e){}
                     throw new Exception("HTTP error fetching URL (status=" + String.valueOf(status)
-                            + ", URL=" + httRequestUrl + ")");
+                            + ", URL=" + httRequestUrl + ", msg="+errMsg+")");
                 } else {
+                    InputStream inputStream = connection.getInputStream();
                     // 讀取 JSON RESPONSE --> sb
                     InputStreamReader reader = new InputStreamReader(inputStream,"UTF-8");
                     BufferedReader in = new BufferedReader(reader);
