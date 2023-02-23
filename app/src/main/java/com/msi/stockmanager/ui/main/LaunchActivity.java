@@ -67,9 +67,9 @@ public class LaunchActivity extends AppCompatActivity {
             Log.d(TAG, "+++ init start +++");
             initLock.lock();
             Profile.load(this);
-            ApiUtil.init(this);
             ColorUtil.init(this);
             FormatUtil.init(this);
+            ApiUtil.init(this);
             AccountUtil.init(this);
             AccountUtil.addListener(listener);
             long t2 = System.currentTimeMillis();

@@ -142,7 +142,7 @@ public class AnalysisActivity extends AppCompatActivity {
                     } else {
                         requestAsync();
                     }
-                    if(System.currentTimeMillis() - value.info.getLastUpdateTime() < 60*60*1000) {
+                    if(value != null && System.currentTimeMillis() - value.info.getLastUpdateTime() < 60*60*1000) {
                         onRegularPriceUpdated(value.info);
                     } else {
                         ApiUtil.stockApi.getRegularStockPrice(targetStockId, info -> {

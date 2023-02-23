@@ -28,7 +28,6 @@ public class ApiUtil {
         transApi = new TransApi(context);
         newsApi = new NewsApi(context);
         taApi = new TaApi();
-        revenueApi = new RevenueApi();
-        revenueApi.init(null);
+        revenueApi = new RevenueApi(context);
     }
 }

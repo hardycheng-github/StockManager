@@ -1,5 +1,7 @@
 package com.msi.stockmanager.data.revenue
 
+import android.content.Context
+
 data class RevenueInfo(
     val year: Int, //資料年月-年
     val month: Int, //資料年月-月
@@ -19,12 +21,28 @@ data class RevenueInfo(
 
 interface IRevenueApi {
 
-    interface InitCallback {
+    companion object {
+        const val SYNC_STATUS_NONE = 0
+        const val SYNC_STATUS_ING = 1
+        const val SYNC_STATUS_SUCCESS = 2
+        const val SYNC_STATUS_FAIL = 3
+    }
+
+    interface SyncCallback {
+        fun onStart()
         fun onSuccess()
         fun onFail(msg: String)
     }
 
-    fun init(cb: InitCallback? = null)
+    /**
+     * fetching data from open data cloud
+     */
+    fun sync(blocking:Boolean = false, cb: SyncCallback? = null): Int
+
+    /**
+     * check if sync success before
+     */
+    fun hasSync(): Boolean
 
     fun getRevenueInfo(stockId: String, year: Int = -1, month: Int = -1): RevenueInfo
 

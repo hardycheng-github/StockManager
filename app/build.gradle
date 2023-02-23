@@ -89,5 +89,6 @@ dependencies {
     implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
 
     implementation "com.opencsv:opencsv:5.7.1"
+    implementation 'com.github.evrencoskun:TableView:v0.8.9.4'
 
 }
