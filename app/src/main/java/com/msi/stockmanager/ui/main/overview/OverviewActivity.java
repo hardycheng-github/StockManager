@@ -38,6 +38,7 @@ import com.msi.stockmanager.ui.main.form.FormActivity;
 import com.msi.stockmanager.ui.main.news.NewsActivity;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.ui.main.revenue.RevenueActivity;
 import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
 import java.util.ArrayList;
@@ -303,6 +304,9 @@ public class OverviewActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_news:
                 startActivity(new Intent(OverviewActivity.this, NewsActivity.class));
+                return true;
+            case R.id.menu_revenue:
+                startActivity(new Intent(OverviewActivity.this, RevenueActivity.class));
                 return true;
         }
 

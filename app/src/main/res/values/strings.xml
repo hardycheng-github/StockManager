@@ -193,4 +193,6 @@
     <string name="init_error_message">無法初始化應用，請確認您的網路環境，或重新嘗試同步</string>
     <string name="retry">重試</string>
     <string name="exit">離開</string>
+    <string name="watching_list">觀察清單</string>
+    <string name="title_activity_revenue">營收分析</string>
 </resources>

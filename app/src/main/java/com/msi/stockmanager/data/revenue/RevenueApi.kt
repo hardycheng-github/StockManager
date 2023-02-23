@@ -65,11 +65,11 @@ class RevenueApi(val context: Context): IRevenueApi {
                                     val connection = url.openConnection() as HttpURLConnection
                                     connection.requestMethod = "GET"
                                     connection.doInput = true
-                                    val inputStream: InputStream = connection.inputStream
                                     val status: Int = connection.responseCode
-                                    if (status != 200 || inputStream == null) {
+                                    if (status != 200) {
                                         throw java.lang.Exception("HTTP error fetching URL (status=$status, URL=$httRequestUrl)")
                                     } else {
+                                        val inputStream: InputStream = connection.inputStream
                                         val reader = InputStreamReader(inputStream, "UTF-8")
                                         val br = BufferedReader(reader)
                                         file.parentFile.mkdirs()
