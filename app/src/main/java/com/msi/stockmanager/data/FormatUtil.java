@@ -24,11 +24,19 @@ public class FormatUtil {
         number.setMaximumFractionDigits(2);
     }
 
+    public static String currency(long val){
+        return currency.format(val);
+    }
+
     public static String currency(int val){
         return currency.format(val);
     }
 
     public static String number(int val){
+        return number.format(val);
+    }
+
+    public static String number(long val){
         return number.format(val);
     }
 

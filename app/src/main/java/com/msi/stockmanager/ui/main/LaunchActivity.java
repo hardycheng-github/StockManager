@@ -119,4 +119,10 @@ public class LaunchActivity extends AppCompatActivity {
         initThread.setName("initThread");
         initThread.start();
     }
+
+    public void recreate(){
+        //fixed xiaomi device recreate fail
+        finish();
+        startActivity(new Intent(this, LaunchActivity.class));
+    }
 }

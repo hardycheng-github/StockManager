@@ -1,17 +1,13 @@
 package com.msi.stockmanager.data.revenue
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.SystemClock
 import android.util.Log
-import com.msi.stockmanager.data.DateUtil
-import com.msi.stockmanager.data.stock.StockApi
-import com.msi.stockmanager.data.stock.StockHistory
-import com.opencsv.CSVParser
-import com.opencsv.CSVReader
+import androidx.core.content.SharedPreferencesCompat
+import androidx.preference.PreferenceManager
 import com.opencsv.CSVReaderBuilder
 import kotlinx.coroutines.*
-import org.json.JSONArray
-import org.json.JSONObject
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -24,6 +20,8 @@ class RevenueApi(val context: Context): IRevenueApi {
     val infoList = mutableListOf<RevenueInfo>()
     var initCallback: IRevenueApi.SyncCallback? = null
     var syncStatus = IRevenueApi.SYNC_STATUS_NONE
+    val mWatchingList = mutableListOf<String>()
+    val sharedPref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     init {
         sync(false, null)
@@ -31,8 +29,24 @@ class RevenueApi(val context: Context): IRevenueApi {
 
     override fun sync(blocking: Boolean, cb: IRevenueApi.SyncCallback?): Int {
         if(syncStatus == IRevenueApi.SYNC_STATUS_ING){
-            cb?.onFail("last sync task still running")
-            IRevenueApi.SYNC_STATUS_FAIL
+            if(blocking){
+                runBlocking {
+                    while(syncStatus == IRevenueApi.SYNC_STATUS_ING) delay(100)
+                }
+                when(syncStatus){
+                    IRevenueApi.SYNC_STATUS_SUCCESS ->{
+                        cb?.onSuccess()
+                        IRevenueApi.SYNC_STATUS_SUCCESS
+                    }
+                    else -> {
+                        cb?.onFail("last sync task fail")
+                        IRevenueApi.SYNC_STATUS_FAIL
+                    }
+                }
+            } else {
+                cb?.onFail("last sync task still running")
+                IRevenueApi.SYNC_STATUS_FAIL
+            }
         }
         initCallback = cb
         //data from 103-1
@@ -156,7 +170,63 @@ class RevenueApi(val context: Context): IRevenueApi {
         return syncStatus == IRevenueApi.SYNC_STATUS_SUCCESS
     }
 
-    override fun getRevenueInfo(stockId: String, year: Int, month: Int): RevenueInfo {
-        TODO("Not yet implemented")
+    override fun getRevenueInfo(stockId: String, year: Int, month: Int): RevenueInfo? {
+        return infoList.find {
+            it.stockId == stockId && it.year == year && it.month == month
+        }
+    }
+
+    private fun loadWatchingList(){
+        mWatchingList.clear()
+        sharedPref.getString("revenueWatchingList", "")?.let{ stockIdList ->
+            stockIdList.split(",").forEach { stockId ->
+                mWatchingList += stockId.trim()
+            }
+        }
+    }
+
+    private fun saveWatchingList(){
+        sharedPref.edit()
+            .putString("revenueWatchingList", mWatchingList.joinToString(","))
+            .commit()
+    }
+
+    override fun inWatchingList(stockId: String) = mWatchingList.contains(stockId)
+
+    override fun getWatchingList() = mWatchingList
+
+    override fun addWatchingList(stockId: String): List<String> {
+        if(!inWatchingList(stockId)){
+            mWatchingList += stockId
+            saveWatchingList()
+        }
+        return mWatchingList
+    }
+
+    override fun addWatchingList(stockIdList: List<String>): List<String> {
+        var change = false
+        stockIdList.forEach { stockId ->
+            if(!inWatchingList(stockId)){
+                mWatchingList += stockId
+                change = true
+            }
+        }
+        if(change) saveWatchingList()
+        return mWatchingList
+    }
+
+    override fun removeWatchingList(stockId: String): List<String> {
+        if(inWatchingList(stockId)){
+            mWatchingList.remove(stockId)
+            saveWatchingList()
+        }
+        return mWatchingList
+    }
+
+    override fun clearWatchingList() {
+        if(mWatchingList.isNotEmpty()) {
+            mWatchingList.clear()
+            saveWatchingList()
+        }
     }
 }

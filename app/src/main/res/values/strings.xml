@@ -195,4 +195,17 @@
     <string name="exit">離開</string>
     <string name="watching_list">觀察清單</string>
     <string name="title_activity_revenue">營收分析</string>
+    <string name="revenue_title_date">yyyy年MM月</string>
+    <string name="revenue_table_header_row">觀察清單</string>
+    <string name="revenue_table_header_stock_id">股票代碼</string>
+    <string name="revenue_table_header_company_name">公司名稱</string>
+    <string name="revenue_table_header_company_type">產業類別</string>
+    <string name="revenue_table_header_revenue_this_month">當月營收</string>
+    <string name="revenue_table_header_revenue_last_month">上月營收</string>
+    <string name="revenue_table_header_revenue_last_year">去年同月營收</string>
+    <string name="revenue_table_header_revenue_mom">月增率</string>
+    <string name="revenue_table_header_revenue_yoy">年增率</string>
+    <string name="revenue_table_header_revenue_this_ytd">今年累積營收</string>
+    <string name="revenue_table_header_revenue_last_ytd">去年累積營收</string>
+    <string name="revenue_table_header_revenue_yoy_ytd">累積年增率</string>
 </resources>

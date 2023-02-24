@@ -24,7 +24,7 @@ import kotlin.math.max
 class TaApi : ITaApi {
 
     companion object {
-        val TAG: String = TaApi.javaClass.simpleName
+        val TAG: String = TaApi::class.java.simpleName
         const val DEFAULT_INDICATOR_COUNT = 14
     }
 

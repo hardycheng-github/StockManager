@@ -85,4 +85,10 @@
     <color name="ml_gray">#ff9e9e9e</color>
     <color name="ml_blue">#ff239efe</color>
     <color name="ml_red">#ffff0000</color>
+
+    <color name="revenue_title_text">@color/main_m</color>
+    <color name="bg_line">@color/gray_99</color>
+    <color name="cell_background_color">@color/white</color>
+    <color name="header_line_color">@color/gray_66</color>
+    <color name="table_view_default_text_color">@color/black</color>
 </resources>

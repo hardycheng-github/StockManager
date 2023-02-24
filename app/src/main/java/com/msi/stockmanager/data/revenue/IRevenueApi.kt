@@ -44,6 +44,18 @@ interface IRevenueApi {
      */
     fun hasSync(): Boolean
 
-    fun getRevenueInfo(stockId: String, year: Int = -1, month: Int = -1): RevenueInfo
+    fun getRevenueInfo(stockId: String, year: Int = -1, month: Int = -1): RevenueInfo?
+
+    fun inWatchingList(stockId: String): Boolean
+
+    fun getWatchingList(): List<String>
+
+    fun addWatchingList(stockId: String): List<String>
+
+    fun addWatchingList(stockIdList: List<String>): List<String>
+
+    fun removeWatchingList(stockId: String): List<String>
+
+    fun clearWatchingList()
 
 }
