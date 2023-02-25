@@ -80,7 +80,7 @@ dependencies {
 //    debugImplementation 'com.facebook.stetho:stetho-js-rhino:1.6.0'
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.core:core-ktx:$kotlin_version"
-//    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'org.jsoup:jsoup:+'
 
     implementation 'org.ta4j:ta4j-core:0.14'

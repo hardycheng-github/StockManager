@@ -1,166 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.main.revenue.RevenueActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.StockManager.AppBarOverlay"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.StockManager.PopupOverlay" />
-    </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/areaMain"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/areaTitle"
-            android:layout_width="0dp"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/areaTable"
+            android:theme="@style/Theme.StockManager.AppBarOverlay"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.helper.widget.Flow
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="btnTitleYearSub,btnTitleMonthSub,textTitle,btnTitleMonthAdd,btnTitleYearAdd"
-                app:flow_horizontalAlign="center"
-                app:flow_horizontalGap="@dimen/revenue_title_arrow_padding"
-                app:flow_verticalAlign="center"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageButton
-                android:id="@+id/btnTitleYearSub"
-                android:layout_width="@dimen/revenue_title_arrow_size"
-                android:layout_height="@dimen/revenue_title_arrow_size"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_baseline_keyboard_double_arrow_left_24"
-                app:tint="@color/revenue_title_text" />
-
-            <ImageButton
-                android:id="@+id/btnTitleMonthSub"
-                android:layout_width="@dimen/revenue_title_arrow_size"
-                android:layout_height="@dimen/revenue_title_arrow_size"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_baseline_keyboard_arrow_left_24"
-                app:tint="@color/revenue_title_text"/>
-
-            <TextView
-                android:id="@+id/textTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:minWidth="120dp"
-                android:gravity="center"
-                android:text="@string/revenue_title_date"
-                android:textColor="@color/revenue_title_text"
-                android:textSize="@dimen/revenue_title_text_size"/>
-
-            <ImageButton
-                android:id="@+id/btnTitleMonthAdd"
-                android:layout_width="@dimen/revenue_title_arrow_size"
-                android:layout_height="@dimen/revenue_title_arrow_size"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_baseline_keyboard_arrow_right_24"
-                app:tint="@color/revenue_title_text" />
-
-            <ImageButton
-                android:id="@+id/btnTitleYearAdd"
-                android:layout_width="@dimen/revenue_title_arrow_size"
-                android:layout_height="@dimen/revenue_title_arrow_size"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_baseline_keyboard_double_arrow_right_24"
-                app:tint="@color/revenue_title_text"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:popupTheme="@style/Theme.StockManager.PopupOverlay" />
+        </com.google.android.material.appbar.AppBarLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/areaTable"
+            android:id="@+id/areaMain"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/areaTitle">
+            app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
-            <com.evrencoskun.tableview.TableView
-                android:id="@+id/revenue_table"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:allow_click_inside_cell="false"
-                app:allow_click_inside_column_header="false"
-                app:allow_click_inside_row_header="false"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/areaTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginVertical="16dp"
+                app:layout_constraintBottom_toTopOf="@+id/areaTable"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.helper.widget.Flow
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:constraint_referenced_ids="btnTitleYearSub,btnTitleMonthSub,textTitle,btnTitleMonthAdd,btnTitleYearAdd"
+                    app:flow_horizontalAlign="center"
+                    app:flow_horizontalGap="@dimen/revenue_title_arrow_padding"
+                    app:flow_verticalAlign="center"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/btnTitleYearSub"
+                    android:layout_width="@dimen/revenue_title_arrow_size"
+                    android:layout_height="@dimen/revenue_title_arrow_size"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/ic_baseline_keyboard_double_arrow_left_24"
+                    app:tint="@color/revenue_title_text" />
+
+                <ImageButton
+                    android:id="@+id/btnTitleMonthSub"
+                    android:layout_width="@dimen/revenue_title_arrow_size"
+                    android:layout_height="@dimen/revenue_title_arrow_size"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/ic_baseline_keyboard_arrow_left_24"
+                    app:tint="@color/revenue_title_text"/>
+
+                <TextView
+                    android:id="@+id/textTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:minWidth="120dp"
+                    android:gravity="center"
+                    android:text="@string/revenue_title_date"
+                    android:textColor="@color/revenue_title_text"
+                    android:textSize="@dimen/revenue_title_text_size"/>
+
+                <ImageButton
+                    android:id="@+id/btnTitleMonthAdd"
+                    android:layout_width="@dimen/revenue_title_arrow_size"
+                    android:layout_height="@dimen/revenue_title_arrow_size"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/ic_baseline_keyboard_arrow_right_24"
+                    app:tint="@color/revenue_title_text" />
+
+                <ImageButton
+                    android:id="@+id/btnTitleYearAdd"
+                    android:layout_width="@dimen/revenue_title_arrow_size"
+                    android:layout_height="@dimen/revenue_title_arrow_size"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/ic_baseline_keyboard_double_arrow_right_24"
+                    app:tint="@color/revenue_title_text"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/areaTable"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/areaTitle">
+
+                <com.evrencoskun.tableview.TableView
+                    android:id="@+id/revenue_table"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:allow_click_inside_cell="false"
+                    app:allow_click_inside_column_header="false"
+                    app:allow_click_inside_row_header="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                </com.evrencoskun.tableview.TableView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-            </com.evrencoskun.tableview.TableView>
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/textView24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <TextView
+                    android:id="@+id/textView24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/syncing"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/progressBar" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/loading"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintBottom_toTopOf="@+id/textView24"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textView24"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/syncing"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/progressBar" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <include
+            layout="@layout/layout_history_trans_filter"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </com.google.android.material.navigation.NavigationView>
+
+
+</androidx.drawerlayout.widget.DrawerLayout>

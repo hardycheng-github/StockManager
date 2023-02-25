@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.SystemClock
 import android.util.Log
-import androidx.core.content.SharedPreferencesCompat
 import androidx.preference.PreferenceManager
 import com.opencsv.CSVReaderBuilder
 import kotlinx.coroutines.*
@@ -114,11 +113,11 @@ class RevenueApi(val context: Context): IRevenueApi {
                                             rowData[5].toLongOrNull()?:0,
                                             rowData[6].toLongOrNull()?:0,
                                             rowData[7].toLongOrNull()?:0,
-                                            rowData[8].toFloatOrNull()?:0f,
-                                            rowData[9].toFloatOrNull()?:0f,
+                                                (rowData[8].toFloatOrNull()?:0f)/100f,
+                                                (rowData[9].toFloatOrNull()?:0f)/100f,
                                             rowData[10].toLongOrNull()?:0,
                                             rowData[11].toLongOrNull()?:0,
-                                            rowData[12].toFloatOrNull()?:0f,
+                                        (rowData[12].toFloatOrNull()?:0f)/100f,
                                             rowData[13],
                                         )
                                     }

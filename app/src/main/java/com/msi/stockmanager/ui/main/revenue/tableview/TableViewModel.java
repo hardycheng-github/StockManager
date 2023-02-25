@@ -48,8 +48,8 @@ import java.util.List;
 public class TableViewModel {
 
     private static int[] headerResidList = new int[]{
-            R.string.revenue_table_header_stock_id,
-            R.string.revenue_table_header_company_name,
+//            R.string.revenue_table_header_stock_id,
+//            R.string.revenue_table_header_company_name,
             R.string.revenue_table_header_company_type,
             R.string.revenue_table_header_revenue_this_month,
             R.string.revenue_table_header_revenue_last_month,

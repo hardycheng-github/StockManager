@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/textView20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="施工中"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/title_filter"
+            android:layout_width="0dp"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/filter_bg_1"
+            android:gravity="center"
+            android:paddingStart="@dimen/filter_padding_2"
+            android:text="@string/title_filter"
+            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/divider3"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:elevation="100dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintBottom_toBottomOf="@id/title_filter" />
+
+        <ScrollView
+            android:id="@+id/scrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/constraintLayout9"
+            app:layout_constraintTop_toBottomOf="@+id/title_filter">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/textView25"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_margin="@dimen/filter_padding_2"-->
+<!--                        android:text="@string/date_range"-->
+<!--                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />-->
+
+<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                        android:id="@+id/date_start"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="@dimen/filter_item_height"-->
+<!--                        android:layout_marginHorizontal="@dimen/filter_padding_2"-->
+<!--                        android:background="@drawable/ic_btn_sub"-->
+<!--                        android:clickable="true">-->
+
+<!--                        <ImageView-->
+<!--                            android:id="@+id/imageView3"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="@dimen/filter_padding_3"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent"-->
+<!--                            app:srcCompat="@drawable/ic_baseline_calendar_today_24"-->
+<!--                            app:tint="@color/main_m" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/textView19"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="@dimen/filter_padding_3"-->
+<!--                            android:text="@string/date_start"-->
+<!--                            android:textColor="@color/main_m"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintStart_toEndOf="@+id/imageView3"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/date_start_value"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginEnd="@dimen/filter_padding_3"-->
+<!--                            android:text="yyyy-mm-dd"-->
+<!--                            android:textColor="@color/black"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                        android:id="@+id/date_end"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="@dimen/filter_item_height"-->
+<!--                        android:layout_marginHorizontal="@dimen/filter_padding_2"-->
+<!--                        android:layout_marginTop="@dimen/filter_padding_2"-->
+<!--                        android:background="@drawable/ic_btn_sub"-->
+<!--                        android:clickable="true">-->
+
+<!--                        <ImageView-->
+<!--                            android:id="@+id/imageView4"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="@dimen/filter_padding_3"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintStart_toStartOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent"-->
+<!--                            app:srcCompat="@drawable/ic_baseline_calendar_today_24"-->
+<!--                            app:tint="@color/main_m" />-->
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/textView21"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginStart="@dimen/filter_padding_3"-->
+<!--                            android:text="@string/date_end"-->
+<!--                            android:textColor="@color/main_m"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintStart_toEndOf="@+id/imageView4"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+
+
+<!--                        <TextView-->
+<!--                            android:id="@+id/date_end_value"-->
+<!--                            android:layout_width="wrap_content"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:layout_marginEnd="@dimen/filter_padding_3"-->
+<!--                            android:text="yyyy-mm-dd"-->
+<!--                            android:textColor="@color/black"-->
+<!--                            app:layout_constraintBottom_toBottomOf="parent"-->
+<!--                            app:layout_constraintEnd_toEndOf="parent"-->
+<!--                            app:layout_constraintTop_toTopOf="parent" />-->
+<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/textView26"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:gravity="center"-->
+<!--                        android:layout_margin="@dimen/filter_padding_2"-->
+<!--                        android:visibility="gone"-->
+<!--                        android:text="@string/date_to"-->
+<!--                        android:textAppearance="@style/TextAppearance.AppCompat.Small" />-->
+
+<!--                    <androidx.constraintlayout.widget.ConstraintLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_margin="@dimen/filter_padding_2">-->
+
+<!--                        <androidx.appcompat.widget.AppCompatButton-->
+<!--                            android:id="@+id/today"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="@drawable/ic_btn_sub"-->
+<!--                            android:minHeight="@dimen/filter_item_height"-->
+<!--                            android:text="@string/date_today" />-->
+
+<!--                        <androidx.appcompat.widget.AppCompatButton-->
+<!--                            android:id="@+id/recent_week"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="@drawable/ic_btn_sub"-->
+<!--                            android:minHeight="@dimen/filter_item_height"-->
+<!--                            android:text="@string/date_week" />-->
+
+<!--                        <androidx.appcompat.widget.AppCompatButton-->
+<!--                            android:id="@+id/recent_month"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="@drawable/ic_btn_sub"-->
+<!--                            android:minHeight="@dimen/filter_item_height"-->
+<!--                            android:text="@string/date_month" />-->
+
+<!--                        <androidx.appcompat.widget.AppCompatButton-->
+<!--                            android:id="@+id/recent_year"-->
+<!--                            android:layout_width="0dp"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            android:background="@drawable/ic_btn_sub"-->
+<!--                            android:minHeight="@dimen/filter_item_height"-->
+<!--                            android:text="@string/date_year" />-->
+
+<!--                        <androidx.constraintlayout.helper.widget.Flow-->
+<!--                            android:id="@+id/flow3"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="wrap_content"-->
+<!--                            app:constraint_referenced_ids="today,recent_week,recent_month,recent_year"-->
+<!--                            app:flow_horizontalGap="@dimen/filter_padding_2"-->
+<!--                            app:flow_maxElementsWrap="2"-->
+<!--                            app:flow_verticalGap="@dimen/filter_padding_2"-->
+<!--                            app:flow_wrapMode="chain" />-->
+
+<!--                    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="match_parent"-->
+<!--                        android:orientation="vertical"></LinearLayout>-->
+<!--                </LinearLayout>-->
+
+                <View
+                    android:id="@+id/divider4"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:elevation="100dp"
+                    android:background="?android:attr/listDivider"
+                    app:layout_constraintBottom_toBottomOf="@id/title_filter" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView27"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/filter_padding_2"
+                        android:layout_marginHorizontal="@dimen/filter_padding_2"
+                        android:text="@string/revenue_filter_cols"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
+
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/filter_padding_2">
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_company_type"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_company_type" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_revenue_this_month"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_revenue_this_month" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_revenue_last_month"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_revenue_last_month" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_revenue_last_year"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_revenue_last_year" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_revenue_mom"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_revenue_mom" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_revenue_yoy"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_revenue_yoy" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_revenue_this_ytd"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_revenue_this_ytd" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_revenue_last_ytd"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_revenue_last_ytd" />
+
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/revenue_table_header_revenue_yoy_ytd"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/ic_btn_sub"
+                            android:minHeight="@dimen/filter_item_height"
+                            android:text="@string/revenue_table_header_revenue_yoy_ytd" />
+
+                        <View
+                            android:id="@+id/revenue_table_blank"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:minHeight="@dimen/filter_item_height" />
+
+
+                        <androidx.constraintlayout.helper.widget.Flow
+                            android:id="@+id/flow4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:constraint_referenced_ids="revenue_table_header_company_type,revenue_table_header_revenue_this_month,revenue_table_header_revenue_last_month,revenue_table_header_revenue_last_year,revenue_table_header_revenue_mom,revenue_table_header_revenue_yoy,revenue_table_header_revenue_this_ytd,revenue_table_header_revenue_last_ytd, revenue_table_header_revenue_yoy_ytd, revenue_table_blank"
+                            app:flow_horizontalGap="@dimen/filter_padding_2"
+                            app:flow_maxElementsWrap="2"
+                            app:flow_verticalGap="@dimen/filter_padding_2"
+                            app:flow_wrapMode="chain" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <View
+            android:id="@+id/divider2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:elevation="100dp"
+            android:background="?android:attr/listDivider"
+            app:layout_constraintTop_toTopOf="@+id/constraintLayout9"
+            tools:layout_editor_absoluteX="10dp" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout9"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/filter_bg_1"
+            android:padding="@dimen/filter_padding_1"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/reset"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/filter_padding_1"
+                android:background="@drawable/ic_btn_sub"
+                android:text="@string/reset_filter"
+                android:textColor="@color/main_m"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/apply"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/apply"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/filter_padding_1"
+                android:background="@drawable/ic_btn_main"
+                android:text="@string/apply_filter"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/reset"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

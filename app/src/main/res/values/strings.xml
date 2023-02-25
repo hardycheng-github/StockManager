@@ -208,4 +208,5 @@
     <string name="revenue_table_header_revenue_this_ytd">今年累積營收</string>
     <string name="revenue_table_header_revenue_last_ytd">去年累積營收</string>
     <string name="revenue_table_header_revenue_yoy_ytd">累積年增率</string>
+    <string name="revenue_filter_cols">顯示欄位</string>
 </resources>
