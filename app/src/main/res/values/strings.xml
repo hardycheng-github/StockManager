@@ -208,5 +208,10 @@
     <string name="revenue_table_header_revenue_this_ytd">今年累積營收</string>
     <string name="revenue_table_header_revenue_last_ytd">去年累積營收</string>
     <string name="revenue_table_header_revenue_yoy_ytd">累積年增率</string>
-    <string name="revenue_filter_cols">顯示欄位</string>
+    <string name="revenue_filter_hidden_items">隱藏欄位</string>
+    <string name="revenue_filter_reset">重設篩選</string>
+    <string name="revenue_filter_sort_type">排序方式</string>
+    <string name="revenue_filter_sort_type_asc">由小至大</string>
+    <string name="revenue_filter_sort_type_des">由大至小</string>
+    <string name="revenue_filter_sort_target">排序目標</string>
 </resources>
