@@ -87,7 +87,7 @@
                             android:id="@+id/revenue_table_header_company_type"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_company_type" />
 
@@ -95,7 +95,7 @@
                             android:id="@+id/revenue_table_header_revenue_this_month"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_this_month" />
 
@@ -103,7 +103,7 @@
                             android:id="@+id/revenue_table_header_revenue_last_month"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_last_month" />
 
@@ -111,7 +111,7 @@
                             android:id="@+id/revenue_table_header_revenue_last_year"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_last_year" />
 
@@ -119,7 +119,7 @@
                             android:id="@+id/revenue_table_header_revenue_mom"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_mom" />
 
@@ -127,7 +127,7 @@
                             android:id="@+id/revenue_table_header_revenue_yoy"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_yoy" />
 
@@ -135,7 +135,7 @@
                             android:id="@+id/revenue_table_header_revenue_this_ytd"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_this_ytd" />
 
@@ -143,7 +143,7 @@
                             android:id="@+id/revenue_table_header_revenue_last_ytd"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_last_ytd" />
 
@@ -151,7 +151,7 @@
                             android:id="@+id/revenue_table_header_revenue_yoy_ytd"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_yoy_ytd" />
 
@@ -206,7 +206,7 @@
                             android:id="@+id/revenue_filter_sort_type_asc"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_filter_sort_type_asc" />
 
@@ -214,7 +214,7 @@
                             android:id="@+id/revenue_filter_sort_type_des"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_filter_sort_type_des" />
 
@@ -261,7 +261,7 @@
                             android:id="@+id/revenue_sort_header_stock_id"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_stock_id" />
 
@@ -269,7 +269,7 @@
                             android:id="@+id/revenue_sort_header_company_type"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_company_type" />
 
@@ -277,7 +277,7 @@
                             android:id="@+id/revenue_sort_header_revenue_this_month"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_this_month" />
 
@@ -285,7 +285,7 @@
                             android:id="@+id/revenue_sort_header_revenue_last_month"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_last_month" />
 
@@ -293,7 +293,7 @@
                             android:id="@+id/revenue_sort_header_revenue_last_year"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_last_year" />
 
@@ -301,7 +301,7 @@
                             android:id="@+id/revenue_sort_header_revenue_mom"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_mom" />
 
@@ -309,7 +309,7 @@
                             android:id="@+id/revenue_sort_header_revenue_yoy"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_yoy" />
 
@@ -317,7 +317,7 @@
                             android:id="@+id/revenue_sort_header_revenue_this_ytd"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_this_ytd" />
 
@@ -325,7 +325,7 @@
                             android:id="@+id/revenue_sort_header_revenue_last_ytd"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_last_ytd" />
 
@@ -333,7 +333,7 @@
                             android:id="@+id/revenue_sort_header_revenue_yoy_ytd"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_btn_sub"
+                            android:background="@drawable/ic_btn_selectable"
                             android:minHeight="@dimen/filter_item_height"
                             android:text="@string/revenue_table_header_revenue_yoy_ytd" />
 

@@ -81,12 +81,130 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         })
     }
 
-    private fun initFilter(){
-        filterUtil = RevenueFilterUtil()
-        filterBinding = binding.layoutRevenueFilter
-        filterBinding.reset.setOnClickListener {
-            filterUtil.reset()
+    private fun onRevenueFilterApply(hiddenItemList: Set<String>, sortingAscending: Boolean, sortingTarget: String){
+        Log.d(TAG, "onRevenueFilterApply(hiddenItemList: ${hiddenItemList.joinToString()}, sortingAscending: $sortingAscending, sortingTarget: $sortingTarget)")
+        launch(Dispatchers.Main) {
+            filterBinding.revenueTableHeaderCompanyType.isSelected = false
+            filterBinding.revenueTableHeaderRevenueThisMonth.isSelected = false
+            filterBinding.revenueTableHeaderRevenueLastMonth.isSelected = false
+            filterBinding.revenueTableHeaderRevenueMom.isSelected = false
+            filterBinding.revenueTableHeaderRevenueLastYear.isSelected = false
+            filterBinding.revenueTableHeaderRevenueYoy.isSelected = false
+            filterBinding.revenueTableHeaderRevenueThisYtd.isSelected = false
+            filterBinding.revenueTableHeaderRevenueLastYtd.isSelected = false
+            filterBinding.revenueTableHeaderRevenueYoyYtd.isSelected = false
+
+            filterBinding.revenueFilterSortTypeAsc.isSelected = sortingAscending
+            filterBinding.revenueFilterSortTypeDes.isSelected = !sortingAscending
+
+            filterBinding.revenueSortHeaderStockId.isSelected = false
+            filterBinding.revenueSortHeaderCompanyType.isSelected = false
+            filterBinding.revenueSortHeaderRevenueThisMonth.isSelected = false
+            filterBinding.revenueSortHeaderRevenueLastMonth.isSelected = false
+            filterBinding.revenueSortHeaderRevenueMom.isSelected = false
+            filterBinding.revenueSortHeaderRevenueLastYear.isSelected = false
+            filterBinding.revenueSortHeaderRevenueYoy.isSelected = false
+            filterBinding.revenueSortHeaderRevenueThisYtd.isSelected = false
+            filterBinding.revenueSortHeaderRevenueLastYtd.isSelected = false
+            filterBinding.revenueSortHeaderRevenueYoyYtd.isSelected = false
+
+            when(sortingTarget.toIntOrNull()?:0){
+                R.string.revenue_table_header_stock_id -> {
+                    filterBinding.revenueSortHeaderStockId.isSelected = true
+                }
+                R.string.revenue_table_header_company_type -> {
+                    filterBinding.revenueSortHeaderCompanyType.isSelected = true
+                }
+                R.string.revenue_table_header_revenue_this_month -> {
+                    filterBinding.revenueSortHeaderRevenueThisMonth.isSelected = true
+                }
+                R.string.revenue_table_header_revenue_last_month -> {
+                    filterBinding.revenueSortHeaderRevenueLastMonth.isSelected = true
+                }
+                R.string.revenue_table_header_revenue_mom -> {
+                    filterBinding.revenueSortHeaderRevenueMom.isSelected = true
+                }
+                R.string.revenue_table_header_revenue_last_year -> {
+                    filterBinding.revenueSortHeaderRevenueLastYear.isSelected = true
+                }
+                R.string.revenue_table_header_revenue_yoy -> {
+                    filterBinding.revenueSortHeaderRevenueYoy.isSelected = true
+                }
+                R.string.revenue_table_header_revenue_this_ytd -> {
+                    filterBinding.revenueSortHeaderRevenueThisYtd.isSelected = true
+                }
+                R.string.revenue_table_header_revenue_last_ytd -> {
+                    filterBinding.revenueSortHeaderRevenueLastYtd.isSelected = true
+                }
+                R.string.revenue_table_header_revenue_yoy_ytd -> {
+                    filterBinding.revenueSortHeaderRevenueYoyYtd.isSelected = true
+                }
+            }
+
+            hiddenItemList.forEach {
+                when(it.toIntOrNull()?:0){
+                    R.string.revenue_table_header_company_type -> {
+                        filterBinding.revenueTableHeaderCompanyType.isSelected = true
+                    }
+                    R.string.revenue_table_header_revenue_this_month -> {
+                        filterBinding.revenueTableHeaderRevenueThisMonth.isSelected = true
+                    }
+                    R.string.revenue_table_header_revenue_last_month -> {
+                        filterBinding.revenueTableHeaderRevenueLastMonth.isSelected = true
+                    }
+                    R.string.revenue_table_header_revenue_mom -> {
+                        filterBinding.revenueTableHeaderRevenueMom.isSelected = true
+                    }
+                    R.string.revenue_table_header_revenue_last_year -> {
+                        filterBinding.revenueTableHeaderRevenueLastYear.isSelected = true
+                    }
+                    R.string.revenue_table_header_revenue_yoy -> {
+                        filterBinding.revenueTableHeaderRevenueYoy.isSelected = true
+                    }
+                    R.string.revenue_table_header_revenue_this_ytd -> {
+                        filterBinding.revenueTableHeaderRevenueThisYtd.isSelected = true
+                    }
+                    R.string.revenue_table_header_revenue_last_ytd -> {
+                        filterBinding.revenueTableHeaderRevenueLastYtd.isSelected = true
+                    }
+                    R.string.revenue_table_header_revenue_yoy_ytd -> {
+                        filterBinding.revenueTableHeaderRevenueYoyYtd.isSelected = true
+                    }
+                }
+            }
+
+            // TODO: apply filter and sorting 
         }
+    }
+
+    private fun initFilter(){
+        filterUtil = RevenueFilterUtil(::onRevenueFilterApply)
+        filterBinding = binding.layoutRevenueFilter
+        filterBinding.reset.setOnClickListener { resetFilter() }
+        filterBinding.apply.setOnClickListener { applyFilter() }
+        filterBinding.revenueTableHeaderCompanyType.setOnClickListener { it.isSelected = !it.isSelected }
+        filterBinding.revenueTableHeaderRevenueThisMonth.setOnClickListener { it.isSelected = !it.isSelected }
+        filterBinding.revenueTableHeaderRevenueLastMonth.setOnClickListener { it.isSelected = !it.isSelected }
+        filterBinding.revenueTableHeaderRevenueMom.setOnClickListener { it.isSelected = !it.isSelected }
+        filterBinding.revenueTableHeaderRevenueLastYear.setOnClickListener { it.isSelected = !it.isSelected }
+        filterBinding.revenueTableHeaderRevenueYoy.setOnClickListener { it.isSelected = !it.isSelected }
+        filterBinding.revenueTableHeaderRevenueThisYtd.setOnClickListener { it.isSelected = !it.isSelected }
+        filterBinding.revenueTableHeaderRevenueLastYtd.setOnClickListener { it.isSelected = !it.isSelected }
+        filterBinding.revenueTableHeaderRevenueYoyYtd.setOnClickListener { it.isSelected = !it.isSelected }
+
+        filterBinding.revenueFilterSortTypeAsc.setOnClickListener { selectSortingType(it) }
+        filterBinding.revenueFilterSortTypeDes.setOnClickListener { selectSortingType(it) }
+
+        filterBinding.revenueSortHeaderStockId.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderCompanyType.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderRevenueThisMonth.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderRevenueLastMonth.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderRevenueMom.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderRevenueLastYear.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderRevenueYoy.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderRevenueThisYtd.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderRevenueLastYtd.setOnClickListener { selectSortingTarget(it) }
+        filterBinding.revenueSortHeaderRevenueYoyYtd.setOnClickListener { selectSortingTarget(it) }
     }
 
     private fun onSearchApply(keyword: String) {
@@ -217,7 +335,7 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         tableViewAdapter.setAllItems(tableViewModel.columnHeaderList, tableViewModel.rowHeaderList, tableViewModel.getCellList(mYearMonth.year, mYearMonth.monthValue))
                         binding.loading.visibility = View.INVISIBLE
                         binding.areaTable.visibility = View.VISIBLE
-                        applyFilter()
+                        filterUtil.update()
                     }
                 }
             }
@@ -225,11 +343,62 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     private fun applyFilter(){
-        binding.revenueTable.clearHiddenColumnList()
-        val columnHeaderMap = mutableMapOf<String, Integer>()
-        filterUtil.hiddenItems.forEach {
+        filterUtil.hiddenItems.clear()
+        if(filterBinding.revenueTableHeaderCompanyType.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_company_type.toString()
+        if(filterBinding.revenueTableHeaderRevenueThisMonth.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_revenue_this_month.toString()
+        if(filterBinding.revenueTableHeaderRevenueLastMonth.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_revenue_last_month.toString()
+        if(filterBinding.revenueTableHeaderRevenueMom.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_revenue_mom.toString()
+        if(filterBinding.revenueTableHeaderRevenueLastYear.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_revenue_last_year.toString()
+        if(filterBinding.revenueTableHeaderRevenueYoy.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_revenue_yoy.toString()
+        if(filterBinding.revenueTableHeaderRevenueThisYtd.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_revenue_this_ytd.toString()
+        if(filterBinding.revenueTableHeaderRevenueLastYtd.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_revenue_last_ytd.toString()
+        if(filterBinding.revenueTableHeaderRevenueYoyYtd.isSelected) filterUtil.hiddenItems += R.string.revenue_table_header_revenue_yoy_ytd.toString()
 
+        filterUtil.sortingAscending = filterBinding.revenueFilterSortTypeAsc.isSelected
+
+        if(filterBinding.revenueSortHeaderStockId.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_stock_id.toString()
+        if(filterBinding.revenueSortHeaderCompanyType.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_company_type.toString()
+        if(filterBinding.revenueSortHeaderRevenueThisMonth.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_revenue_this_month.toString()
+        if(filterBinding.revenueSortHeaderRevenueLastMonth.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_revenue_last_month.toString()
+        if(filterBinding.revenueSortHeaderRevenueMom.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_revenue_mom.toString()
+        if(filterBinding.revenueSortHeaderRevenueLastYear.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_revenue_last_year.toString()
+        if(filterBinding.revenueSortHeaderRevenueYoy.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_revenue_yoy.toString()
+        if(filterBinding.revenueSortHeaderRevenueThisYtd.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_revenue_this_ytd.toString()
+        if(filterBinding.revenueSortHeaderRevenueLastYtd.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_revenue_last_ytd.toString()
+        if(filterBinding.revenueSortHeaderRevenueYoyYtd.isSelected) filterUtil.sortingTarget = R.string.revenue_table_header_revenue_yoy_ytd.toString()
+
+        filterUtil.update()
+        if (binding.drawer.isDrawerVisible(GravityCompat.END)) {
+            binding.drawer.closeDrawer(GravityCompat.END)
         }
+    }
+
+    private fun resetFilter(){
+        filterUtil.reset()
+        filterUtil.update()
+        if (binding.drawer.isDrawerVisible(GravityCompat.END)) {
+            binding.drawer.closeDrawer(GravityCompat.END)
+        }
+    }
+
+    private fun selectSortingType(target: View){
+        filterBinding.revenueFilterSortTypeAsc.isSelected = false
+        filterBinding.revenueFilterSortTypeDes.isSelected = false
+        target.isSelected = true
+    }
+
+    private fun selectSortingTarget(target: View){
+        filterBinding.revenueSortHeaderStockId.isSelected = false
+        filterBinding.revenueSortHeaderCompanyType.isSelected = false
+        filterBinding.revenueSortHeaderRevenueThisMonth.isSelected = false
+        filterBinding.revenueSortHeaderRevenueLastMonth.isSelected = false
+        filterBinding.revenueSortHeaderRevenueMom.isSelected = false
+        filterBinding.revenueSortHeaderRevenueLastYear.isSelected = false
+        filterBinding.revenueSortHeaderRevenueYoy.isSelected = false
+        filterBinding.revenueSortHeaderRevenueThisYtd.isSelected = false
+        filterBinding.revenueSortHeaderRevenueLastYtd.isSelected = false
+        filterBinding.revenueSortHeaderRevenueYoyYtd.isSelected = false
+        target.isSelected = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
