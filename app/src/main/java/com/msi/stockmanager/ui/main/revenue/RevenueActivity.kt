@@ -16,7 +16,6 @@ import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.Lifecycle.Event.*
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.recyclerview.widget.RecyclerView
-import com.evrencoskun.tableview.listener.ITableViewListener
 import com.evrencoskun.tableview.sort.SortState
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.msi.stockmanager.R
@@ -195,17 +194,22 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     else SortState.DESCENDING
                 )
             }
-
+//            delay(1000)
             //filter
-            binding.revenueTable.showAllHiddenColumns()
             (0 until columnHeaderSize).forEach {
                 val columnHeader = columnHeaderList[it]
                 if(hiddenItemList.contains(columnHeader.id)){
-//                    binding.revenueTable.setColumnWidth(it, 0)
-                    binding.revenueTable.hideColumn(it)
+                    binding.revenueTable.setColumnWidth(it, 0)
+//                    binding.revenueTable.hideColumn(it)
                     // TODO: hide column cause error when onBind with wrong index
+                } else {
+                    // Recalculate of the width values of the columns
+//                    binding.revenueTable.getCellLayoutManager().fitWidthSize(it, false)
+//                    try { binding.revenueTable.remeasureColumnWidth(it) } catch (e: Exception){}
+                    binding.revenueTable.setColumnWidth(it, 300)
                 }
             }
+            binding.revenueTable.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -315,6 +319,7 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         tableViewModel = TableViewModel(this, filterUtil);
         tableViewAdapter = TableViewAdapter(tableViewModel)
         binding.revenueTable.setAdapter(tableViewAdapter)
+//        binding.revenueTable.isIgnoreSelectionColors = true
         ApiUtil.revenueApi.clearWatchingList()
         ApiUtil.revenueApi.addWatchingList(ApiUtil.transApi.holdingStockList)
 

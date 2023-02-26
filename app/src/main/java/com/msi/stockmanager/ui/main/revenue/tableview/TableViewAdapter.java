@@ -126,10 +126,10 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
     @Override
     public void onBindCellViewHolder(@NonNull AbstractViewHolder holder, @Nullable Cell cellItemModel, int
             columnPosition, int rowPosition) {
-        String cellId = cellItemModel.getId();
-        int resid = Integer.parseInt(cellId.split("___")[1]);
-        Log.v(TAG, "onBindCellViewHolder(x "+columnPosition+", y "+rowPosition+")");
-        Log.v(TAG, "Cell: type "+holder.getItemViewType()+",id " + cellItemModel.getId() + " "+getTableView().getContext().getString(resid)+", data " + cellItemModel.getData().toString());
+//        String cellId = cellItemModel.getId();
+//        int resid = Integer.parseInt(cellId.split("___")[1]);
+//        Log.v(TAG, "onBindCellViewHolder(x "+columnPosition+", y "+rowPosition+")");
+//        Log.v(TAG, "Cell: type "+holder.getItemViewType()+",id " + cellItemModel.getId() + " "+getTableView().getContext().getString(resid)+", data " + cellItemModel.getData().toString());
 
         switch (holder.getItemViewType()) {
             case REVENUE_CELL_TYPE:
@@ -346,7 +346,7 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
         try {
             ColumnHeader ch = getColumnHeaderItem(column);
             int headerResId = Integer.parseInt(ch.getId());
-            Log.v(TAG, "getCellItemViewType("+column+"): " + headerResId + " " + getTableView().getContext().getString(headerResId));
+//            Log.v(TAG, "getCellItemViewType("+column+"): " + headerResId + " " + getTableView().getContext().getString(headerResId));
             switch (headerResId){
                 case R.string.revenue_table_header_stock_id:
                 case R.string.revenue_table_header_company_name:
