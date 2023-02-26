@@ -214,4 +214,8 @@
     <string name="revenue_filter_sort_type_asc">由小至大</string>
     <string name="revenue_filter_sort_type_des">由大至小</string>
     <string name="revenue_filter_sort_target">排序目標</string>
+    <string name="revenue_watching_list_remove_title">取消關注確認</string>
+    <string name="revenue_watching_list_remove_msg">將「${stock_name}」從關注清單中移除?</string>
+    <string name="revenue_watching_list_remove_yes">是</string>
+    <string name="revenue_watching_list_remove_no">否</string>
 </resources>

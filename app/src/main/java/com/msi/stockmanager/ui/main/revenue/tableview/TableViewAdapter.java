@@ -82,25 +82,31 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
         //TODO check
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         View layout;
+        AbstractViewHolder holder;
 
         switch (viewType) {
             case REVENUE_CELL_TYPE:
                 // Get image cell layout which has ImageView on the base instead of TextView.
                 layout = inflater.inflate(R.layout.table_view_cell_layout, parent, false);
 
-                return new RevenueViewHolder(layout);
+                holder = new RevenueViewHolder(layout);
+                break;
             case PERCENT_CELL_TYPE:
                 // Get image cell layout which has ImageView instead of TextView.
                 layout = inflater.inflate(R.layout.table_view_cell_layout, parent, false);
 
-                return new PercentViewHolder(layout);
+                holder = new PercentViewHolder(layout);
+                break;
             default:
                 // For cells that display a text
                 layout = inflater.inflate(R.layout.table_view_cell_layout, parent, false);
 
                 // Create a Cell ViewHolder
-                return new CellViewHolder(layout);
+                holder = new CellViewHolder(layout);
+                break;
         }
+
+        return holder;
     }
 
     /**
@@ -120,6 +126,10 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
     @Override
     public void onBindCellViewHolder(@NonNull AbstractViewHolder holder, @Nullable Cell cellItemModel, int
             columnPosition, int rowPosition) {
+        String cellId = cellItemModel.getId();
+        int resid = Integer.parseInt(cellId.split("___")[1]);
+        Log.v(TAG, "onBindCellViewHolder(x "+columnPosition+", y "+rowPosition+")");
+        Log.v(TAG, "Cell: type "+holder.getItemViewType()+",id " + cellItemModel.getId() + " "+getTableView().getContext().getString(resid)+", data " + cellItemModel.getData().toString());
 
         switch (holder.getItemViewType()) {
             case REVENUE_CELL_TYPE:
@@ -135,6 +145,25 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
                 viewHolder.setCell(cellItemModel);
                 break;
         }
+
+        holder.itemView.setClickable(true);
+        holder.itemView.setOnClickListener(v->{
+            if(mTableViewModel.listener != null){
+                mTableViewModel.listener.onCellClicked(holder, columnPosition, rowPosition);
+            }
+        });
+        holder.itemView.setOnLongClickListener(v->{
+            if(mTableViewModel.listener != null){
+                mTableViewModel.listener.onCellLongPressed(holder, columnPosition, rowPosition);
+            }
+            return true;
+        });
+
+//        if(mTableViewModel.isHiddenColumn(columnPosition)){
+//            holder.itemView.setVisibility(View.GONE);
+//        } else {
+//            holder.itemView.setVisibility(View.VISIBLE);
+//        }
     }
 
     /**
@@ -179,6 +208,25 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
         // Get the holder to update cell item text
         ColumnHeaderViewHolder columnHeaderViewHolder = (ColumnHeaderViewHolder) holder;
         columnHeaderViewHolder.setColumnHeader(columnHeaderItemModel);
+
+        holder.itemView.setClickable(true);
+        holder.itemView.setOnClickListener(v->{
+            if(mTableViewModel.listener != null){
+                mTableViewModel.listener.onColumnHeaderClicked(holder, columnPosition);
+            }
+        });
+        holder.itemView.setOnLongClickListener(v->{
+            if(mTableViewModel.listener != null){
+                mTableViewModel.listener.onColumnHeaderLongPressed(holder, columnPosition);
+            }
+            return true;
+        });
+
+//        if(mTableViewModel.isHiddenColumn(columnPosition)){
+//            holder.itemView.setVisibility(View.GONE);
+//        } else {
+//            holder.itemView.setVisibility(View.VISIBLE);
+//        }
     }
 
     /**
@@ -222,6 +270,19 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
         // Get the holder to update row header item text
         RowHeaderViewHolder rowHeaderViewHolder = (RowHeaderViewHolder) holder;
         rowHeaderViewHolder.row_header_textview.setText(String.valueOf(rowHeaderItemModel.getData()));
+
+        holder.itemView.setClickable(true);
+        holder.itemView.setOnClickListener(v->{
+            if(mTableViewModel.listener != null){
+                mTableViewModel.listener.onRowHeaderClicked(holder, rowPosition);
+            }
+        });
+        holder.itemView.setOnLongClickListener(v->{
+            if(mTableViewModel.listener != null){
+                mTableViewModel.listener.onRowHeaderLongPressed(holder, rowPosition);
+            }
+            return true;
+        });
     }
 
     @NonNull
@@ -230,6 +291,19 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
         // Get Corner xml layout
         View corner = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.table_view_corner_layout, parent, false);
+        corner.setClickable(true);
+        corner.setOnClickListener(v->{
+            if(mTableViewModel.listener != null){
+                mTableViewModel.listener.onCornerClicked();
+            }
+        });
+        corner.setOnLongClickListener(v->{
+            if(mTableViewModel.listener != null){
+                mTableViewModel.listener.onCornerLongPressed();
+            }
+            return true;
+        });
+
 //        corner.setOnClickListener(view -> {
 //            SortState sortState = TableViewAdapter.this.getTableView()
 //                    .getRowHeaderSortingStatus();
@@ -270,8 +344,9 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
         // then you should fill this method to be able create different
         // type of CellViewHolder on "onCreateCellViewHolder"
         try {
-            ColumnHeader ch = mTableViewModel.getColumnHeaderList().get(column);
+            ColumnHeader ch = getColumnHeaderItem(column);
             int headerResId = Integer.parseInt(ch.getId());
+            Log.v(TAG, "getCellItemViewType("+column+"): " + headerResId + " " + getTableView().getContext().getString(headerResId));
             switch (headerResId){
                 case R.string.revenue_table_header_stock_id:
                 case R.string.revenue_table_header_company_name:

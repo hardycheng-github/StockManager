@@ -28,12 +28,14 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import com.evrencoskun.tableview.listener.ITableViewListener;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.revenue.RevenueInfo;
 import com.msi.stockmanager.data.stock.MyStockUtil;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
+import com.msi.stockmanager.ui.main.revenue.RevenueFilterUtil;
 import com.msi.stockmanager.ui.main.revenue.tableview.model.Cell;
 import com.msi.stockmanager.ui.main.revenue.tableview.model.ColumnHeader;
 import com.msi.stockmanager.ui.main.revenue.tableview.model.RowHeader;
@@ -63,8 +65,25 @@ public class TableViewModel {
 
     private Context mContext;
 
-    public TableViewModel(Context context) {
+    public IRevenueTableListener listener;
+
+    public RevenueFilterUtil filterUtil;
+
+    public boolean isHiddenColumn(int col){
+        List<ColumnHeader> ch = getColumnHeaderList();
+        if(ch.size() > col){
+            return filterUtil.getHiddenItems().contains(ch.get(col).getId());
+        }
+        return false;
+    }
+
+    public TableViewModel(Context context, RevenueFilterUtil util) {
         mContext = context;
+        filterUtil = util;
+    }
+
+    public void setListener(IRevenueTableListener listener) {
+        this.listener = listener;
     }
 
     @NonNull

@@ -15,6 +15,10 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuItemCompat
 import androidx.lifecycle.Lifecycle.Event.*
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.recyclerview.widget.RecyclerView
+import com.evrencoskun.tableview.listener.ITableViewListener
+import com.evrencoskun.tableview.sort.SortState
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.msi.stockmanager.R
 import com.msi.stockmanager.data.ApiUtil
 import com.msi.stockmanager.data.stock.StockUtil
@@ -22,6 +26,7 @@ import com.msi.stockmanager.data.stock.getStockInfoOrNull
 import com.msi.stockmanager.databinding.ActivityRevenueBinding
 import com.msi.stockmanager.databinding.LayoutRevenueFilterBinding
 import com.msi.stockmanager.ui.main.StockFilterAdapter
+import com.msi.stockmanager.ui.main.revenue.tableview.IRevenueTableListener
 import com.msi.stockmanager.ui.main.revenue.tableview.TableViewAdapter
 import com.msi.stockmanager.ui.main.revenue.tableview.TableViewModel
 import kotlinx.coroutines.*
@@ -66,8 +71,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     setSupportActionBar(binding.toolbar)
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
                     initView()
-                    initTable()
                     initFilter()
+                    initTable()
                     reload(0, -1)
                 }
                 ON_START -> {
@@ -173,7 +178,34 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 }
             }
 
-            // TODO: apply filter and sorting 
+            val columnHeaderList = tableViewModel.columnHeaderList
+            val columnHeaderSize = columnHeaderList.size
+            // sorting
+            (0 until columnHeaderSize).forEach {
+                val columnHeader = columnHeaderList[it]
+                var state = if(columnHeader.id == filterUtil.sortingTarget){
+                    if(filterUtil.sortingAscending) SortState.ASCENDING
+                    else SortState.DESCENDING
+                } else SortState.UNSORTED
+                binding.revenueTable.sortColumn(it, state)
+            }
+            if(filterUtil.sortingTarget == R.string.revenue_table_header_stock_id.toString()){
+                binding.revenueTable.sortRowHeader(
+                    if(filterUtil.sortingAscending) SortState.ASCENDING
+                    else SortState.DESCENDING
+                )
+            }
+
+            //filter
+            binding.revenueTable.showAllHiddenColumns()
+            (0 until columnHeaderSize).forEach {
+                val columnHeader = columnHeaderList[it]
+                if(hiddenItemList.contains(columnHeader.id)){
+//                    binding.revenueTable.setColumnWidth(it, 0)
+                    binding.revenueTable.hideColumn(it)
+                    // TODO: hide column cause error when onBind with wrong index
+                }
+            }
         }
     }
 
@@ -280,11 +312,107 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     }
 
     private fun initTable(){
-        tableViewModel = TableViewModel(this)
+        tableViewModel = TableViewModel(this, filterUtil);
         tableViewAdapter = TableViewAdapter(tableViewModel)
         binding.revenueTable.setAdapter(tableViewAdapter)
         ApiUtil.revenueApi.clearWatchingList()
         ApiUtil.revenueApi.addWatchingList(ApiUtil.transApi.holdingStockList)
+
+        tableViewModel.setListener(object:IRevenueTableListener{
+            override fun onCornerClicked() {
+                Log.v(TAG, "[IRevenueTableListener] onCornerClicked")
+                if(filterUtil.sortingTarget == R.string.revenue_table_header_stock_id.toString()) {
+                    filterUtil.sortingAscending = !filterUtil.sortingAscending
+                } else {
+                    filterUtil.sortingTarget = R.string.revenue_table_header_stock_id.toString()
+                    filterUtil.sortingAscending = true
+                }
+                filterUtil.update()
+            }
+
+            override fun onCornerLongPressed() {
+                Log.v(TAG, "[IRevenueTableListener] onCornerLongPressed")
+            }
+
+            override fun onCellClicked(cellView: RecyclerView.ViewHolder, column: Int, row: Int) {
+                Log.v(TAG, "[IRevenueTableListener] onCellClicked: $column, $row")
+            }
+
+            override fun onCellDoubleClicked(
+                cellView: RecyclerView.ViewHolder,
+                column: Int,
+                row: Int
+            ) {
+                Log.v(TAG, "[IRevenueTableListener] onCellDoubleClicked: $column, $row")
+            }
+
+            override fun onCellLongPressed(
+                cellView: RecyclerView.ViewHolder,
+                column: Int,
+                row: Int
+            ) {
+                Log.v(TAG, "[IRevenueTableListener] onCellLongPressed: $column, $row")
+            }
+
+            override fun onColumnHeaderClicked(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+                Log.v(TAG, "[IRevenueTableListener] onColumnHeaderClicked: $column")
+                val item = tableViewModel.columnHeaderList[column]
+                if(filterUtil.sortingTarget == item.id) {
+                    filterUtil.sortingAscending = !filterUtil.sortingAscending
+                } else {
+                    filterUtil.sortingTarget = item.id
+                    filterUtil.sortingAscending = true
+                }
+                filterUtil.update()
+            }
+
+            override fun onColumnHeaderDoubleClicked(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+                Log.v(TAG, "[IRevenueTableListener] onColumnHeaderDoubleClicked: $column")
+            }
+
+            override fun onColumnHeaderLongPressed(
+                columnHeaderView: RecyclerView.ViewHolder,
+                column: Int
+            ) {
+                Log.v(TAG, "[IRevenueTableListener] onColumnHeaderLongPressed: $column")
+            }
+
+            override fun onRowHeaderClicked(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+                Log.v(TAG, "[IRevenueTableListener] onRowHeaderClicked: $row")
+            }
+
+            override fun onRowHeaderDoubleClicked(
+                rowHeaderView: RecyclerView.ViewHolder,
+                row: Int
+            ) {
+                Log.v(TAG, "[IRevenueTableListener] onRowHeaderDoubleClicked: $row")
+            }
+
+            override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
+                Log.v(TAG, "[IRevenueTableListener] onRowHeaderLongPressed: $row")
+                val stockId = tableViewModel.rowHeaderList[row].id
+                val stockName = getStockInfoOrNull(stockId)?.getStockNameWithId()?:stockId
+                MaterialAlertDialogBuilder(this@RevenueActivity)
+                    .setTitle(getString(R.string.revenue_watching_list_remove_title).replace("\${stock_name}", stockName))
+                    .setMessage(getString(R.string.revenue_watching_list_remove_msg).replace("\${stock_name}", stockName))
+                    .setNegativeButton(R.string.revenue_watching_list_remove_no){ dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    .setPositiveButton(R.string.revenue_watching_list_remove_yes){ dialog, _ ->
+                        ApiUtil.revenueApi.removeWatchingList(stockId)
+                        reload(enforce = true)
+                        dialog.dismiss()
+                    }
+                    .show()
+            }
+
+        })
     }
 
     private fun initView(){
@@ -333,6 +461,7 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     if(!ApiUtil.revenueApi.hasSync()) ApiUtil.revenueApi.sync(true)
                     withContext(Dispatchers.Main){
                         tableViewAdapter.setAllItems(tableViewModel.columnHeaderList, tableViewModel.rowHeaderList, tableViewModel.getCellList(mYearMonth.year, mYearMonth.monthValue))
+                        tableViewAdapter.cornerView?.visibility = View.VISIBLE
                         binding.loading.visibility = View.INVISIBLE
                         binding.areaTable.visibility = View.VISIBLE
                         filterUtil.update()
