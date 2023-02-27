@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.msi.stockmanager.data.analytics.ITaApi;
+import com.msi.stockmanager.data.stock.IStockApi;
+import com.msi.stockmanager.data.stock.StockHistory;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.data.transaction.ITransApi;
@@ -16,6 +19,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import io.reactivex.rxjava3.annotations.NonNull;
+import io.reactivex.rxjava3.disposables.Disposable;
 
 public class AccountUtil {
     public static final String TAG = AccountUtil.class.getSimpleName();
@@ -99,7 +105,7 @@ public class AccountUtil {
                 }
             }
             Lock lock = new ReentrantLock();
-            lockCount = account.stockValueMap.size();
+            lockCount = account.stockValueMap.size() * 3; //regular price + history data + ta calc
             for(Map.Entry<String, StockValue> entry: account.stockValueMap.entrySet()) {
                 String stockId = entry.getKey();
                 StockValue stockValue = entry.getValue();
@@ -130,6 +136,62 @@ public class AccountUtil {
                         }
                     }
                 });
+                if(stockValue.dataList == null || stockValue.dataList.isEmpty()) {
+                    ApiUtil.stockApi.getHistoryStockData(stockId, "1d", "1y", new IStockApi.HistoryCallback() {
+                        @Override
+                        public void onResult(List<StockHistory> data) {
+                            stockValue.dataList = data;
+                            ApiUtil.taApi.getAllIndicatorLastScores(data, new ITaApi.Callback() {
+                                @Override
+                                public void onSubscribe(@NonNull Disposable d) {
+                                }
+
+                                @Override
+                                public void onSuccess(@NonNull Map<String, ? extends Integer> stringMap) {
+                                    stockValue.taMap.clear();
+                                    stockValue.taMap.putAll(stringMap);
+                                    if (--lockCount <= 0) {
+                                        synchronized (lock) {
+                                            lock.notifyAll();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onError(@NonNull Throwable e) {
+                                    if (--lockCount <= 0) {
+                                        synchronized (lock) {
+                                            lock.notifyAll();
+                                        }
+                                    }
+                                }
+                            });
+                            if (--lockCount <= 0) {
+                                synchronized (lock) {
+                                    lock.notifyAll();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onException(Exception e) {
+                            Log.e(TAG, stockId + " getHistoryStockData err: " + e.getMessage());
+                            lockCount -= 2; //skip ta calc
+                            if (lockCount <= 0) {
+                                synchronized (lock) {
+                                    lock.notifyAll();
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    lockCount -= 2; //skip ta calc
+                    if (lockCount <= 0) {
+                        synchronized (lock) {
+                            lock.notifyAll();
+                        }
+                    }
+                }
             }
             if(lockCount > 0) {
                 synchronized (lock) {
@@ -158,6 +220,10 @@ public class AccountUtil {
         }
     }
 
+    public static void forceUpdate(){
+        onDataChanged();
+    }
+
     private synchronized static void onDataChanged(){
         if(onDataChangedTask != null && onDataChangedTask.getStatus() == AsyncTask.Status.RUNNING){
             onDataChangedTask.cancel(true);
@@ -167,6 +233,7 @@ public class AccountUtil {
     }
 
     public static void init(Context context){
+        if(mContext != null) return;
         mContext = context;
         ApiUtil.transApi.addTransUpdateListener(transUpdateListener);
         onDataChanged();
@@ -241,6 +308,8 @@ public class AccountUtil {
 
     public static class StockValue{
         public StockInfo info;
+        public List<StockHistory> dataList;
+        public Map<String, Integer> taMap = new HashMap<>();
         public int holdingAmount;
         public int holdingCost;
         public int holdingCalc;

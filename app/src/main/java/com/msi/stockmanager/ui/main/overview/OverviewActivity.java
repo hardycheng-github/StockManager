@@ -38,6 +38,7 @@ import com.msi.stockmanager.ui.main.form.FormActivity;
 import com.msi.stockmanager.ui.main.news.NewsActivity;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.ui.main.revenue.RevenueActivity;
 import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
 import java.util.ArrayList;
@@ -170,6 +171,11 @@ public class OverviewActivity extends AppCompatActivity {
 //                ColorUtil.init(this);
 //                AccountUtil.init(this);
 
+//                int color0 = ColorUtil.getColorWithAlpha(0xFFFF0000, 0);
+//                int color1 = ColorUtil.getColorWithAlpha(0xFFFF0000, 0.2);
+//                int color2 = ColorUtil.getColorWithAlpha(0xFFFF0000, 0.4);
+//                int color3 = ColorUtil.getColorWithAlpha(0xFFFF0000, 1);
+
                 binding = ActivityOverviewBinding.inflate(getLayoutInflater());
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.overviewToolbar);
@@ -291,11 +297,16 @@ public class OverviewActivity extends AppCompatActivity {
                 startActivity(new Intent(OverviewActivity.this, SettingsActivity.class));
                 return true;
             case R.id.menu_analysis:
-                //startActivity(new Intent(OverviewActivity.this, AnalysisActivity.class));
-                startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class));
+                Intent intent = new Intent(OverviewActivity.this, AnalysisActivity.class);
+//                intent.putExtra("EXTRA_STOCK_ID", "2330");
+                startActivity(intent);
+//                startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class));
                 return true;
             case R.id.menu_news:
                 startActivity(new Intent(OverviewActivity.this, NewsActivity.class));
+                return true;
+            case R.id.menu_revenue:
+                startActivity(new Intent(OverviewActivity.this, RevenueActivity.class));
                 return true;
         }
 

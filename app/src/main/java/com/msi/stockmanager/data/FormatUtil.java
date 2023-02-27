@@ -17,10 +17,15 @@ public class FormatUtil {
     private static NumberFormat percent = NumberFormat.getPercentInstance();
 
     public static void init(Context context){
+        if(mContext != null) return;
         mContext = context;
         percent.setMaximumFractionDigits(2);
         currency.setMaximumFractionDigits(0);
         number.setMaximumFractionDigits(2);
+    }
+
+    public static String currency(long val){
+        return currency.format(val);
     }
 
     public static String currency(int val){
@@ -28,6 +33,10 @@ public class FormatUtil {
     }
 
     public static String number(int val){
+        return number.format(val);
+    }
+
+    public static String number(long val){
         return number.format(val);
     }
 

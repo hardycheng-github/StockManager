@@ -1,4 +1,4 @@
-package com.msi.stockmanager.ui.main.trans_history;
+package com.msi.stockmanager.ui.main;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class StockFilterAdapter extends ArrayAdapter<String> {
+    public static final int SUGGESTION_LIMITS = 15;
     Context mContext;
     List<String> items, tempItems, suggestions;
 
@@ -65,6 +66,9 @@ public abstract class StockFilterAdapter extends ArrayAdapter<String> {
                 for (String val : tempItems) {
                     if (val.toLowerCase().contains(constraint.toString().toLowerCase())) {
                         suggestions.add(val);
+                        if(SUGGESTION_LIMITS > 0 && suggestions.size() >= SUGGESTION_LIMITS){
+                            break;
+                        }
                     }
                 }
                 FilterResults filterResults = new FilterResults();

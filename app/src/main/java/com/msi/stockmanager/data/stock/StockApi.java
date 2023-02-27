@@ -3,6 +3,8 @@ package com.msi.stockmanager.data.stock;
 import android.content.Context;
 import android.util.Log;
 
+import com.msi.stockmanager.data.DateUtil;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,14 +60,26 @@ public class StockApi implements IStockApi{
                 String httRequestUrl = String.format("https://query1.finance.yahoo.com/v6/finance/quote?symbols=" + stock_id + ".TW");
                 URL url = new URL(httRequestUrl);
                 connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
                 connection.setRequestMethod("GET");
                 connection.setDoInput(true);
-                InputStream inputStream = connection.getInputStream();
                 int status = connection.getResponseCode();
-                if ((status != 200) || (inputStream == null)) {
+                if (status != 200) {
+                    String errMsg = "";
+                    try {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
+                        StringBuilder sb = new StringBuilder();
+                        String line = "";
+                        while ((line = in.readLine()) != null) {
+                            sb.append(line + "\n");
+                        }
+                        in.close();
+                        errMsg = sb.toString().trim();
+                    } catch (Exception e){}
                     throw new Exception("HTTP error fetching URL (status=" + String.valueOf(status)
-                            + ", URL=" + httRequestUrl + ")");
+                            + ", URL=" + httRequestUrl + ", msg="+errMsg+")");
                 } else {
+                    InputStream inputStream = connection.getInputStream();
                     // 讀取 JSON RESPONSE --> sb
                     InputStreamReader reader = new InputStreamReader(inputStream,"UTF-8");
                     BufferedReader in = new BufferedReader(reader);
@@ -81,6 +95,13 @@ public class StockApi implements IStockApi{
                     Log.d("HttpRequest", "object=" + object.toString());
                     // 取得股價
                     info.setLastPrice(object.getDouble("regularMarketPrice"));
+                    info.setLastOpen(object.getDouble("regularMarketOpen"));
+                    info.setLastHigh(object.getDouble("regularMarketDayHigh"));
+                    info.setLastLow(object.getDouble("regularMarketDayLow"));
+                    info.setLastVolume(object.getDouble("regularMarketVolume"));
+                    info.setPreviosClose(object.getDouble("regularMarketPreviousClose"));
+                    info.setLastChange(object.getDouble("regularMarketChange"));
+                    info.setLastChangePercent(object.getDouble("regularMarketChangePercent") / 100.0);
                     // 取得股價更新時間
                     info.setLastUpdateTime(object.getLong("regularMarketTime")*1000);
                     try {
@@ -163,14 +184,26 @@ public class StockApi implements IStockApi{
                 String httRequestUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/"+stock_id+".TW?interval="+interval+"&range="+range);
                 URL url = new URL(httRequestUrl);
                 connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
                 connection.setRequestMethod("GET");
                 connection.setDoInput(true);
-                InputStream inputStream = connection.getInputStream();
                 int status = connection.getResponseCode();
-                if ((status != 200) || (inputStream == null)) {
+                if (status != 200) {
+                    String errMsg = "";
+                    try {
+                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
+                        StringBuilder sb = new StringBuilder();
+                        String line = "";
+                        while ((line = in.readLine()) != null) {
+                            sb.append(line + "\n");
+                        }
+                        in.close();
+                        errMsg = sb.toString().trim();
+                    } catch (Exception e){}
                     throw new Exception("HTTP error fetching URL (status=" + String.valueOf(status)
-                            + ", URL=" + httRequestUrl + ")");
+                            + ", URL=" + httRequestUrl + ", msg="+errMsg+")");
                 } else {
+                    InputStream inputStream = connection.getInputStream();
                     // 讀取 JSON RESPONSE --> sb
                     InputStreamReader reader = new InputStreamReader(inputStream,"UTF-8");
                     BufferedReader in = new BufferedReader(reader);
@@ -220,16 +253,20 @@ public class StockApi implements IStockApi{
                     //Log.d("HttpRequest", "adjclose=" + adj_close.toString());
                     if (timestamp.length() > 0) {
                         for (int i=0; i<timestamp.length(); i++) {
-                            StockHistory history   = new StockHistory();
-                            history.stock_id       = stock_id;
-                            history.date_timestamp = ((timestamp == null)? 0 : timestamp.getLong(i));
-                            history.price_open     = ((open == null)? 0 : open.getDouble(i));
-                            history.price_close    = ((close == null)? 0 : close.getDouble(i));
-                            history.price_high     = ((high == null)? 0 : high.getDouble(i));
-                            history.price_low      = ((low == null)? 0 : low.getDouble(i));
-                            history.price_volume   = ((volume == null)? 0 : volume.getDouble(i));
-                            //history.price_adjclose = ((adj_close == null)? 0 : adj_close.getDouble(i));
-                            data.add(history);
+                            StockHistory history = new StockHistory();
+                            try {
+                                history.stock_id = stock_id;
+                                history.date_timestamp = ((timestamp == null) ? 0 : timestamp.getLong(i) * 1000);
+                                history.price_open = ((open == null) ? 0 : open.getDouble(i));
+                                history.price_close = ((close == null) ? 0 : close.getDouble(i));
+                                history.price_high = ((high == null) ? 0 : high.getDouble(i));
+                                history.price_low = ((low == null) ? 0 : low.getDouble(i));
+                                history.price_volume = ((volume == null) ? 0 : volume.getDouble(i));
+                                //history.price_adjclose = ((adj_close == null)? 0 : adj_close.getDouble(i));
+                                data.add(history);
+                            } catch (Exception e){
+                                Log.w(TAG, "getHistoryStockData err: " + stock_id + " parse err at time " + DateUtil.toDateTimeString(history.date_timestamp));
+                            }
                         }
                     }
                 }

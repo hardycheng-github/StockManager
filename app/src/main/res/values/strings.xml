@@ -173,4 +173,49 @@
         <item>最大</item>
     </string-array>
     <string name="title_activity_kline_view">KlineViewActivity</string>
+    <string name="today_open">今日開盤價</string>
+    <string name="today_high">今日最高價</string>
+    <string name="today_low">今日最低價</string>
+    <string name="today_close">今日收盤價</string>
+    <string name="today_volume">今日成交量</string>
+    <string name="advice">智慧分析</string>
+    <string name="long_score">趨勢走向</string>
+    <string name="short_score">買賣壓力</string>
+    <string name="total_score">綜合分數</string>
+    <string-array name="score_list">
+        <item>強勢下跌</item>
+        <item>下跌趨勢</item>
+        <item>建議觀望</item>
+        <item>上漲趨勢</item>
+        <item>強勢上漲</item>
+    </string-array>
+    <string name="init_error_title">初始化失敗</string>
+    <string name="init_error_message">無法初始化應用，請確認您的網路環境，或重新嘗試同步</string>
+    <string name="retry">重試</string>
+    <string name="exit">離開</string>
+    <string name="watching_list">觀察清單</string>
+    <string name="title_activity_revenue">營收分析</string>
+    <string name="revenue_title_date">yyyy年MM月</string>
+    <string name="revenue_table_header_row">觀察清單</string>
+    <string name="revenue_table_header_stock_id">股票代碼</string>
+    <string name="revenue_table_header_company_name">公司名稱</string>
+    <string name="revenue_table_header_company_type">產業類別</string>
+    <string name="revenue_table_header_revenue_this_month">當月營收</string>
+    <string name="revenue_table_header_revenue_last_month">上月營收</string>
+    <string name="revenue_table_header_revenue_last_year">去年同月營收</string>
+    <string name="revenue_table_header_revenue_mom">月增率</string>
+    <string name="revenue_table_header_revenue_yoy">年增率</string>
+    <string name="revenue_table_header_revenue_this_ytd">今年累積營收</string>
+    <string name="revenue_table_header_revenue_last_ytd">去年累積營收</string>
+    <string name="revenue_table_header_revenue_yoy_ytd">累積年增率</string>
+    <string name="revenue_filter_hidden_items">隱藏欄位</string>
+    <string name="revenue_filter_reset">重設篩選</string>
+    <string name="revenue_filter_sort_type">排序方式</string>
+    <string name="revenue_filter_sort_type_asc">由小至大</string>
+    <string name="revenue_filter_sort_type_des">由大至小</string>
+    <string name="revenue_filter_sort_target">排序目標</string>
+    <string name="revenue_watching_list_remove_title">取消關注確認</string>
+    <string name="revenue_watching_list_remove_msg">將「${stock_name}」從關注清單中移除?</string>
+    <string name="revenue_watching_list_remove_yes">是</string>
+    <string name="revenue_watching_list_remove_no">否</string>
 </resources>

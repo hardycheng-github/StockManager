@@ -136,7 +136,7 @@ public class NewsApi implements INewsApi {
                     }
 
                     for (NewsItem item : itemList) {
-                        item.type = type;
+                        item.type = Integer.parseInt(SOURCE_INFO[finalX][1]);
 
                         //避免多個執行緒同時操作List
                         synchronized(newsItemList) {

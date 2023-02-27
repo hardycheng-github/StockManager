@@ -1,14 +1,15 @@
 package com.msi.stockmanager.data.stock
 
-import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.Stable
 import java.util.*
 import kotlin.collections.HashMap
 
 val StockUtil = MyStockUtil()
 
-fun getStockInfoOrNull(stockId: String): StockInfo? {
+fun getStockInfoOrNull(stockIdOrWithName: String): StockInfo? {
+    val splitIdx = stockIdOrWithName.indexOf(" - ")
+    val stockId = if(splitIdx > 0) stockIdOrWithName.substring(0, splitIdx).trim()
+                    else stockIdOrWithName
     return StockUtil.stockMap.getOrDefault(stockId, null)
 }
 

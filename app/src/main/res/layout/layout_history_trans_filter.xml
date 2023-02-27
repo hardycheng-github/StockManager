@@ -212,7 +212,7 @@
                             android:id="@+id/flow3"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            app:constraint_referenced_ids="today,recent_year,recent_month,recent_week"
+                            app:constraint_referenced_ids="today,recent_week,recent_month,recent_year"
                             app:flow_horizontalGap="@dimen/filter_padding_2"
                             app:flow_maxElementsWrap="2"
                             app:flow_verticalGap="@dimen/filter_padding_2"

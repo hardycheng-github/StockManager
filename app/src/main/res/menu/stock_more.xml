@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/goodinfo"
+        android:title="Goodinfo!" />
+    <item
+        android:id="@+id/wantgoo"
+        android:title="玩股網" />
+    <item
+        android:id="@+id/yahoo"
+        android:title="Yahoo股市" />
+    <item
+        android:id="@+id/anue"
+        android:title="Anue 鉅亨網" />
+    <item
+        android:id="@+id/cmoney_forum"
+        android:title="股市爆料同學會" />
+    <item
+        android:id="@+id/twse"
+        android:title="證交所每日報表" />
+</menu>

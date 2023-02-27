@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.stock.IStockApi;
 import com.msi.stockmanager.data.stock.StockApi;
 import com.msi.stockmanager.data.stock.StockHistory;
@@ -165,7 +166,7 @@ public class HttpDemoActivity extends AppCompatActivity {
                         handler.sendMessage(handler.obtainMessage(MESSAGE_APPEND_RESULT, "===================== ====== ====== ====== ====== ============\n"));
                         for (StockHistory a : data) {
 //                            String timestamp = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(a.date_timestamp * 1000));
-                            String timestamp = new SimpleDateFormat("yyyy-MM-dd").format(new Date(a.date_timestamp * 1000));
+                            String timestamp = DateUtil.toDateTimeString(a.date_timestamp);
                             handler.sendMessage(handler.obtainMessage(MESSAGE_APPEND_RESULT, "[" + timestamp + "] " +
                                     String.format("%6.1f", a.price_open) + " " + String.format("%6.1f", a.price_close) + " " +
                                     String.format("%6.1f", a.price_high) + " " + String.format("%6.1f", a.price_low) + " " +
