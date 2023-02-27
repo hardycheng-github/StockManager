@@ -32,10 +32,9 @@
     android:background="@color/cell_background_color"
     android:orientation="vertical">
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -74,10 +73,17 @@
         </RelativeLayout>
 
         <View
+            android:layout_width="@dimen/tableview_cell_border_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:background="@color/bg_line"/>
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_gravity="bottom"
+            android:layout_height="@dimen/tableview_header_border_width"
+            android:layout_alignParentBottom="true"
             android:background="@color/header_line_color"/>
-    </FrameLayout>
+
+    </RelativeLayout>
 </LinearLayout>
 

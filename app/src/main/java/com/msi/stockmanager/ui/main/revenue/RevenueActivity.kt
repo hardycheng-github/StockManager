@@ -319,7 +319,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         tableViewModel = TableViewModel(this, filterUtil);
         tableViewAdapter = TableViewAdapter(tableViewModel)
         binding.revenueTable.setAdapter(tableViewAdapter)
-//        binding.revenueTable.isIgnoreSelectionColors = true
+        binding.revenueTable.isIgnoreSelectionColors = true
+        binding.revenueTable.setHasFixedWidth(false)
         ApiUtil.revenueApi.clearWatchingList()
         ApiUtil.revenueApi.addWatchingList(ApiUtil.transApi.holdingStockList)
 

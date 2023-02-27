@@ -32,6 +32,7 @@
 
 
     <color name="gray_f5">#f5f5f5</color>
+    <color name="gray_cc">#cccccc</color>
     <color name="gray_66">#666666</color>
     <color name="gray_99">#999999</color>
 
@@ -87,8 +88,8 @@
     <color name="ml_red">#ffff0000</color>
 
     <color name="revenue_title_text">@color/main_m</color>
-    <color name="bg_line">@color/gray_99</color>
+    <color name="bg_line">#ddd</color>
     <color name="cell_background_color">@color/white</color>
-    <color name="header_line_color">@color/gray_66</color>
+    <color name="header_line_color">#666</color>
     <color name="table_view_default_text_color">@color/black</color>
 </resources>

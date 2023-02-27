@@ -123,6 +123,8 @@
                     app:allow_click_inside_cell="false"
                     app:allow_click_inside_column_header="false"
                     app:allow_click_inside_row_header="false"
+                    app:show_horizontal_separator="false"
+                    app:show_vertical_separator="false"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
