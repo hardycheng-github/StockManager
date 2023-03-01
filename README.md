@@ -103,6 +103,11 @@
 
 ![個股智慧分析](https://user-images.githubusercontent.com/55072235/185323325-ae7a04df-4b7d-4aad-b6da-b0c015edd060.png)
 
+### 營收分析報告
+
+![營收分析報告](https://user-images.githubusercontent.com/55072235/222057537-15899d1b-5c0b-44ee-aad3-ed8160f19648.png)
+
+
 ## 👀 The Demo
 
 使用情境的快速展示
