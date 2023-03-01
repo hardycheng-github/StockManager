@@ -28,9 +28,13 @@ import com.msi.stockmanager.ui.main.StockFilterAdapter
 import com.msi.stockmanager.ui.main.revenue.tableview.IRevenueTableListener
 import com.msi.stockmanager.ui.main.revenue.tableview.TableViewAdapter
 import com.msi.stockmanager.ui.main.revenue.tableview.TableViewModel
+import com.msi.stockmanager.ui.main.revenue.tableview.model.RowHeader
 import kotlinx.coroutines.*
+import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
+import java.util.*
+import kotlin.collections.ArrayList
 
 class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     companion object {
@@ -40,7 +44,9 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     lateinit var filterBinding: LayoutRevenueFilterBinding
     lateinit var binding: ActivityRevenueBinding
     lateinit var mMenu: Menu
-    private var mYearMonth: YearMonth = YearMonth.now()
+    private val maxYearMonth = YearMonth.now().minusMonths(if(LocalDate.now().dayOfMonth < 10) 2 else 1)
+    private val minYearMonth = YearMonth.of(103+1911, 1)
+    private var mYearMonth: YearMonth = maxYearMonth
     lateinit var tableViewModel: TableViewModel
     lateinit var tableViewAdapter: TableViewAdapter
 
@@ -72,7 +78,7 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     initView()
                     initFilter()
                     initTable()
-                    reload(0, -1)
+                    reload(enforce = true)
                 }
                 ON_START -> {
 
@@ -209,7 +215,6 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     binding.revenueTable.setColumnWidth(it, 300)
                 }
             }
-            binding.revenueTable.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -402,7 +407,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
             override fun onRowHeaderLongPressed(rowHeaderView: RecyclerView.ViewHolder, row: Int) {
                 Log.v(TAG, "[IRevenueTableListener] onRowHeaderLongPressed: $row")
-                val stockId = tableViewModel.rowHeaderList[row].id
+
+                val stockId = (tableViewAdapter.getRowHeaderItem(row) as RowHeader).id
                 val stockName = getStockInfoOrNull(stockId)?.getStockNameWithId()?:stockId
                 MaterialAlertDialogBuilder(this@RevenueActivity)
                     .setTitle(getString(R.string.revenue_watching_list_remove_title).replace("\${stock_name}", stockName))
@@ -446,8 +452,6 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
 
     private fun reload(yearShift: Int = 0, monthShift: Int = 0, enforce: Boolean = false){
         var tmpYearMonth = mYearMonth
-        val maxYearMonth = YearMonth.now().minusMonths(1)
-        val minYearMonth = YearMonth.of(103+1911, 1)
         tmpYearMonth = tmpYearMonth.plusMonths(monthShift.toLong())
         tmpYearMonth = tmpYearMonth.plusYears(yearShift.toLong())
         if(tmpYearMonth.isBefore(minYearMonth)) tmpYearMonth = minYearMonth
@@ -473,6 +477,7 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         filterUtil.update()
                     }
                 }
+                binding.revenueTable.adapter?.notifyDataSetChanged()
             }
         }
     }
