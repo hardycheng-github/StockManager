@@ -215,6 +215,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     binding.revenueTable.setColumnWidth(it, 300)
                 }
             }
+
+            binding.revenueTable.adapter?.notifyDataSetChanged()
         }
     }
 
@@ -477,7 +479,6 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                         filterUtil.update()
                     }
                 }
-                binding.revenueTable.adapter?.notifyDataSetChanged()
             }
         }
     }
