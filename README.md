@@ -116,13 +116,13 @@
 
 [//]: # (https://user-images.githubusercontent.com/55072235/177121818-dd6a86d6-ea83-43dd-862a-5ef97e72e81f.mov)
 
-[//]: # (https://user-images.githubusercontent.com/55072235/185537117-59f51a5f-3430-4d8e-849a-ff7384a36633.mov)
+[全功能展示](https://user-images.githubusercontent.com/55072235/185537117-59f51a5f-3430-4d8e-849a-ff7384a36633.mov)
 
-[//]: # (https://user-images.githubusercontent.com/55072235/222036718-75ee3d48-5d23-4913-990b-548ec5ab8d28.mov)
+[全功能展示(外部連結)](https://youtu.be/QVbjk0S1DQM)
 
-[全功能展示](https://youtu.be/QVbjk0S1DQM)
+[營收功能展示](https://user-images.githubusercontent.com/55072235/222036718-75ee3d48-5d23-4913-990b-548ec5ab8d28.mov)
 
-[營收功能展示](https://youtu.be/lKCi3CZaZ4Q)
+[營收功能展示(外部連結)](https://youtu.be/lKCi3CZaZ4Q)
 
 ## 🛠 Development Notes
 
