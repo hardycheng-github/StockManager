@@ -20,6 +20,7 @@
 * [財經新聞彙整](#財經新聞彙整)
 * [走勢與技術線圖](#走勢與技術線圖)
 * [智慧分析建議](#智慧分析建議)
+* [營收分析報告](#營收分析報告)
 
 ### 簡單易懂的介面設計
 
@@ -67,6 +68,10 @@
 
 <img width="360" src="https://github.com/hardycheng-github/StockManager/blob/demo/demo/Screenshot_2022-08-15-15-58-40-562_com.msi.stockmanager.jpg" />
 
+### 營收分析報告
+自動同步證交所公告的歷史營收資料，營收比對好簡單
+
+<img width="360" src="https://user-images.githubusercontent.com/55072235/222035327-17adbc84-1fff-43da-a195-0cf88e6b0929.jpg" />
 
 ## 📑 User Guide
 
@@ -107,10 +112,13 @@
 * 歷史紀錄搜尋
 * 財經新聞
 * 智慧分析
+* 營收分析
 
 [//]: # (https://user-images.githubusercontent.com/55072235/177121818-dd6a86d6-ea83-43dd-862a-5ef97e72e81f.mov)
 
 [MSI Stock Manager Stage-2 Demo](https://user-images.githubusercontent.com/55072235/185537117-59f51a5f-3430-4d8e-849a-ff7384a36633.mov)
+
+[MSI Stock Manager Demo - Revenue](https://user-images.githubusercontent.com/55072235/222036718-75ee3d48-5d23-4913-990b-548ec5ab8d28.mov)
 
 ## 🛠 Development Notes
 
@@ -195,3 +203,4 @@ Ta4j是非常方便的投資工具，開發者可以在java環境中簡單的計
 - [x] `股票走勢圖與技術分析線圖`
 - [x] `個股投資分析建議`
 - [x] `智慧分析演算法改良`
+- [x] `營收分析報告功能`
