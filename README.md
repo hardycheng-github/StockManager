@@ -71,7 +71,7 @@
 ### 營收分析報告
 自動同步公開歷史營收資料，營收比對好簡單
 
-<img width="360" src="https://user-images.githubusercontent.com/55072235/222035327-17adbc84-1fff-43da-a195-0cf88e6b0929.jpg" />
+<img width="360" src="https://user-images.githubusercontent.com/55072235/222070432-00535f51-934d-4569-aefc-04093ee8a577.gif" />
 
 ## 📑 User Guide
 
