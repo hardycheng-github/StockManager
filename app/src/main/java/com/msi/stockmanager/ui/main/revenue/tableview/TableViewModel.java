@@ -41,6 +41,7 @@ import com.msi.stockmanager.ui.main.revenue.tableview.model.ColumnHeader;
 import com.msi.stockmanager.ui.main.revenue.tableview.model.RowHeader;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -162,6 +163,8 @@ public class TableViewModel {
             String stockIdWithName = info != null ? stockId + "\n" + info.getStockName() : stockId;
             list.add(new RowHeader(stockId, stockIdWithName));
         }
+        Comparator<RowHeader> comp = Comparator.comparing(RowHeader::getId);
+        list.sort(filterUtil.getSortingAscending() ? comp : comp.reversed());
         return list;
     }
 
