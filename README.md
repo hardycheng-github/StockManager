@@ -140,6 +140,7 @@
 * [Compose EasyForms](#compose-easyforms)
 * [KLineView](#klineview)
 * [Ta4j](#ta4j)
+* [TableView](#tableview)
 
 ### [Kotlin](https://kotlinlang.org/)
 
@@ -207,7 +208,9 @@ Ta4j是非常方便的投資工具，開發者可以在java環境中簡單的計
 
 > TableView is a powerful Android library for displaying complex data structures and rendering tabular data composed of rows, columns and cells.
 
-TableView是為Android平台所開發的表格程式庫，底層以RecylerView實作，除了簡單表格呈現，還提供排序、篩選、單格互動監聽(單擊、雙擊、長按)...等功能。
+TableView是為Android平台所開發的表格程式庫，專門做網狀表格呈現，底層以RecylerView實作。
+
+除了簡單表格呈現，還提供排序、篩選、單格互動監聽(單擊、雙擊、長按)...等功能。
 
 ## 🏃‍♀️ Next Stage
 
