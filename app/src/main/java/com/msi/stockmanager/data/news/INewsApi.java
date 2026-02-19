@@ -15,8 +15,6 @@ public interface INewsApi {
     int TYPE_CRYPTO = 4; //加密貨幣
 
     String SOURCE_CNYES = "鉅亨新聞";
-    String SOURCE_YAHOO = "Yahoo財經";
-    String SOURCE_CHINATIMES = "中時新聞網";
 
     class NewsItem {
         public int type; //news type, ex: TYPE_STOCK,TYPE_BULLETIN,TYPE_EXCHANGE,TYPE_CRYPTO
