@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 apply plugin: 'kotlin-android'
 
@@ -12,7 +13,7 @@ android {
         minSdk 26
         targetSdk 32
         versionCode 1
-        versionName "1.4.230301-alpha"
+        versionName "2.0.260219-alpha"
         vectorDrawables {
             useSupportLibrary true
         }
@@ -90,6 +91,12 @@ dependencies {
     implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
 
     implementation "com.opencsv:opencsv:5.7.1"
+
+    // Room (使用 2.3.0 以相容 Kotlin 1.5.21)
+    def room_version = "2.3.0"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-rxjava3:$room_version"
 
 //    implementation 'com.github.evrencoskun:tableview:0.8.9.4'
 
