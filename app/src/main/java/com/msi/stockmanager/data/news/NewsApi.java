@@ -4,38 +4,25 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
-import android.widget.Switch;
 
-import com.msi.stockmanager.data.DateUtil;
-import com.msi.stockmanager.ui.main.pager.PagerActivity;
-
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class NewsApi implements INewsApi {
     private static final String TAG = NewsApi.class.getSimpleName();
+    private static final String API_BASE = "https://api.cnyes.com/media/api/v1/newslist/category/";
+    private static final int API_LIMIT = 30;
+
     private Context parentsContext;
     private Map<Integer, List<NewsItem>> newsRecord;
 
@@ -44,13 +31,8 @@ public class NewsApi implements INewsApi {
     private static final String[][] SOURCE_INFO = {
             {"CNYES","1","https://news.cnyes.com/news/cat/tw_quo"},                //鉅亨 - 台股
             {"CNYES","2","https://news.cnyes.com/news/cat/announcement"},          //鉅亨 - 公告
-            {"CNYES","3","https://news.cnyes.com/news/cat/forex",},                //鉅亨 - 外匯
+            {"CNYES","3","https://news.cnyes.com/news/cat/forex"},                 //鉅亨 - 外匯
             {"CNYES","4","https://news.cnyes.com/news/cat/bc_crypto"},             //鉅亨 - 虛擬貨幣
-            //{"YAHOO","1","https://tw.stock.yahoo.com/tw-market"},                  //奇摩 - 台股
-            {"CHINATIMES","1","https://wantrich.chinatimes.com/newslist/420101/1"},   //中時新聞網 - 台股(上市櫃)
-            {"CHINATIMES","3","https://www.chinatimes.com/Search/%E5%A4%96%E5%8C%AF?chdtv"},   //中時新聞網 - 搜尋(外匯)
-            {"CHINATIMES","4","https://www.chinatimes.com/search/%E5%8A%A0%E5%AF%86%E8%B2%A8%E5%B9%A3?chdtv"}   //中時新聞網 - 搜尋(加密貨幣)
-
     };
 
     public NewsApi() {} // for test
@@ -102,13 +84,12 @@ public class NewsApi implements INewsApi {
             return BitmapFactory.decodeStream(in);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            //Log.e(TAG, "err: " + e.getMessage());
         }
         return null;
     }
 
     /**
-     * 爬蟲取得各新聞網站的各個種類新聞
+     * 取得各分類新聞（僅 CNYES API）
      * @param type 新聞種類
      * @return List<NewsItem>
      */
@@ -120,25 +101,11 @@ public class NewsApi implements INewsApi {
         for(int x=0; x<SOURCE_INFO.length; x++) {
             int finalX = x;
             new Thread(() -> {
-                // 挑選出type相符的 or type:0 全部
                 if (Integer.parseInt(SOURCE_INFO[finalX][1]) == type || 0 == type){
-                    List<NewsItem> itemList = new ArrayList<>();
-                    switch (SOURCE_INFO[finalX][0]) {
-                        case "CNYES":
-                            itemList = CrawlerWithCNYES(SOURCE_INFO[finalX][2]);
-                            break;
-                        case "YAHOO":
-                            itemList = CrawlerWithYahoo(SOURCE_INFO[finalX][2]);
-                            break;
-                        case "CHINATIMES":
-                            itemList = CrawlerWithChinatimes(SOURCE_INFO[finalX][2]);
-                            break;
-                    }
+                    List<NewsItem> itemList = CrawlerWithCNYES(SOURCE_INFO[finalX][2]);
 
                     for (NewsItem item : itemList) {
                         item.type = Integer.parseInt(SOURCE_INFO[finalX][1]);
-
-                        //避免多個執行緒同時操作List
                         synchronized(newsItemList) {
                             newsItemList.add(item);
                         }
@@ -147,7 +114,6 @@ public class NewsApi implements INewsApi {
                 Log.d(TAG, "NewsApi Info : Thread finished index : " + finalX);
                 countDownLatch.countDown();
             }).start();
-
         }
 
         try {
@@ -160,155 +126,88 @@ public class NewsApi implements INewsApi {
     }
 
     /**
-     * 爬蟲取得鉅亨網的新聞
-     * @param URL 爬蟲網址
+     * 透過鉅亨 API 取得新聞列表
+     * @param pageUrl 原網頁 URL，用於從 path 取出 category（例如 https://news.cnyes.com/news/cat/tw_quo）
      * @return List<NewsItem>
      */
-    private static List<NewsItem> CrawlerWithCNYES(String URL){
+    private static List<NewsItem> CrawlerWithCNYES(String pageUrl){
         List<NewsItem> newsItemList = new ArrayList<>();
 
+        String category = pageUrl.substring(pageUrl.lastIndexOf('/') + 1).trim();
+        String apiUrl = API_BASE + category + "?limit=" + API_LIMIT;
+
+        HttpURLConnection conn = null;
         try {
-            final Document doc = Jsoup.connect(URL).get();
+            URL url = new URL(apiUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+            conn.setConnectTimeout(15000);
+            conn.setReadTimeout(15000);
 
-            Elements newsListByCrawler = doc.select("div.theme-list").first()
-                    .select(":root > div > a");
+            int code = conn.getResponseCode();
+            if (code != 200) {
+                Log.w(TAG, "CNYES API non-200: " + code + " " + apiUrl);
+                return newsItemList;
+            }
 
-            for (Element el : newsListByCrawler) {
-                NewsItem item;
-                item = new NewsItem();
+            String response = readStream(conn.getInputStream());
+            JSONObject root = new JSONObject(response);
+            JSONObject items = root.optJSONObject("items");
+            if (items == null) {
+                return newsItemList;
+            }
+            JSONArray data = items.optJSONArray("data");
+            if (data == null) {
+                return newsItemList;
+            }
+
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject obj = data.optJSONObject(i);
+                if (obj == null) continue;
+
+                NewsItem item = new NewsItem();
                 item.source = SOURCE_CNYES;
-                item.title = el.attr("title");
-                item.link = el.absUrl("href");
+                item.title = obj.optString("title", "");
+                long publishAt = obj.optLong("publishAt", 0L);
+                item.timestamp = publishAt * 1000;
+                long newsId = obj.optLong("newsId", 0L);
+                item.link = "https://news.cnyes.com/news/id/" + newsId;
 
-                try {
-                    String imageUrl = el.select(":root > div > figure > img").attr("src").toString();
-                    item.image = getImageFromUrl(imageUrl);
-                } catch (NullPointerException e){
-                    System.out.println("DOM not found.");
-                }
-
-                try {
-                    String time = el.select(":root > div.theme-meta > time").attr("datetime").toString();
-                    SimpleDateFormat datetime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
-
-                    item.timestamp = datetime.parse(time).getTime();
-                } catch (NullPointerException e) {
-                    System.out.println("DOM not found.");
-                }
-                newsItemList.add(item);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return newsItemList;
-    }
-
-    /**
-     * 爬蟲取得奇摩股市的新聞
-     * @param URL 爬蟲網址
-     * @return List<NewsItem>
-     */
-    private static List<NewsItem> CrawlerWithYahoo(String URL){
-        List<NewsItem> newsItemList = new ArrayList<>();
-
-        try {
-            final Document doc = Jsoup.connect(URL).get();
-            Elements newsListByCrawler = doc.select("div#YDC-Stream").select(":root > ul > li");
-            for (Element el : newsListByCrawler) {
-                NewsItem item;
-                item = new NewsItem();
-                item.source = SOURCE_YAHOO;
-
-                //獲取標題及連結，若獲取失敗 - 跳出
-                try {
-                    item.link = el.select(":root > div > div")
-                            .select("a.mega-item-header-link").first().absUrl("href");
-                    item.title = el.select(":root > div > div")
-                            .select("a.mega-item-header-link").first().text();
-                } catch (NullPointerException e){
-                    System.out.println("DOM not found.");
-                    continue;
-                }
-
-                //有可能沒有圖片，若獲取失敗 - 繼續
-                try {
-                    String imageUrl = el.select(":root > div > div > div").get(0)
-                            .select("img").first().attr("src").toString();
-                    item.image = getImageFromUrl(imageUrl);
-
-                } catch (NullPointerException e){
-                    System.out.println("DOM not found.");
-                }
-
-                newsItemList.add(item);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-
-        return newsItemList;
-    }
-
-    /**
-     * 爬蟲取得中時新聞網的新聞
-     * @param URL 爬蟲網址
-     * @return List<NewsItem>
-     */
-    private static List<NewsItem> CrawlerWithChinatimes(String URL){
-        List<NewsItem> newsItemList = new ArrayList<>();
-
-        try {
-            final Document doc = Jsoup.connect(URL).get();
-            Elements newsListByCrawler = doc.select("ul.vertical-list").select(":root > li");
-            for (Element el : newsListByCrawler) {
-                NewsItem item;
-                item = new NewsItem();
-                item.source = SOURCE_CHINATIMES;
-
-                //獲取標題及連結，若獲取失敗 - 跳出
-                try {
-                    item.link = el.select(":root > div > div > div")
-                            .select(".title").first().select("a").first().absUrl("href");
-                    item.title = el.select(":root > div > div > div")
-                            .select(".title").first().select("a").text();
-                } catch (Exception e){
-                    System.out.println("DOM not found.");
-                    continue;
-                }
-
-                //獲取時間，若獲取失敗 - 繼續
-                try {
-                    String time = el.select(":root > div > div > div > div.meta-info > time")
-                            .attr("datetime");
-                    if(time != null){
-                        if (time.matches("\\d+")) { //1658217101
-                            item.timestamp = Long.parseLong(time) * 1000;
-                        } else if (time.matches("\\d{4}[\\-]\\d{2}[\\-]\\d{2}\\s\\d{2}[:]\\d{2}")){ //2022-07-19 11:58
-                            SimpleDateFormat datetime = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                            item.timestamp = datetime.parse(time).getTime();
+                JSONObject coverSrc = obj.optJSONObject("coverSrc");
+                if (coverSrc != null) {
+                    JSONObject s = coverSrc.optJSONObject("s");
+                    if (s == null) s = coverSrc.optJSONObject("m");
+                    if (s != null) {
+                        String src = s.optString("src", "");
+                        if (!src.isEmpty()) {
+                            item.image = getImageFromUrl(src);
                         }
                     }
-                } catch (NullPointerException e) {
-                    System.out.println("DOM not found.");
-                }
-
-                //有可能沒有圖片，若獲取失敗 - 繼續
-                try {
-                    String imageUrl = el.select(":root > div > div > div > div.thumb-photo")
-                            .select("img").attr("src");
-                    item.image = getImageFromUrl(imageUrl);
-
-                } catch (NullPointerException e){
-                    e.printStackTrace();
                 }
 
                 newsItemList.add(item);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
+            Log.e(TAG, "CrawlerWithCNYES error: " + e.getMessage());
             e.printStackTrace();
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
 
         return newsItemList;
+    }
+
+    private static String readStream(InputStream in) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        byte[] buf = new byte[4096];
+        int n;
+        while ((n = in.read(buf)) != -1) {
+            sb.append(new String(buf, 0, n, "UTF-8"));
+        }
+        in.close();
+        return sb.toString();
     }
 }
