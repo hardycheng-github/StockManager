@@ -6,6 +6,8 @@ import com.msi.stockmanager.data.analytics.ITaApi;
 import com.msi.stockmanager.data.analytics.TaApi;
 import com.msi.stockmanager.data.news.INewsApi;
 import com.msi.stockmanager.data.news.NewsApi;
+import com.msi.stockmanager.data.notify.INotifyRepository;
+import com.msi.stockmanager.data.notify.NotifyRepository;
 import com.msi.stockmanager.data.revenue.IRevenueApi;
 import com.msi.stockmanager.data.revenue.RevenueApi;
 import com.msi.stockmanager.data.stock.IStockApi;
@@ -19,6 +21,7 @@ public class ApiUtil {
     public static INewsApi newsApi;
     public static ITaApi taApi;
     public static IRevenueApi revenueApi;
+    public static INotifyRepository notifyRepository;
     private static Context mContext;
 
     public static void init(Context context){
@@ -29,5 +32,6 @@ public class ApiUtil {
         newsApi = new NewsApi(context);
         taApi = new TaApi();
         revenueApi = new RevenueApi(context);
+        notifyRepository = new NotifyRepository(context);
     }
 }

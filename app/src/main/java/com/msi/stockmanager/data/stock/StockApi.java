@@ -106,7 +106,7 @@ public class StockApi implements IStockApi{
                 return;
             }
             try {
-                String startDate = getDateStringDaysAgo(5);
+                String startDate = getDateStringDaysAgo(10);
                 String endDate = getTodayDateString();
                 String requestUrl = FINMIND_BASE_URL + "?dataset=" + DATASET_TAIWAN_STOCK_PRICE
                         + "&stock_id=" + stock_id + "&date=" + startDate + "&end_date=" + endDate;

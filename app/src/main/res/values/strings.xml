@@ -218,4 +218,10 @@
     <string name="revenue_watching_list_remove_msg">將「${stock_name}」從關注清單中移除?</string>
     <string name="revenue_watching_list_remove_yes">是</string>
     <string name="revenue_watching_list_remove_no">否</string>
+    
+    <!-- Notify -->
+    <string name="notify_title">通知</string>
+    <string name="notify_empty_message">目前無任何通知</string>
+    <string name="notify_mark_all_read">全部已讀</string>
+    <string name="notify_delete_all">全部刪除</string>
 </resources>
