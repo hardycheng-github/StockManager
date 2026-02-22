@@ -75,6 +75,8 @@ public class OverviewActivity extends AppCompatActivity {
     private MenuItem notifyMenuItem;
     private View notifyBadgeView;
     private TextView badgeCountText;
+    /** 快取未讀數，供 menu 晚於 onStart 建立時立即顯示，-1 表示尚未取得 */
+    private int lastUnreadCount = -1;
     private CompositeDisposable disposables = new CompositeDisposable();
     private static final String PREF_NOTIFY_TEST_INSERTED = "notify_test_inserted_this_launch";
     private Handler mHandler = new Handler(){
@@ -279,11 +281,13 @@ public class OverviewActivity extends AppCompatActivity {
                 // 載入通知列表和未讀數
                 loadNotifyList();
                 updateUnreadCount();
-                
+
                 // 測試插入通知（每啟動一次）
                 insertTestNotifications();
 
-//                binding.drawer.openDrawer(GravityCompat.END); //TEST OPEN NOTIFY DRAWER
+            } else if(event.equals(Lifecycle.Event.ON_RESUME)){
+                // 回到畫面時重新整理未讀數（離開再回來或從其他 Activity 返回）
+                updateUnreadCount();
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 binding.fabOverviewAdd.close(false);
                 binding.fabOverviewAdd.hideMenuButton(false);
@@ -325,10 +329,44 @@ public class OverviewActivity extends AppCompatActivity {
         if (notifyMenuItem != null && notifyMenuItem.getActionView() != null) {
             notifyBadgeView = notifyMenuItem.getActionView();
             badgeCountText = notifyBadgeView.findViewById(R.id.badge_count);
-            notifyBadgeView.setOnClickListener(v -> onOptionsItemSelected(notifyMenuItem));
+            notifyBadgeView.setOnClickListener(v -> {
+                onOptionsItemSelected(notifyMenuItem);
+                // 若 OnTouchListener 未收到事件，至少點擊時短暫顯示 ripple
+                v.setPressed(true);
+                v.postOnAnimation(() -> v.setPressed(false));
+            });
+            // actionLayout 的 view 常收不到 touch 的 pressed 狀態，手動設定以觸發 ripple
+            notifyBadgeView.setOnTouchListener((v, ev) -> {
+                switch (ev.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        v.setPressed(true);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        v.setPressed(false);
+                        break;
+                }
+                return false; // 不消費事件，讓 click 仍可觸發
+            });
+            // Menu 可能晚於 onStart 建立，此時 badge 已就緒，立即套用快取並重新拉取未讀數
+            if (lastUnreadCount >= 0) {
+                applyUnreadCountToBadge(badgeCountText, lastUnreadCount);
+            }
+            updateUnreadCount();
         }
         
         return true;
+    }
+    
+    /** 將未讀數寫入 badge TextView（可傳入 null 會略過）；顯示上限 99 */
+    private void applyUnreadCountToBadge(TextView badge, int count) {
+        if (badge == null) return;
+        if (count > 0) {
+            badge.setText(String.valueOf(Math.min(count, 99)));
+            badge.setVisibility(View.VISIBLE);
+        } else {
+            badge.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -509,14 +547,13 @@ public class OverviewActivity extends AppCompatActivity {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 count -> {
-                    if (badgeCountText != null) {
-                        if (count > 0) {
-                            badgeCountText.setText(String.valueOf(count));
-                            badgeCountText.setVisibility(View.VISIBLE);
-                        } else {
-                            badgeCountText.setVisibility(View.GONE);
-                        }
+                    lastUnreadCount = count;
+                    // 非同步回調時 badge 可能尚未建立，嘗試從 MenuItem 解析
+                    TextView badge = badgeCountText;
+                    if (badge == null && notifyMenuItem != null && notifyMenuItem.getActionView() != null) {
+                        badge = notifyMenuItem.getActionView().findViewById(R.id.badge_count);
                     }
+                    applyUnreadCountToBadge(badge, count);
                 },
                 error -> Log.e(TAG, "getUnreadCount error", error)
             );

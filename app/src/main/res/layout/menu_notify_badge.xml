@@ -5,13 +5,13 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:background="@drawable/ripple_menu_item"
-    android:padding="8dp">
+    android:background="?attr/actionBarItemBackground"
+    android:padding="4dp">
 
     <ImageView
         android:id="@+id/icon_notify"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:src="@drawable/ic_baseline_notifications_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,15 +21,13 @@
 
     <TextView
         android:id="@+id/badge_count"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:background="@drawable/badge_background"
-        android:minWidth="16dp"
-        android:paddingHorizontal="4dp"
-        android:paddingVertical="2dp"
         android:text="0"
+        android:gravity="center"
         android:textColor="@color/white"
-        android:textSize="10sp"
+        android:textSize="8sp"
         android:textStyle="bold"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
