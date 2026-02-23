@@ -15,6 +15,8 @@ import java.util.*
 class RevenueApi(val context: Context): IRevenueApi {
     companion object{
         val TAG = RevenueApi::class.java.simpleName
+        // 控制是否啟用營收 API，設為 false 可避免不必要的網路消耗
+        private const val ENABLE_REVENUE_API = false
     }
     val infoList = mutableListOf<RevenueInfo>()
     var initCallback: IRevenueApi.SyncCallback? = null
@@ -23,10 +25,19 @@ class RevenueApi(val context: Context): IRevenueApi {
     val sharedPref: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     init {
-        sync(false, null)
+        if (ENABLE_REVENUE_API) {
+            sync(false, null)
+        }
     }
 
     override fun sync(blocking: Boolean, cb: IRevenueApi.SyncCallback?): Int {
+        // 檢查是否啟用營收 API
+        if (!ENABLE_REVENUE_API) {
+            Log.d(TAG, "[sync] 營收資料抓取功能已停用")
+            cb?.onFail("營收資料抓取功能已停用")
+            return IRevenueApi.SYNC_STATUS_FAIL
+        }
+        
         if(syncStatus == IRevenueApi.SYNC_STATUS_ING){
             if(blocking){
                 runBlocking {
