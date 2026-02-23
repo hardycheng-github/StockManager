@@ -57,6 +57,10 @@
     <string name="title_activity_settings">帳戶設定</string>
     <string name="setting_fee_discount">手續費優惠</string>
     <string name="setting_fee_minimum">最低手續費</string>
+    <string name="setting_ma_alert_level">平均線關注等級</string>
+    <string name="ma_alert_level_low">保守</string>
+    <string name="ma_alert_level_default">穩健</string>
+    <string name="ma_alert_level_high">積極</string>
     <string name="hint_stock_search">請輸入股票代碼或名稱</string>
     <string name="syncing">同步中</string>
     <string name="title_activity_http_request_demo">HttpRequestDemo</string>
@@ -223,5 +227,17 @@
     <string name="notify_title">通知</string>
     <string name="notify_empty_message">目前無任何通知</string>
     <string name="notify_mark_all_read">全部已讀</string>
+    
+    <!-- MA Alert Level Arrays -->
+    <string-array name="ma_alert_level_entries">
+        <item>@string/ma_alert_level_low</item>
+        <item>@string/ma_alert_level_default</item>
+        <item>@string/ma_alert_level_high</item>
+    </string-array>
+    <string-array name="ma_alert_level_values">
+        <item>LOW</item>
+        <item>DEFAULT</item>
+        <item>HIGH</item>
+    </string-array>
     <string name="notify_delete_all">全部刪除</string>
 </resources>

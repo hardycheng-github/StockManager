@@ -48,4 +48,9 @@ class NotifyRepository(context: Context) : INotifyRepository {
         return dao.markAllDeleted()
             .subscribeOn(Schedulers.io())
     }
+    
+    override fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Single<NotifyEntity?> {
+        return dao.findByTypeAndPayloadAndDate(type, payload, date)
+            .subscribeOn(Schedulers.io())
+    }
 }

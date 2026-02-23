@@ -43,4 +43,9 @@ interface INotifyRepository {
      * 全部標記為已刪除
      */
     fun markAllDeleted(): Single<Int>
+    
+    /**
+     * 根據類型、載荷和日期查找通知（用於檢查是否已存在相同事件）
+     */
+    fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Single<NotifyEntity?>
 }

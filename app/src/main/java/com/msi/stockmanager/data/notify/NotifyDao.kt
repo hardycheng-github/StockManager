@@ -33,4 +33,7 @@ interface NotifyDao {
     
     @Query("UPDATE notify_entity SET deleted = 1 WHERE id = :id")
     fun markDeleted(id: Long): Single<Int>
+    
+    @Query("SELECT * FROM notify_entity WHERE type = :type AND actionPayload = :payload AND createdAt = :date AND deleted = 0 LIMIT 1")
+    fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Single<NotifyEntity?>
 }

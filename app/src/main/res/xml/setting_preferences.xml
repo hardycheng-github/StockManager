@@ -21,5 +21,12 @@
         android:defaultValue="false"
         android:key="profit_color_reverse"
         android:title="@string/profit_color_reverse" />
+    
+    <ListPreference
+        android:defaultValue="DEFAULT"
+        android:entries="@array/ma_alert_level_entries"
+        android:entryValues="@array/ma_alert_level_values"
+        android:key="setting_ma_alert_level"
+        android:title="@string/setting_ma_alert_level" />
 
 </PreferenceScreen>
