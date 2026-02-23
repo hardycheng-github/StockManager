@@ -1,5 +1,6 @@
 package com.msi.stockmanager.ui.main.notify;
 
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,11 +105,13 @@ public class NotifyAdapter extends RecyclerView.Adapter<NotifyAdapter.ViewHolder
             String timeStr = DateUtil.toDateTimeString(item.getCreatedAt());
             binding.textTime.setText(timeStr);
             
-            // 未讀指示器
+            // 未讀指示器和字體樣式
             if (!item.getRead()) {
                 binding.indicatorUnread.setVisibility(View.VISIBLE);
+                binding.textTitle.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.BOLD));
             } else {
                 binding.indicatorUnread.setVisibility(View.GONE);
+                binding.textTitle.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.NORMAL));
             }
             
             // 點擊事件

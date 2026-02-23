@@ -50,6 +50,7 @@ import com.msi.stockmanager.ui.main.news.NewsActivity;
 import com.msi.stockmanager.ui.main.notify.NotifyAdapter;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.notify.MaBreakthroughService;
 import com.msi.stockmanager.ui.main.revenue.RevenueActivity;
 import com.msi.stockmanager.ui.main.setting.SettingsActivity;
 
@@ -281,9 +282,12 @@ public class OverviewActivity extends AppCompatActivity {
                 // 載入通知列表和未讀數
                 loadNotifyList();
                 updateUnreadCount();
+                
+                // 檢查平均線突破事件
+                MaBreakthroughService.checkWatchingList(OverviewActivity.this);
 
                 // 測試插入通知（每啟動一次）
-                insertTestNotifications();
+                // insertTestNotifications(); // 已停用自動插入測試通知功能
 
             } else if(event.equals(Lifecycle.Event.ON_RESUME)){
                 // 回到畫面時重新整理未讀數（離開再回來或從其他 Activity 返回）
