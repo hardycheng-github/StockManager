@@ -21,6 +21,7 @@ import com.msi.stockmanager.data.FormatUtil;
 import com.msi.stockmanager.data.news.INewsApi;
 import com.msi.stockmanager.databinding.FragmentNewsBinding;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -117,9 +118,10 @@ public class NewsFragment extends Fragment {
         ApiUtil.newsApi.getNewsList(newsType, force, new INewsApi.ResultCallback() {
             @Override
             public void onResult(List<INewsApi.NewsItem> newsItemList) {
+                List<INewsApi.NewsItem> displayList = getDisplayList(newsItemList);
                 binding.list.setVisibility(View.VISIBLE);
-                if(newsItemList.size() > 0){
-                    mAdapter.reloadList(newsItemList);
+                if(displayList.size() > 0){
+                    mAdapter.reloadList(displayList);
                     binding.noData.setVisibility(View.INVISIBLE);
                 } else {
                     binding.noData.setVisibility(View.VISIBLE);
@@ -134,6 +136,19 @@ public class NewsFragment extends Fragment {
                 binding.loading.setVisibility(View.INVISIBLE);
             }
         });
+    }
+
+    private List<INewsApi.NewsItem> getDisplayList(List<INewsApi.NewsItem> source) {
+        if (newsType != INewsApi.TYPE_ALL) {
+            return source;
+        }
+        List<INewsApi.NewsItem> filtered = new ArrayList<>();
+        for (INewsApi.NewsItem item : source) {
+            if (item.type != INewsApi.TYPE_BULLETIN) {
+                filtered.add(item);
+            }
+        }
+        return filtered;
     }
 
     @Override

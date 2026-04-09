@@ -5,6 +5,14 @@ plugins {
 }
 apply plugin: 'kotlin-android'
 
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { stream ->
+        localProperties.load(stream)
+    }
+}
+
 android {
     compileSdk 32
 
@@ -19,6 +27,12 @@ android {
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        def MARKETAUX_API_TOKEN =
+                (localProperties.getProperty("MARKETAUX_API_TOKEN")
+                        ?: project.findProperty("MARKETAUX_API_TOKEN")
+                        ?: "")
+        buildConfigField "String", "MARKETAUX_API_TOKEN", "\"${MARKETAUX_API_TOKEN}\""
     }
 
     buildTypes {
