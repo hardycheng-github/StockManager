@@ -12,7 +12,7 @@ usage() {
   cat <<'EOF'
 Usage: ./android_build_install_launch.sh [options]
 
-Build Android APK with --no-daemon, install it, and launch app.
+Build Android APK, install it, and launch app.
 
 Options:
   -s, --serial <device_serial>   Target adb device serial
@@ -185,9 +185,9 @@ main() {
 
   echo "[1/3] Building APK (module=${APP_MODULE}, variant=${VARIANT})..."
   if [ "$RUN_CLEAN" = "true" ]; then
-    "$gradle_cmd" --no-daemon "$clean_task" "$assemble_task"
+    "$gradle_cmd" "$clean_task" "$assemble_task"
   else
-    "$gradle_cmd" --no-daemon "$assemble_task"
+    "$gradle_cmd" "$assemble_task"
   fi
 
   if ! APK_PATH="$(find_variant_apk "$APP_MODULE" "$VARIANT")"; then
