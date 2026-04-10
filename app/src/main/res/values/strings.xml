@@ -88,7 +88,7 @@
     <string name="dialog_remove_stock_dividend_reduction_msg">刪除所有【%s】的股利與減資紀錄?</string>
     <string name="confirm">確定</string>
     <string name="cancel">取消</string>
-    <string name="copyright_msg">Copyright © 2022 MSI</string>
+    <string name="copyright_msg">Copyright © YYYY MSI</string>
     <string name="search_stock">股票搜尋</string>
     <string name="filter">過濾器</string>
     <string name="title_activity_list">歷史紀錄</string>

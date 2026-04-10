@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import java.util.Calendar;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LaunchActivity extends AppCompatActivity {
@@ -62,6 +63,9 @@ public class LaunchActivity extends AppCompatActivity {
             }
         });
         binding.version.setText(getString(R.string.version) + " " + BuildConfig.VERSION_NAME);
+        String copyright = getString(R.string.copyright_msg).replace(
+                "YYYY", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+        binding.copyright.setText(copyright);
         long t1 = System.currentTimeMillis();
         initThread = new Thread(()->{
             Log.d(TAG, "+++ init start +++");
