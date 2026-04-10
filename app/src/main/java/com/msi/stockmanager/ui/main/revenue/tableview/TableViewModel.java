@@ -100,53 +100,30 @@ public class TableViewModel {
             for(ColumnHeader ch: cols){
                 int headerResId = Integer.parseInt(ch.getId());
                 Object data = "";
-                switch (headerResId){
-                    case R.string.revenue_table_header_stock_id:{
-                        data = stockId;
-                        break;
-                    }
-                    case R.string.revenue_table_header_company_name:{
-                        data = stockInfo != null ? stockInfo.getCompanyName()
-                                : stockInfo1 != null ? stockInfo1.getStockName() : "";
-                        break;
-                    }
-                    case R.string.revenue_table_header_company_type:{
-                        data = stockInfo != null ? stockInfo.getCompanyType()
-                                : stockInfo1 != null ? stockInfo1.getCompanyType() : "";
-                        break;
-                    }
-                    case R.string.revenue_table_header_revenue_this_month:{
-                        data = stockInfo != null ? stockInfo.getRevenueThisMonth() : 0L;
-                        break;
-                    }
-                    case R.string.revenue_table_header_revenue_last_month:{
-                        data = stockInfo != null ? stockInfo.getRevenueLastMonth() : 0L;
-                        break;
-                    }
-                    case R.string.revenue_table_header_revenue_last_year:{
-                        data = stockInfo != null ? stockInfo.getRevenueLastYearSameMonth() : 0L;
-                        break;
-                    }
-                    case R.string.revenue_table_header_revenue_mom:{
-                        data = stockInfo != null ? stockInfo.getRevenueMoM() : 0f;
-                        break;
-                    }
-                    case R.string.revenue_table_header_revenue_yoy:{
-                        data = stockInfo != null ? stockInfo.getRevenueYoY() : 0f;
-                        break;
-                    }
-                    case R.string.revenue_table_header_revenue_this_ytd:{
-                        data = stockInfo != null ? stockInfo.getRevenueYtdThisYear() : 0L;
-                        break;
-                    }
-                    case R.string.revenue_table_header_revenue_last_ytd:{
-                        data = stockInfo != null ? stockInfo.getRevenueYtdLastYear() : 0L;
-                        break;
-                    }
-                    case R.string.revenue_table_header_revenue_yoy_ytd:{
-                        data = stockInfo != null ? stockInfo.getRevenueYtdYoY() : 0f;
-                        break;
-                    }
+                if (headerResId == R.string.revenue_table_header_stock_id) {
+                    data = stockId;
+                } else if (headerResId == R.string.revenue_table_header_company_name) {
+                    data = stockInfo != null ? stockInfo.getCompanyName()
+                            : stockInfo1 != null ? stockInfo1.getStockName() : "";
+                } else if (headerResId == R.string.revenue_table_header_company_type) {
+                    data = stockInfo != null ? stockInfo.getCompanyType()
+                            : stockInfo1 != null ? stockInfo1.getCompanyType() : "";
+                } else if (headerResId == R.string.revenue_table_header_revenue_this_month) {
+                    data = stockInfo != null ? stockInfo.getRevenueThisMonth() : 0L;
+                } else if (headerResId == R.string.revenue_table_header_revenue_last_month) {
+                    data = stockInfo != null ? stockInfo.getRevenueLastMonth() : 0L;
+                } else if (headerResId == R.string.revenue_table_header_revenue_last_year) {
+                    data = stockInfo != null ? stockInfo.getRevenueLastYearSameMonth() : 0L;
+                } else if (headerResId == R.string.revenue_table_header_revenue_mom) {
+                    data = stockInfo != null ? stockInfo.getRevenueMoM() : 0f;
+                } else if (headerResId == R.string.revenue_table_header_revenue_yoy) {
+                    data = stockInfo != null ? stockInfo.getRevenueYoY() : 0f;
+                } else if (headerResId == R.string.revenue_table_header_revenue_this_ytd) {
+                    data = stockInfo != null ? stockInfo.getRevenueYtdThisYear() : 0L;
+                } else if (headerResId == R.string.revenue_table_header_revenue_last_ytd) {
+                    data = stockInfo != null ? stockInfo.getRevenueYtdLastYear() : 0L;
+                } else if (headerResId == R.string.revenue_table_header_revenue_yoy_ytd) {
+                    data = stockInfo != null ? stockInfo.getRevenueYtdYoY() : 0f;
                 }
                 row.add(new Cell(rh.getId()+"___"+ch.getId(), data));
             }

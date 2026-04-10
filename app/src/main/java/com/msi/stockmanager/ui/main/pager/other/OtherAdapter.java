@@ -91,16 +91,16 @@ public class OtherAdapter extends RecyclerView.Adapter<OtherAdapter.ViewHolder> 
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    switch(item.getItemId())
-                    {
-                        case R.id.item1:
-                            onEdit(info);
-                            return true;
-                        case R.id.item2:
-                            onRemove(info);
-                            return true;
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.item1) {
+                        onEdit(info);
+                        return true;
                     }
-                    return onMenuItemClick(item);
+                    if (itemId == R.id.item2) {
+                        onRemove(info);
+                        return true;
+                    }
+                    return false;
                 }
             });
             // Showing the popup menu

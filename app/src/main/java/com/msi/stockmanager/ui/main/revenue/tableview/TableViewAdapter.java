@@ -347,22 +347,22 @@ public class TableViewAdapter extends AbstractTableAdapter<ColumnHeader, RowHead
             ColumnHeader ch = getColumnHeaderItem(column);
             int headerResId = Integer.parseInt(ch.getId());
 //            Log.v(TAG, "getCellItemViewType("+column+"): " + headerResId + " " + getTableView().getContext().getString(headerResId));
-            switch (headerResId){
-                case R.string.revenue_table_header_stock_id:
-                case R.string.revenue_table_header_company_name:
-                case R.string.revenue_table_header_company_type:
-                    return 0;
-                case R.string.revenue_table_header_revenue_this_month:
-                case R.string.revenue_table_header_revenue_last_month:
-                case R.string.revenue_table_header_revenue_last_year:
-                case R.string.revenue_table_header_revenue_this_ytd:
-                case R.string.revenue_table_header_revenue_last_ytd:
-                    return REVENUE_CELL_TYPE;
-
-                case R.string.revenue_table_header_revenue_mom:
-                case R.string.revenue_table_header_revenue_yoy:
-                case R.string.revenue_table_header_revenue_yoy_ytd:
-                    return PERCENT_CELL_TYPE;
+            if (headerResId == R.string.revenue_table_header_stock_id
+                    || headerResId == R.string.revenue_table_header_company_name
+                    || headerResId == R.string.revenue_table_header_company_type) {
+                return 0;
+            }
+            if (headerResId == R.string.revenue_table_header_revenue_this_month
+                    || headerResId == R.string.revenue_table_header_revenue_last_month
+                    || headerResId == R.string.revenue_table_header_revenue_last_year
+                    || headerResId == R.string.revenue_table_header_revenue_this_ytd
+                    || headerResId == R.string.revenue_table_header_revenue_last_ytd) {
+                return REVENUE_CELL_TYPE;
+            }
+            if (headerResId == R.string.revenue_table_header_revenue_mom
+                    || headerResId == R.string.revenue_table_header_revenue_yoy
+                    || headerResId == R.string.revenue_table_header_revenue_yoy_ytd) {
+                return PERCENT_CELL_TYPE;
             }
         } catch (Exception e){
             Log.e(TAG, "getCellItemViewType(" + column+ ") err: " + e.getMessage());

@@ -100,6 +100,10 @@ fun init(){
                 TransType.TRANS_TYPE_CASH_REDUCTION
             )
         }
+        TransEditType.ERROR -> {
+            titleStr = stringResource(R.string.title_trans_stock)
+            transTypeList = listOf(TransType.TRANS_TYPE_STOCK_BUY, TransType.TRANS_TYPE_STOCK_SELL)
+        }
     }
     if(transObj.trans_type !in transTypeList){
         transObj.trans_type = transTypeList[0]
@@ -189,6 +193,7 @@ fun BuildForm(){
                         TransEditType.STOCK -> buildStockForm()
                         TransEditType.DIVIDEND -> buildDividendForm()
                         TransEditType.REDUCTION -> buildReductionForm()
+                        TransEditType.ERROR -> buildStockForm()
                     }
                 }
                 Button(

@@ -2,6 +2,7 @@ package com.msi.stockmanager.data.notify
 
 import androidx.room.*
 import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
 @Dao
@@ -35,5 +36,5 @@ interface NotifyDao {
     fun markDeleted(id: Long): Single<Int>
     
     @Query("SELECT * FROM notify_entity WHERE type = :type AND actionPayload = :payload AND createdAt = :date AND deleted = 0 LIMIT 1")
-    fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Single<NotifyEntity?>
+    fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Maybe<NotifyEntity>
 }

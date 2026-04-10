@@ -1,6 +1,7 @@
 package com.msi.stockmanager.data.notify
 
 import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
 interface INotifyRepository {
@@ -47,5 +48,5 @@ interface INotifyRepository {
     /**
      * 根據類型、載荷和日期查找通知（用於檢查是否已存在相同事件）
      */
-    fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Single<NotifyEntity?>
+    fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Maybe<NotifyEntity>
 }

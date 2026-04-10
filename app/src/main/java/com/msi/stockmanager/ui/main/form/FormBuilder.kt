@@ -56,61 +56,63 @@ fun StockIdSelector(
 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
         TextTitle(stringResource(id = R.string.trans_stock_selector))
-        AutoCompleteBox(
-            items = list,
-            itemContent = { stock ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = stock.getStockNameWithId(),
-                        style = MaterialTheme.typography.subtitle2
-                    )
-                }
-            },
-        ) {
-            val view = LocalView.current
-
-            filter(value)
-
-            onItemSelected { stock ->
-                value = stock.getStockNameWithId()
-                filter(value)
-                view.clearFocus()
-                state.onValueChangedCallback(stock)
-            }
-
-            TextSearchBar(
-                modifier = Modifier.testTag(AutoCompleteSearchBarTag),
-                value = value,
-                placeholder = stringResource(id = R.string.hint_stock_search),
-                onImeActionClick = {
-                    view.clearFocus()
+        Box(modifier = Modifier.weight(1f)) {
+            AutoCompleteBox(
+                items = list,
+                itemContent = { stock ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stock.getStockNameWithId(),
+                            style = MaterialTheme.typography.subtitle2
+                        )
+                    }
                 },
-                onClearClick = {
-                    value = ""
-                    filter(value)
-                    view.clearFocus()
-
-                    state.onValueChangedCallback(StockInfo())
-                },
-                onFocusChanged = { focusState ->
-                    isFocus = focusState.isFocused
-                    if(isFocus && value.length >= searchThreshold) isSearching = true;
-                    if(!isFocus && isSearching) isSearching = false
-                },
-                onValueChanged = { query ->
-                    value = query
-                    filter(value)
-                    isSearching = isFocus && value.isNotEmpty()
-                    state.onValueChangedCallback(StockInfo())
-                },
-                enabled = (list != null && list.size > 0),
             ) {
-                state.errorState.value == EasyFormsErrorState.INVALID
+                val view = LocalView.current
+
+                filter(value)
+
+                onItemSelected { stock ->
+                    value = stock.getStockNameWithId()
+                    filter(value)
+                    view.clearFocus()
+                    state.onValueChangedCallback(stock)
+                }
+
+                TextSearchBar(
+                    modifier = Modifier.testTag(AutoCompleteSearchBarTag),
+                    value = value,
+                    placeholder = stringResource(id = R.string.hint_stock_search),
+                    onImeActionClick = {
+                        view.clearFocus()
+                    },
+                    onClearClick = {
+                        value = ""
+                        filter(value)
+                        view.clearFocus()
+
+                        state.onValueChangedCallback(StockInfo())
+                    },
+                    onFocusChanged = { focusState ->
+                        isFocus = focusState.isFocused
+                        if(isFocus && value.length >= searchThreshold) isSearching = true;
+                        if(!isFocus && isSearching) isSearching = false
+                    },
+                    onValueChanged = { query ->
+                        value = query
+                        filter(value)
+                        isSearching = isFocus && value.isNotEmpty()
+                        state.onValueChangedCallback(StockInfo())
+                    },
+                    enabled = (list != null && list.size > 0),
+                ) {
+                    state.errorState.value == EasyFormsErrorState.INVALID
+                }
             }
         }
     }
@@ -193,8 +195,13 @@ fun IntegerSelector(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.constrainAs(text){
-                    start.linkTo(sub.end)
-                    end.linkTo(add.start)
+                    if (showButtons) {
+                        start.linkTo(sub.end)
+                        end.linkTo(add.start)
+                    } else {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     width = Dimension.fillToConstraints
                     height = Dimension.wrapContent
                 },
@@ -350,8 +357,13 @@ fun DoubleSelector(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.constrainAs(text){
-                    start.linkTo(sub.end)
-                    end.linkTo(add.start)
+                    if (showButtons) {
+                        start.linkTo(sub.end)
+                        end.linkTo(add.start)
+                    } else {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     width = Dimension.fillToConstraints
                     height = Dimension.wrapContent
                 },
@@ -518,6 +530,7 @@ data class DatePickerResult(
 )
 
 @Composable
+@OptIn(ExperimentalLayoutApi::class)
 fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, default: Int = items[0], key:Any,
     state:TransTypeSelectorState = easyForm.addAndGetCustomState(key, TransTypeSelectorState(default))
 ){
@@ -525,7 +538,11 @@ fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, defa
     state.onValueChangedCallback(state.state.value)
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
         TextTitle(title)
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.horizontalScroll(rememberScrollState())){
+        FlowRow(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
             for(type in items){
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                     .clickable { state.onValueChangedCallback(type) }){
@@ -578,6 +595,10 @@ data class TransTypeSelectorResult(
 )
 
 @Composable
-fun TextTitle(title:String){
-    Text(text=title, modifier = Modifier.fillMaxWidth(0.3f), style=MaterialTheme.typography.subtitle1)
+fun RowScope.TextTitle(title:String){
+    Text(
+        text = title,
+        modifier = Modifier.weight(0.32f),
+        style = MaterialTheme.typography.subtitle1
+    )
 }

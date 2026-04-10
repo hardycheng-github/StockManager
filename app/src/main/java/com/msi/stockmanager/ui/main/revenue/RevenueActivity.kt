@@ -275,8 +275,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         menuInflater.inflate(R.menu.menu_revenue, menu)
         mSearchItem = mMenu.findItem(R.id.app_bar_search)
         mSearchView = mSearchItem.getActionView() as SearchView
-        mSearchSrcTextView = mSearchView.findViewById<SearchAutoComplete>(R.id.search_src_text)
-        mSearchCloseBtn = mSearchView.findViewById<ImageView>(R.id.search_close_btn)
+        mSearchSrcTextView = mSearchView.findViewById<SearchAutoComplete>(androidx.appcompat.R.id.search_src_text)
+        mSearchCloseBtn = mSearchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
         mSearchCloseBtn.setOnClickListener(View.OnClickListener { v: View? -> mSearchView.onActionViewCollapsed() })
         val stockNameList: MutableList<String> = ArrayList()
         for (info in StockUtil.stockList) {

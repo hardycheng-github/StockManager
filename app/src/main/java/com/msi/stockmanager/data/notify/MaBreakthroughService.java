@@ -183,36 +183,7 @@ public class MaBreakthroughService {
                 .observeOn(Schedulers.io())
                 .subscribe(
                         existing -> {
-                            if (existing == null) {
-                                // 不存在，創建新通知
-                                String maName = MaBreakthroughConfig.getMaName(maDays);
-                                String action = isBreakthrough ? "突破" : "跌破";
-                                String title = String.format("%s %s - %s%s", 
-                                        stockId, stockInfo.getStockName(), action, maName);
-                                String body = String.format("收盤價：%.2f，%s：%.2f", price, maName, maValue);
-                                
-                                NotifyEntity notify = new NotifyEntity(
-                                        0,
-                                        notifyType,
-                                        title,
-                                        body,
-                                        eventTimestamp, // 使用事件發生日作為時間戳
-                                        false,
-                                        false,
-                                        "OPEN_STOCK",
-                                        stockId
-                                );
-                                
-                                // 插入通知
-                                ApiUtil.notifyRepository.add(notify)
-                                        .subscribeOn(Schedulers.io())
-                                        .subscribe(
-                                                id -> Log.d(TAG, "Notification created: " + title),
-                                                error -> Log.e(TAG, "Error creating notification", error)
-                                        );
-                            } else {
-                                Log.d(TAG, "Notification already exists for " + stockId + " on " + eventTimestamp);
-                            }
+                            Log.d(TAG, "Notification already exists for " + stockId + " on " + eventTimestamp);
                         },
                         error -> {
                             Log.e(TAG, "Error checking existing notification", error);
@@ -240,6 +211,33 @@ public class MaBreakthroughService {
                                     .subscribe(
                                             id -> Log.d(TAG, "Notification created: " + title),
                                             error2 -> Log.e(TAG, "Error creating notification", error2)
+                                    );
+                        },
+                        () -> {
+                            // 不存在，創建新通知
+                            String maName = MaBreakthroughConfig.getMaName(maDays);
+                            String action = isBreakthrough ? "突破" : "跌破";
+                            String title = String.format("%s %s - %s%s",
+                                    stockId, stockInfo.getStockName(), action, maName);
+                            String body = String.format("收盤價：%.2f，%s：%.2f", price, maName, maValue);
+
+                            NotifyEntity notify = new NotifyEntity(
+                                    0,
+                                    notifyType,
+                                    title,
+                                    body,
+                                    eventTimestamp, // 使用事件發生日作為時間戳
+                                    false,
+                                    false,
+                                    "OPEN_STOCK",
+                                    stockId
+                            );
+
+                            ApiUtil.notifyRepository.add(notify)
+                                    .subscribeOn(Schedulers.io())
+                                    .subscribe(
+                                            id -> Log.d(TAG, "Notification created: " + title),
+                                            insertError -> Log.e(TAG, "Error creating notification", insertError)
                                     );
                         }
                 );
