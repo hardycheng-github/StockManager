@@ -9,6 +9,7 @@ import com.msi.stockmanager.data.AccountUtil;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.ColorUtil;
 import com.msi.stockmanager.data.FormatUtil;
+import com.msi.stockmanager.data.news.NewsPreloadService;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.databinding.ActivityLaunchBinding;
 import com.msi.stockmanager.ui.main.overview.OverviewActivity;
@@ -19,7 +20,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import java.util.Calendar;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class LaunchActivity extends AppCompatActivity {
     public static String TAG = LaunchActivity.class.getSimpleName();
@@ -31,13 +31,14 @@ public class LaunchActivity extends AppCompatActivity {
     private boolean isInit = false;
     private boolean isSkip = false;
     private boolean isAccountUpdated = false;
+    private boolean isNewsPreloaded = false;
     private boolean isError = false;
-    private ReentrantLock initLock = new ReentrantLock();
+    private final Object initSignal = new Object();
     private AccountUtil.AccountUpdateListener listener = accountValue -> {
         Log.d(TAG, "account updated!");
         isAccountUpdated = true;
-        synchronized(initLock){
-            initLock.notifyAll();
+        synchronized(initSignal){
+            initSignal.notifyAll();
         }
     };
 
@@ -54,6 +55,8 @@ public class LaunchActivity extends AppCompatActivity {
         isInit = false;
         isSkip = false;
         isAccountUpdated = false;
+        isNewsPreloaded = false;
+        isError = false;
         setContentView(binding.getRoot());
         binding.getRoot().setClickable(true);
         binding.getRoot().setOnClickListener(v->{
@@ -69,25 +72,50 @@ public class LaunchActivity extends AppCompatActivity {
         long t1 = System.currentTimeMillis();
         initThread = new Thread(()->{
             Log.d(TAG, "+++ init start +++");
-            initLock.lock();
             Profile.load(this);
             ColorUtil.init(this);
             FormatUtil.init(this);
             ApiUtil.init(this);
+            NewsPreloadService.preload(ApiUtil.newsApi, false, new com.msi.stockmanager.data.news.INewsApi.TaskCallback() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "news preloaded!");
+                    isNewsPreloaded = true;
+                    synchronized (initSignal) {
+                        initSignal.notifyAll();
+                    }
+                }
+
+                @Override
+                public void onException(Exception e) {
+                    Log.e(TAG, "news preload failed: " + e.getMessage());
+                    isNewsPreloaded = false;
+                    isError = true;
+                    synchronized (initSignal) {
+                        initSignal.notifyAll();
+                    }
+                }
+            });
             AccountUtil.init(this);
             AccountUtil.addListener(listener);
             long t2 = System.currentTimeMillis();
             try {
-                if(!isAccountUpdated) {
-                    synchronized (initLock) {
-                        initLock.wait(MAX_STAY_TIME);
+                long waitStart = System.currentTimeMillis();
+                synchronized (initSignal) {
+                    while (!isError && (!isAccountUpdated || !isNewsPreloaded)) {
+                        long elapsed = System.currentTimeMillis() - waitStart;
+                        long remain = MAX_STAY_TIME - elapsed;
+                        if (remain <= 0) {
+                            break;
+                        }
+                        initSignal.wait(remain);
                     }
                 }
-                if (!isAccountUpdated) throw new Exception("timeout");
-                Log.d(TAG, "AccountUtil init success: " + (System.currentTimeMillis() - t2));
+                if (!isAccountUpdated || !isNewsPreloaded) throw new Exception("timeout");
+                Log.d(TAG, "Init success (account + news): " + (System.currentTimeMillis() - t2));
             } catch (Exception e) {
                 isError = true;
-                Log.w(TAG, "AccountUtil init timeout: " + MAX_STAY_TIME);
+                Log.w(TAG, "Init timeout: " + MAX_STAY_TIME + ", account=" + isAccountUpdated + ", news=" + isNewsPreloaded);
             }
             AccountUtil.removeListener(listener);
 

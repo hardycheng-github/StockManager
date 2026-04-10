@@ -110,15 +110,26 @@ public class NewsFragment extends Fragment {
     private void refresh(boolean force){
         isRefresh = true;
         if(!isInit) return;
-        binding.refresh.setRefreshing(false);
-        binding.loading.setVisibility(View.VISIBLE);
-        binding.list.setVisibility(View.INVISIBLE);
+        boolean hasCache = ApiUtil.newsApi != null && ApiUtil.newsApi.hasCache(newsType);
+        if (force) {
+            binding.refresh.setRefreshing(true);
+            if (mAdapter == null || mAdapter.getItemCount() == 0) {
+                binding.loading.setVisibility(View.VISIBLE);
+            } else {
+                binding.loading.setVisibility(View.INVISIBLE);
+            }
+        } else {
+            binding.refresh.setRefreshing(false);
+            binding.loading.setVisibility(hasCache ? View.INVISIBLE : View.VISIBLE);
+        }
+        binding.list.setVisibility(hasCache ? View.VISIBLE : View.INVISIBLE);
         binding.noData.setVisibility(View.INVISIBLE);
 
         ApiUtil.newsApi.getNewsList(newsType, force, new INewsApi.ResultCallback() {
             @Override
             public void onResult(List<INewsApi.NewsItem> newsItemList) {
                 List<INewsApi.NewsItem> displayList = getDisplayList(newsItemList);
+                binding.refresh.setRefreshing(false);
                 binding.list.setVisibility(View.VISIBLE);
                 if(displayList.size() > 0){
                     mAdapter.reloadList(displayList);
@@ -131,6 +142,7 @@ public class NewsFragment extends Fragment {
 
             @Override
             public void onException(Exception e) {
+                binding.refresh.setRefreshing(false);
                 binding.noData.setVisibility(View.VISIBLE);
                 binding.list.setVisibility(View.INVISIBLE);
                 binding.loading.setVisibility(View.INVISIBLE);

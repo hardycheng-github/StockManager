@@ -81,6 +81,58 @@ public class NewsApi implements INewsApi {
         task.start();
     }
 
+    @Override
+    public void preload(boolean force, TaskCallback callback) {
+        Thread task = new Thread(() -> {
+            try {
+                synchronized (newsCacheLock) {
+                    ensureNewsCache(TYPE_ALL, force);
+                }
+                runTaskSuccess(callback);
+            } catch (Exception e) {
+                Log.e(TAG, "preload err: " + e.getMessage());
+                runTaskException(callback, e);
+            }
+        });
+        task.setName("newsPreload");
+        task.start();
+    }
+
+    @Override
+    public boolean hasCache(int type) {
+        synchronized (newsCacheLock) {
+            if (newsRecord == null) {
+                return false;
+            }
+            if (newsRecord.get(type) != null) {
+                return true;
+            }
+            return newsRecord.get(TYPE_ALL) != null;
+        }
+    }
+
+    private void runTaskSuccess(TaskCallback callback) {
+        if (callback == null) {
+            return;
+        }
+        if (parentsContext instanceof Activity) {
+            ((Activity) parentsContext).runOnUiThread(callback::onSuccess);
+        } else {
+            callback.onSuccess();
+        }
+    }
+
+    private void runTaskException(TaskCallback callback, Exception e) {
+        if (callback == null) {
+            return;
+        }
+        if (parentsContext instanceof Activity) {
+            ((Activity) parentsContext).runOnUiThread(() -> callback.onException(e));
+        } else {
+            callback.onException(e);
+        }
+    }
+
     private void ensureNewsCache(int type, boolean force) {
         if (force || newsRecord.get(TYPE_ALL) == null) {
             Log.d(TAG, "NewsApi Info : Fetch all news from network and rebuild cache.");
