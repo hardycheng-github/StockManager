@@ -195,6 +195,10 @@
     </string-array>
     <string name="init_error_title">初始化失敗</string>
     <string name="init_error_message">無法初始化應用，請確認您的網路環境，或重新嘗試同步</string>
+    <string name="launch_init_preparing">正在準備應用設定</string>
+    <string name="launch_init_loading_account">正在載入帳務資料</string>
+    <string name="launch_init_loading_news">正在取得即時新聞</string>
+    <string name="launch_init_done">初始化完成</string>
     <string name="retry">重試</string>
     <string name="exit">離開</string>
     <string name="watching_list">觀察清單</string>

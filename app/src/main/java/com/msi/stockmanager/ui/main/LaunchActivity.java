@@ -25,6 +25,9 @@ public class LaunchActivity extends AppCompatActivity {
     public static String TAG = LaunchActivity.class.getSimpleName();
     public static final int MIN_STAY_TIME = 3000;
     public static final int MAX_STAY_TIME = 9000;
+    private static final long STATUS_SWITCH_INTERVAL_MS = 1000L;
+    private static final long STATUS_FADE_DURATION_MS = 750L;
+    private static final long FINAL_STATUS_DELAY_MS = 1000L;
 
     private ActivityLaunchBinding binding;
     private Thread initThread;
@@ -33,6 +36,21 @@ public class LaunchActivity extends AppCompatActivity {
     private boolean isAccountUpdated = false;
     private boolean isNewsPreloaded = false;
     private boolean isError = false;
+    private int statusIndex = 0;
+    private final int[] initStatusTexts = {
+            R.string.launch_init_preparing,
+            R.string.launch_init_loading_account,
+            R.string.launch_init_loading_news
+    };
+    // The status messages are intentionally cosmetic and not tied to real init progress.
+    private final Runnable statusTicker = new Runnable() {
+        @Override
+        public void run() {
+            if (binding == null || isDestroyed()) return;
+            statusIndex = (statusIndex + 1) % initStatusTexts.length;
+            showStatusWithFade(initStatusTexts[statusIndex], LaunchActivity.this::scheduleNextStatusTick);
+        }
+    };
     private final Object initSignal = new Object();
     private AccountUtil.AccountUpdateListener listener = accountValue -> {
         Log.d(TAG, "account updated!");
@@ -69,6 +87,7 @@ public class LaunchActivity extends AppCompatActivity {
         String copyright = getString(R.string.copyright_msg).replace(
                 "YYYY", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
         binding.copyright.setText(copyright);
+        startStatusRotation();
         long t1 = System.currentTimeMillis();
         initThread = new Thread(()->{
             Log.d(TAG, "+++ init start +++");
@@ -125,12 +144,13 @@ public class LaunchActivity extends AppCompatActivity {
                 long diff = System.currentTimeMillis() - t1;
                 if (diff < MIN_STAY_TIME) {
                     try {
-                        initThread.sleep(MIN_STAY_TIME - diff);
+                        Thread.sleep(MIN_STAY_TIME - diff);
                     } catch (InterruptedException e) {}
                 }
             }
             runOnUiThread(()->{
                 if(isError){
+                    stopStatusRotation();
                     Log.d(TAG, "timeout alert!");
                     // TODO: 2022/8/8
                     new AlertDialog.Builder(this)
@@ -142,14 +162,66 @@ public class LaunchActivity extends AppCompatActivity {
                             .create()
                             .show();
                 } else {
-                    Log.d(TAG, "launch to overview activity");
-                    startActivity(new Intent(this, OverviewActivity.class));
-                    finish();
+                    stopStatusRotation();
+                    showStatusWithFade(R.string.launch_init_done, () -> binding.initStatus.postDelayed(() -> {
+                        if (isFinishing() || isDestroyed()) return;
+                        Log.d(TAG, "launch to overview activity");
+                        startActivity(new Intent(this, OverviewActivity.class));
+                        finish();
+                    }, FINAL_STATUS_DELAY_MS));
                 }
             });
         });
         initThread.setName("initThread");
         initThread.start();
+    }
+
+    private void startStatusRotation() {
+        statusIndex = 0;
+        binding.initStatus.setText(initStatusTexts[statusIndex]);
+        binding.initStatus.setAlpha(0f);
+        binding.initStatus.animate()
+                .alpha(1f)
+                .setDuration(STATUS_FADE_DURATION_MS)
+                .start();
+        scheduleNextStatusTick();
+    }
+
+    private void scheduleNextStatusTick() {
+        if (binding == null) return;
+        binding.initStatus.removeCallbacks(statusTicker);
+        long minTransitionMs = STATUS_FADE_DURATION_MS * 2L;
+        long nextDelayMs = Math.max(STATUS_SWITCH_INTERVAL_MS, minTransitionMs);
+        binding.initStatus.postDelayed(statusTicker, nextDelayMs);
+    }
+
+    private void stopStatusRotation() {
+        if (binding == null) return;
+        binding.initStatus.removeCallbacks(statusTicker);
+        binding.initStatus.animate().cancel();
+    }
+
+    private void showStatusWithFade(int textResId, Runnable endAction) {
+        binding.initStatus.animate()
+                .alpha(0f)
+                .setDuration(STATUS_FADE_DURATION_MS)
+                .withEndAction(() -> {
+                    if (binding == null || isDestroyed()) return;
+                    binding.initStatus.setText(textResId);
+                    binding.initStatus.setAlpha(0f);
+                    binding.initStatus.animate()
+                            .alpha(1f)
+                            .setDuration(STATUS_FADE_DURATION_MS)
+                            .withEndAction(endAction)
+                            .start();
+                })
+                .start();
+    }
+
+    @Override
+    protected void onDestroy() {
+        stopStatusRotation();
+        super.onDestroy();
     }
 
     public void recreate(){
