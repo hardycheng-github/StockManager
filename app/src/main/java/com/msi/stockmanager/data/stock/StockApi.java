@@ -3,6 +3,7 @@ package com.msi.stockmanager.data.stock;
 import android.content.Context;
 import android.util.Log;
 
+import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.data.DateUtil;
 
 import org.json.JSONArray;
@@ -20,8 +21,10 @@ import java.util.List;
 
 public class StockApi implements IStockApi{
     private static final String TAG = StockApi.class.getSimpleName();
-    private static final String FINMIND_BASE_URL = "https://api.finmindtrade.com/api/v3/data";
+    private static final String FINMIND_BASE_URL = "https://api.finmindtrade.com/api/v4/data";
     private static final String DATASET_TAIWAN_STOCK_PRICE = "TaiwanStockPrice";
+    private static final int HTTP_CONNECT_TIMEOUT_MS = 6000;
+    private static final int HTTP_READ_TIMEOUT_MS = 6000;
 
     private Context parentsContext;
     public StockApi(Context context) {
@@ -60,13 +63,16 @@ public class StockApi implements IStockApi{
         return new String[]{ startDate, endDate };
     }
 
-    /** 對 FinMind API 發送 GET 請求，回傳 response body 字串；失敗拋出 Exception */
-    private static String finmindHttpGet(String requestUrl) throws Exception {
+    /** 對 FinMind API V4 發送 GET 請求，回傳 response body 字串；失敗拋出 Exception */
+    private static String finmindHttpGet(String requestUrl, String token) throws Exception {
         URL url = new URL(requestUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+        connection.setRequestProperty("Authorization", "Bearer " + token);
         connection.setRequestMethod("GET");
         connection.setDoInput(true);
+        connection.setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS);
+        connection.setReadTimeout(HTTP_READ_TIMEOUT_MS);
         try {
             int status = connection.getResponseCode();
             if (status != 200) {
@@ -106,12 +112,16 @@ public class StockApi implements IStockApi{
                 return;
             }
             try {
+                String token = BuildConfig.FINMIND_API_TOKEN.trim();
+                if (token.isEmpty()) {
+                    throw new Exception("FINMIND_API_TOKEN is empty");
+                }
                 String startDate = getDateStringDaysAgo(10);
                 String endDate = getTodayDateString();
                 String requestUrl = FINMIND_BASE_URL + "?dataset=" + DATASET_TAIWAN_STOCK_PRICE
-                        + "&stock_id=" + stock_id + "&date=" + startDate + "&end_date=" + endDate;
+                        + "&data_id=" + stock_id + "&start_date=" + startDate + "&end_date=" + endDate;
                 Log.d(TAG, "request url: " + requestUrl);
-                String responseBody = finmindHttpGet(requestUrl);
+                String responseBody = finmindHttpGet(requestUrl, token);
                 JSONObject root = new JSONObject(responseBody);
                 if (root.optInt("status", 0) != 200) {
                     throw new Exception("FinMind API error: " + root.optString("msg", "unknown"));
@@ -154,12 +164,16 @@ public class StockApi implements IStockApi{
     public void getHistoryStockData(String stock_id, String interval, String range, HistoryCallback callback) {
         Thread task = new Thread(()->{
             try {
+                String token = BuildConfig.FINMIND_API_TOKEN.trim();
+                if (token.isEmpty()) {
+                    throw new Exception("FINMIND_API_TOKEN is empty");
+                }
                 String[] dateRange = rangeToDateEndDate(range);
                 String startDate = dateRange[0];
                 String endDate = dateRange[1];
                 String requestUrl = FINMIND_BASE_URL + "?dataset=" + DATASET_TAIWAN_STOCK_PRICE
-                        + "&stock_id=" + stock_id + "&date=" + startDate + "&end_date=" + endDate;
-                String responseBody = finmindHttpGet(requestUrl);
+                        + "&data_id=" + stock_id + "&start_date=" + startDate + "&end_date=" + endDate;
+                String responseBody = finmindHttpGet(requestUrl, token);
                 JSONObject root = new JSONObject(responseBody);
                 if (root.optInt("status", 0) != 200) {
                     throw new Exception("FinMind API error: " + root.optString("msg", "unknown"));
