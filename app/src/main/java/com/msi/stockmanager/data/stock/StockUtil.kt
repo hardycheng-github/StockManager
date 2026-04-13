@@ -25,6 +25,7 @@ class MyStockUtil {
     private fun loadStockList() {
         Log.i(TAG, "+++ loadStockList +++")
         stockList.clear()
+        // https://openapi.twse.com.tw/ #上市公司基本資料
         // 上市公司清單：證交所 open data t187ap03_L.json（出表日期 1150412）；ISIN 自前版 StockUtil 依代號合併，新股尚無則留空
         //(.+)　(.+)\t(.+)\t(.+)\t(.+)\t(.+)\t(.+)\t
         //stockList\.add\(StockInfo\(id=\"$1\", name=\"$2\", isin=\"$3\", listed=\"$4\", mType=\"$5\", cType=\"$6\", cfi=\"$7\"\)\)
