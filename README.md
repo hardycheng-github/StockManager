@@ -1,5 +1,7 @@
 # MSI Stock Manager
 
+> **2026年更新計畫[請點我](README_2026.md)**
+
 一個簡單上手且兼具多功能便利性的股票記帳小幫手
 
 * [APP Introduction](#-app-introduction)
