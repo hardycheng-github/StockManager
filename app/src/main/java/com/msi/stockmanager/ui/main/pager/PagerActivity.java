@@ -197,40 +197,37 @@ public class PagerActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.menu_history:
-                Intent intent = new Intent(PagerActivity.this, TransHistoryActivity.class);
-                switch (pagerAdapter.getPageTitleId(currentPagePosition)) {
-                    case R.string.tab_text_cash:
-                        intent.putExtra(TransHistoryActivity.EXTRA_TARGET_TYPES, new int[]{
-                           TransType.TRANS_TYPE_CASH_IN,
-                           TransType.TRANS_TYPE_CASH_OUT,
-                        });
-                        break;
-                    case R.string.tab_text_stock_holding:
-                    case R.string.tab_text_stock_history:
-                        intent.putExtra(TransHistoryActivity.EXTRA_TARGET_TYPES, new int[]{
-                                TransType.TRANS_TYPE_STOCK_SELL,
-                                TransType.TRANS_TYPE_STOCK_BUY,
-                        });
-                        break;
-                    case R.string.tab_text_other:
-                        intent.putExtra(TransHistoryActivity.EXTRA_TARGET_TYPES, new int[]{
-                                TransType.TRANS_TYPE_CASH_DIVIDEND,
-                                TransType.TRANS_TYPE_STOCK_DIVIDEND,
-                                TransType.TRANS_TYPE_CASH_REDUCTION,
-                                TransType.TRANS_TYPE_STOCK_REDUCTION,
-                        });
-                        break;
-                }
-                startActivity(intent);
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        if (itemId == R.id.menu_history) {
+            Intent intent = new Intent(PagerActivity.this, TransHistoryActivity.class);
+            int pageTitleId = pagerAdapter.getPageTitleId(currentPagePosition);
+            if (pageTitleId == R.string.tab_text_cash) {
+                intent.putExtra(TransHistoryActivity.EXTRA_TARGET_TYPES, new int[]{
+                        TransType.TRANS_TYPE_CASH_IN,
+                        TransType.TRANS_TYPE_CASH_OUT,
+                });
+            } else if (pageTitleId == R.string.tab_text_stock_holding
+                    || pageTitleId == R.string.tab_text_stock_history) {
+                intent.putExtra(TransHistoryActivity.EXTRA_TARGET_TYPES, new int[]{
+                        TransType.TRANS_TYPE_STOCK_SELL,
+                        TransType.TRANS_TYPE_STOCK_BUY,
+                });
+            } else if (pageTitleId == R.string.tab_text_other) {
+                intent.putExtra(TransHistoryActivity.EXTRA_TARGET_TYPES, new int[]{
+                        TransType.TRANS_TYPE_CASH_DIVIDEND,
+                        TransType.TRANS_TYPE_STOCK_DIVIDEND,
+                        TransType.TRANS_TYPE_CASH_REDUCTION,
+                        TransType.TRANS_TYPE_STOCK_REDUCTION,
+                });
+            }
+            startActivity(intent);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void hideFab(){
@@ -275,26 +272,21 @@ public class PagerActivity extends AppCompatActivity {
         }
         else {
             isFabShowing = true;
-            switch (pagerAdapter.getPageTitleId(currentPagePosition)) {
-                case R.string.tab_text_cash:
-                    binding.fabCashAdd.setVisibility(View.VISIBLE);
-                    binding.fabCashAdd.show(true);
-                    break;
-                case R.string.tab_text_stock_holding:
-                    binding.fabHoldingAdd.setVisibility(View.VISIBLE);
-                    binding.fabHoldingAdd.show(true);
-                    break;
-                case R.string.tab_text_stock_history:
-                    binding.fabHistoryAdd.setVisibility(View.VISIBLE);
-                    binding.fabHistoryAdd.show(true);
-                    break;
-                case R.string.tab_text_other:
-                    binding.fabOtherAdd.setVisibility(View.VISIBLE);
-                    binding.fabOtherAdd.showMenuButton(true);
-                    break;
-                default:
-                    isFabShowing = false;
-                    break;
+            int pageTitleId = pagerAdapter.getPageTitleId(currentPagePosition);
+            if (pageTitleId == R.string.tab_text_cash) {
+                binding.fabCashAdd.setVisibility(View.VISIBLE);
+                binding.fabCashAdd.show(true);
+            } else if (pageTitleId == R.string.tab_text_stock_holding) {
+                binding.fabHoldingAdd.setVisibility(View.VISIBLE);
+                binding.fabHoldingAdd.show(true);
+            } else if (pageTitleId == R.string.tab_text_stock_history) {
+                binding.fabHistoryAdd.setVisibility(View.VISIBLE);
+                binding.fabHistoryAdd.show(true);
+            } else if (pageTitleId == R.string.tab_text_other) {
+                binding.fabOtherAdd.setVisibility(View.VISIBLE);
+                binding.fabOtherAdd.showMenuButton(true);
+            } else {
+                isFabShowing = false;
             }
         }
     }
@@ -310,22 +302,18 @@ public class PagerActivity extends AppCompatActivity {
 
     private boolean isCurrentFabShowing(){
         if(!isFabShowing) return false;
-        switch (pagerAdapter.getPageTitleId(currentPagePosition)) {
-            case R.string.tab_text_cash:
-                if(!binding.fabCashAdd.isHidden()) return true;
-                if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
-                break;
-            case R.string.tab_text_stock_holding:
-                if(!binding.fabHoldingAdd.isHidden()) return true;
-                if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
-                break;
-            case R.string.tab_text_stock_history:
-                if(!binding.fabHistoryAdd.isHidden()) return true;
-                if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
-                break;
-            case R.string.tab_text_other:
-                if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
-                break;
+        int pageTitleId = pagerAdapter.getPageTitleId(currentPagePosition);
+        if (pageTitleId == R.string.tab_text_cash) {
+            if(!binding.fabCashAdd.isHidden()) return true;
+            if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
+        } else if (pageTitleId == R.string.tab_text_stock_holding) {
+            if(!binding.fabHoldingAdd.isHidden()) return true;
+            if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
+        } else if (pageTitleId == R.string.tab_text_stock_history) {
+            if(!binding.fabHistoryAdd.isHidden()) return true;
+            if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
+        } else if (pageTitleId == R.string.tab_text_other) {
+            if(!binding.fabOtherAdd.isMenuButtonHidden()) return true;
         }
         return false;
     }

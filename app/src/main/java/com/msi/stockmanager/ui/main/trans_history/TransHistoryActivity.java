@@ -414,8 +414,8 @@ public class TransHistoryActivity extends AppCompatActivity {
         mFilterItem = mMenu.findItem(R.id.app_bar_filter);
         mSearchItem = mMenu.findItem(R.id.app_bar_search);
         mSearchView = (SearchView) mSearchItem.getActionView();
-        mSearchSrcTextView = mSearchView.findViewById(R.id.search_src_text);
-        mSearchCloseBtn = mSearchView.findViewById(R.id.search_close_btn);
+        mSearchSrcTextView = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        mSearchCloseBtn = mSearchView.findViewById(androidx.appcompat.R.id.search_close_btn);
         mSearchCloseBtn.setOnClickListener(v -> {
             onSearchApply("");
         });
@@ -492,21 +492,18 @@ public class TransHistoryActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-            case R.id.app_bar_filter:
-                //TODO filter
-//                setFilterActive(!TransFilter.isChecked());
-                binding.drawer.openDrawer(GravityCompat.END);
-                return true;
-//            case R.id.app_bar_search:
-//                //TODO search
-//                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
         }
+        if (itemId == R.id.app_bar_filter) {
+            //TODO filter
+//          setFilterActive(!TransFilter.isChecked());
+            binding.drawer.openDrawer(GravityCompat.END);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

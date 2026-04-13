@@ -2,6 +2,7 @@ package com.msi.stockmanager.data.notify
 
 import android.content.Context
 import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 
@@ -49,7 +50,7 @@ class NotifyRepository(context: Context) : INotifyRepository {
             .subscribeOn(Schedulers.io())
     }
     
-    override fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Single<NotifyEntity?> {
+    override fun findByTypeAndPayloadAndDate(type: String, payload: String, date: Long): Maybe<NotifyEntity> {
         return dao.findByTypeAndPayloadAndDate(type, payload, date)
             .subscribeOn(Schedulers.io())
     }

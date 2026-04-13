@@ -129,16 +129,16 @@ public class TransHistoryAdapter extends RecyclerView.Adapter<TransHistoryAdapte
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    switch(item.getItemId())
-                    {
-                        case R.id.item1:
-                            onEdit(trans);
-                            return true;
-                        case R.id.item2:
-                            onRemove(trans);
-                            return true;
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.item1) {
+                        onEdit(trans);
+                        return true;
                     }
-                    return onMenuItemClick(item);
+                    if (itemId == R.id.item2) {
+                        onRemove(trans);
+                        return true;
+                    }
+                    return false;
                 }
             });
             // Showing the popup menu

@@ -383,25 +383,27 @@ public class OverviewActivity extends AppCompatActivity {
         Log.d(TAG, "onOptionsItemSelected: " + id);
 
         //noinspection SimplifiableIfStatement
-        switch (id){
-            case R.id.menu_setting:
-                startActivity(new Intent(OverviewActivity.this, SettingsActivity.class));
-                return true;
-            case R.id.menu_analysis:
-                Intent intent = new Intent(OverviewActivity.this, AnalysisActivity.class);
-//                intent.putExtra("EXTRA_STOCK_ID", "2330");
-                startActivity(intent);
-//                startActivity(new Intent(OverviewActivity.this, HttpDemoActivity.class));
-                return true;
-            case R.id.menu_news:
-                startActivity(new Intent(OverviewActivity.this, NewsActivity.class));
-                return true;
-            case R.id.menu_revenue:
-                startActivity(new Intent(OverviewActivity.this, RevenueActivity.class));
-                return true;
-            case R.id.menu_notify:
-                binding.drawer.openDrawer(GravityCompat.END);
-                return true;
+        if (id == R.id.menu_setting) {
+            startActivity(new Intent(OverviewActivity.this, SettingsActivity.class));
+            return true;
+        }
+        if (id == R.id.menu_analysis) {
+            Intent intent = new Intent(OverviewActivity.this, AnalysisActivity.class);
+//          intent.putExtra("EXTRA_STOCK_ID", "2330");
+            startActivity(intent);
+            return true;
+        }
+        if (id == R.id.menu_news) {
+            startActivity(new Intent(OverviewActivity.this, NewsActivity.class));
+            return true;
+        }
+        if (id == R.id.menu_revenue) {
+            startActivity(new Intent(OverviewActivity.this, RevenueActivity.class));
+            return true;
+        }
+        if (id == R.id.menu_notify) {
+            binding.drawer.openDrawer(GravityCompat.END);
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
