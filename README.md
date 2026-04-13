@@ -8,7 +8,7 @@
 * [User Guide](#-user-guide)
 * [The Demo](#-the-demo)
 * [Development Notes](#-development-notes)
-* [Next Stage](#%EF%B8%8F-next-stage)
+* [Next Stage](#‍️-next-stage)
 
 ## 👨‍🏫 APP Introduction
 
