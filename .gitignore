@@ -103,6 +103,6 @@ Thumbs.db
 .project
 .classpath
 .settings/
-.cursor
+.cursor*
 .vscode
 tempCodeRunnerFile.sh
