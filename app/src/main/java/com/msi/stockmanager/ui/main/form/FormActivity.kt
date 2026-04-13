@@ -179,6 +179,7 @@ fun BuildForm(){
                 val (form, button) = createRefs()
                 Column(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(16.dp)
                         .verticalScroll(rememberScrollState())
                         .constrainAs(form) {
@@ -240,7 +241,8 @@ fun buildCashForm(){
             key = FormKeys.TRANS_TYPE,
             title = stringResource(id = R.string.trans_type),
             items = transTypeList,
-            default = transObj.trans_type
+            default = transObj.trans_type,
+            state = transTypeState
         )
     } else {
         keySet.remove(FormKeys.TRANS_TYPE)
@@ -502,7 +504,8 @@ fun buildDividendForm(){
             key = FormKeys.TRANS_TYPE,
             title = stringResource(id = R.string.trans_type),
             items = transTypeList,
-            default = transObj.trans_type
+            default = transObj.trans_type,
+            state = transTypeState
         )
     } else {
         keySet.remove(FormKeys.TRANS_TYPE)
@@ -558,7 +561,8 @@ fun buildReductionForm(){
             key = FormKeys.TRANS_TYPE,
             title = stringResource(id = R.string.trans_type),
             items = transTypeList,
-            default = transObj.trans_type
+            default = transObj.trans_type,
+            state = transTypeState
         )
     } else {
         keySet.remove(FormKeys.TRANS_TYPE)
