@@ -24,7 +24,7 @@ import java.util.Calendar;
 public class LaunchActivity extends AppCompatActivity {
     public static String TAG = LaunchActivity.class.getSimpleName();
     public static final int MIN_STAY_TIME = 3000;
-    public static final int MAX_STAY_TIME = 9000;
+    public static final int MAX_STAY_TIME = 16000;
     private static final long STATUS_SWITCH_INTERVAL_MS = 1000L;
     private static final long STATUS_FADE_DURATION_MS = 750L;
     private static final long FINAL_STATUS_DELAY_MS = 1000L;
