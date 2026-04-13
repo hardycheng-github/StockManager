@@ -44,7 +44,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     lateinit var filterBinding: LayoutRevenueFilterBinding
     lateinit var binding: ActivityRevenueBinding
     lateinit var mMenu: Menu
-    private val maxYearMonth = YearMonth.now().minusMonths(if(LocalDate.now().dayOfMonth < 10) 2 else 1)
+    // FinMind 月營收資料常有發布時差，避免顯示最新一個月出現大量 0 值，UI 上限固定往前兩個月。
+    private val maxYearMonth = YearMonth.now().minusMonths(2)
     private val minYearMonth = YearMonth.of(103+1911, 1)
     private var mYearMonth: YearMonth = maxYearMonth
     lateinit var tableViewModel: TableViewModel

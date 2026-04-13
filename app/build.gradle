@@ -34,6 +34,12 @@ android {
                         ?: project.findProperty("MARKETAUX_API_TOKEN")
                         ?: "")
         buildConfigField "String", "MARKETAUX_API_TOKEN", "\"${MARKETAUX_API_TOKEN}\""
+
+        def FINMIND_API_TOKEN =
+                (localProperties.getProperty("FINMIND_API_TOKEN")
+                        ?: project.findProperty("FINMIND_API_TOKEN")
+                        ?: "")
+        buildConfigField "String", "FINMIND_API_TOKEN", "\"${FINMIND_API_TOKEN.replace("\"", "\\\"")}\""
     }
 
     buildTypes {
