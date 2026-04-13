@@ -499,22 +499,29 @@ fun DatePicker(easyForm: EasyForms, title: String, default: Long = Date().time, 
             .defaultMinSize(0.dp, itemHeight)
     ) {
         TextTitle(title)
-        OutlinedTextField(
-            value = dateStr,
-            onValueChange = {
-                Log.d(TAG, "date onValueChange: $it")
-            },
-            readOnly = true,
-            singleLine = true,
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            modifier = Modifier
-                .weight(1f)
-                .clickable { mDatePickerDialog.show() },
-            enabled = false,
-            colors =  TextFieldDefaults.textFieldColors(
-                disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+        Box(modifier = Modifier.weight(1f)) {
+            OutlinedTextField(
+                value = dateStr,
+                onValueChange = { },
+                readOnly = true,
+                singleLine = true,
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                modifier = Modifier.fillMaxWidth(),
+                // 勿用 enabled=false：Outlined 在停用時會套用灰色底；readOnly 即可鎖定輸入並與其他欄位同色
+                enabled = true,
             )
-        )
+            // TextField 啟用時會攔截觸控，外層 clickable 常失效；覆蓋透明層統一開啟日期對話框
+            val dateFieldInteraction = remember { MutableInteractionSource() }
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .clickable(
+                        interactionSource = dateFieldInteraction,
+                        indication = null,
+                        onClick = { mDatePickerDialog.show() }
+                    )
+            )
+        }
     }
 }
 
