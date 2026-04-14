@@ -1,12 +1,14 @@
 # MSI Stock Manager
 
+> **2026年更新計畫[請點我](README_2026.md)**
+
 一個簡單上手且兼具多功能便利性的股票記帳小幫手
 
 * [APP Introduction](#-app-introduction)
 * [User Guide](#-user-guide)
 * [The Demo](#-the-demo)
 * [Development Notes](#-development-notes)
-* [Next Stage](#%EF%B8%8F-next-stage)
+* [Next Stage](#‍️-next-stage)
 
 ## 👨‍🏫 APP Introduction
 
@@ -211,6 +213,40 @@ Ta4j是非常方便的投資工具，開發者可以在java環境中簡單的計
 TableView是為Android平台所開發的表格程式庫，專門做網狀表格呈現，底層以RecylerView實作。
 
 除了簡單表格呈現，還提供排序、篩選、單格互動監聽(單擊、雙擊、長按)...等功能。
+
+### [Marketaux](https://www.marketaux.com/)
+
+> Instant access to global stock market and finance news also including funds, crypto and more along with comprehensive sentiment analysis.
+
+免費的股票市場與金融新聞串接API，即時獲取全球股市與財經新聞，內容涵蓋基金、加密貨幣等多元領域，並提供全面的情緒分析。
+
+#### 訂閱費用 (2026/4/13更新)
+
+- 免費試用：每日100次呼叫，每次最多3則新聞。
+- USD$29/月：每日2,500次呼叫，每次最多20則新聞。
+- USD$49/月：每日10,000次呼叫，每次最多50則新聞。
+- USD$99/月：每日25,000次呼叫，每次最多100則新聞。
+
+![MarketauxPricing](demo2026/xl/marketaux_pricing.png)
+
+### [FinMind](https://finmindtrade.com/)
+
+> FinMind 金融 X 大數據。在大數據的時代，資料是一切的基礎。我們收集超過 50 種台股相關資料，並提供下載、線上分析、回測。
+
+開源資料庫：不限程式，皆可藉由 FinMind 提供的 api 下載資料，也可直接在網站上下載資料。有資料後，可進行統計分析、回歸分析、時間序列分析、機器學習、深度學習。
+
+線上分析：針對個股，提供技術面、基本面、籌碼面等視覺化分析。
+
+策略回測：根據不同策略，進行回測分析，提供不同策略投資組合的績效、損益、選股標的。
+
+#### 訂閱費用 (2026/4/13更新)
+
+- 免費試用：每小時600次API呼叫。
+- NTD$699/月：每小時1,600次API呼叫。
+- NTD$999/月：每小時6,000次API呼叫。
+- NTD$3,330/月：每小時20,000次API呼叫。
+
+![FinMindPricing](demo2026/xl/finmind_pricing.png)
 
 ## 🏃‍♀️ Next Stage
 
