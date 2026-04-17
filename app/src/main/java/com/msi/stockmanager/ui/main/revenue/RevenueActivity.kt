@@ -44,7 +44,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     lateinit var filterBinding: LayoutRevenueFilterBinding
     lateinit var binding: ActivityRevenueBinding
     lateinit var mMenu: Menu
-    private val maxYearMonth = YearMonth.now().minusMonths(if(LocalDate.now().dayOfMonth < 10) 2 else 1)
+    // FinMind 月營收資料常有發布時差，避免顯示最新一個月出現大量 0 值，UI 上限固定往前兩個月。
+    private val maxYearMonth = YearMonth.now().minusMonths(2)
     private val minYearMonth = YearMonth.of(103+1911, 1)
     private var mYearMonth: YearMonth = maxYearMonth
     lateinit var tableViewModel: TableViewModel
@@ -275,8 +276,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         menuInflater.inflate(R.menu.menu_revenue, menu)
         mSearchItem = mMenu.findItem(R.id.app_bar_search)
         mSearchView = mSearchItem.getActionView() as SearchView
-        mSearchSrcTextView = mSearchView.findViewById<SearchAutoComplete>(R.id.search_src_text)
-        mSearchCloseBtn = mSearchView.findViewById<ImageView>(R.id.search_close_btn)
+        mSearchSrcTextView = mSearchView.findViewById<SearchAutoComplete>(androidx.appcompat.R.id.search_src_text)
+        mSearchCloseBtn = mSearchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
         mSearchCloseBtn.setOnClickListener(View.OnClickListener { v: View? -> mSearchView.onActionViewCollapsed() })
         val stockNameList: MutableList<String> = ArrayList()
         for (info in StockUtil.stockList) {

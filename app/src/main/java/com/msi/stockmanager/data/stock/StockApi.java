@@ -3,10 +3,10 @@ package com.msi.stockmanager.data.stock;
 import android.content.Context;
 import android.util.Log;
 
+import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.data.DateUtil;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -15,272 +15,191 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Calendar;
 import java.util.List;
 
 
 public class StockApi implements IStockApi{
     private static final String TAG = StockApi.class.getSimpleName();
+    private static final String FINMIND_BASE_URL = "https://api.finmindtrade.com/api/v4/data";
+    private static final String DATASET_TAIWAN_STOCK_PRICE = "TaiwanStockPrice";
+    private static final int HTTP_CONNECT_TIMEOUT_MS = 6000;
+    private static final int HTTP_READ_TIMEOUT_MS = 6000;
+
     private Context parentsContext;
     public StockApi(Context context) {
         parentsContext = context;
     }
 
+    /** 取得今日日期字串 yyyy-MM-dd（使用裝置預設時區） */
+    private static String getTodayDateString() {
+        Calendar cal = Calendar.getInstance();
+        return String.format("%04d-%02d-%02d",
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+    }
+
+    /** 取得今日往前推 N 天的日期字串 yyyy-MM-dd */
+    private static String getDateStringDaysAgo(int daysAgo) {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DAY_OF_MONTH, -daysAgo);
+        return String.format("%04d-%02d-%02d",
+                cal.get(Calendar.YEAR), cal.get(Calendar.MONTH) + 1, cal.get(Calendar.DAY_OF_MONTH));
+    }
+
+    /**
+     * 依 range 參數計算 FinMind 所需的 date、end_date。
+     * 僅支援 1d 搭配 1mo、1y；其他 fallback 為 1mo。
+     */
+    private static String[] rangeToDateEndDate(String range) {
+        String endDate = getTodayDateString();
+        String startDate;
+        if ("1y".equals(range)) {
+            startDate = getDateStringDaysAgo(365);
+        } else if ("1mo".equals(range) || "1m".equals(range)) {
+            startDate = getDateStringDaysAgo(31);
+        } else {
+            startDate = getDateStringDaysAgo(31);
+        }
+        return new String[]{ startDate, endDate };
+    }
+
+    /** 對 FinMind API V4 發送 GET 請求，回傳 response body 字串；失敗拋出 Exception */
+    private static String finmindHttpGet(String requestUrl, String token) throws Exception {
+        URL url = new URL(requestUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+        connection.setRequestProperty("Authorization", "Bearer " + token);
+        connection.setRequestMethod("GET");
+        connection.setDoInput(true);
+        connection.setConnectTimeout(HTTP_CONNECT_TIMEOUT_MS);
+        connection.setReadTimeout(HTTP_READ_TIMEOUT_MS);
+        try {
+            int status = connection.getResponseCode();
+            if (status != 200) {
+                String errMsg = "";
+                try (BufferedReader in = new BufferedReader(
+                        new InputStreamReader(connection.getErrorStream(), "UTF-8"))) {
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) sb.append(line).append("\n");
+                    errMsg = sb.toString().trim();
+                } catch (Exception ignored) {}
+                throw new Exception("HTTP error (status=" + status + ", url=" + requestUrl + ", msg=" + errMsg + ")");
+            }
+            try (InputStream is = connection.getInputStream();
+                 InputStreamReader reader = new InputStreamReader(is, "UTF-8");
+                 BufferedReader in = new BufferedReader(reader)) {
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = in.readLine()) != null) sb.append(line).append("\n");
+                return sb.toString();
+            }
+        } finally {
+            connection.disconnect();
+        }
+    }
+
     @Override
     public void getRegularStockPrice(String stock_id, ResultCallback callback) {
         Thread task = new Thread(()->{
-            //網路相關操作屬於耗時操作，需要透過非主線Thread執行
             StockInfo info = StockUtilKt.getStockInfoOrNull(stock_id);
             if (info == null) {
-//                callback.onException(new Exception("Invalid stock ID (" + stock_id + ")"));
-                try {
-                    callback.onResult(null);
-                } catch (Exception ex){
-                    ex.printStackTrace();
-                }
+                try { callback.onResult(null); } catch (Exception ex) { ex.printStackTrace(); }
                 return;
             }
-            //如果interval時間內取得過，直接返回值
-            if(System.currentTimeMillis() - info.getLastUpdateTime() < LAST_UPDATE_INTERVAL){
-                try {
-                    callback.onResult(info);
-                } catch (Exception ex){
-                    ex.printStackTrace();
-                }
+            if (System.currentTimeMillis() - info.getLastUpdateTime() < LAST_UPDATE_INTERVAL) {
+                try { callback.onResult(info); } catch (Exception ex) { ex.printStackTrace(); }
                 return;
             }
-            //如果stock id是合法的，會進入這個區塊
-            //double price = 0;
-            //info.setStockId(stock_id);
-            //info.setLastPrice(0.0);
-            //info.setLastUpdateTime(System.currentTimeMillis());
-            HttpURLConnection connection = null;
             try {
-                // 取得股票資訊
-                String httRequestUrl = String.format("https://query1.finance.yahoo.com/v6/finance/quote?symbols=" + stock_id + ".TW");
-                URL url = new URL(httRequestUrl);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-                connection.setRequestMethod("GET");
-                connection.setDoInput(true);
-                int status = connection.getResponseCode();
-                if (status != 200) {
-                    String errMsg = "";
-                    try {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
-                        StringBuilder sb = new StringBuilder();
-                        String line = "";
-                        while ((line = in.readLine()) != null) {
-                            sb.append(line + "\n");
-                        }
-                        in.close();
-                        errMsg = sb.toString().trim();
-                    } catch (Exception e){}
-                    throw new Exception("HTTP error fetching URL (status=" + String.valueOf(status)
-                            + ", URL=" + httRequestUrl + ", msg="+errMsg+")");
-                } else {
-                    InputStream inputStream = connection.getInputStream();
-                    // 讀取 JSON RESPONSE --> sb
-                    InputStreamReader reader = new InputStreamReader(inputStream,"UTF-8");
-                    BufferedReader in = new BufferedReader(reader);
-                    StringBuilder sb = new StringBuilder();
-                    String line="";
-                    while ((line = in.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    in.close();
-                    //Log.d("HttpRequest", sb.toString());
-                    // 直接取得 JSON RESPONSE ARRAY
-                    JSONObject object = (new JSONObject(sb.toString())).getJSONObject("quoteResponse").getJSONArray("result").getJSONObject(0);
-                    Log.d("HttpRequest", "object=" + object.toString());
-                    // 取得股價
-                    info.setLastPrice(object.getDouble("regularMarketPrice"));
-                    info.setLastOpen(object.getDouble("regularMarketOpen"));
-                    info.setLastHigh(object.getDouble("regularMarketDayHigh"));
-                    info.setLastLow(object.getDouble("regularMarketDayLow"));
-                    info.setLastVolume(object.getDouble("regularMarketVolume"));
-                    info.setPreviosClose(object.getDouble("regularMarketPreviousClose"));
-                    info.setLastChange(object.getDouble("regularMarketChange"));
-                    info.setLastChangePercent(object.getDouble("regularMarketChangePercent") / 100.0);
-                    // 取得股價更新時間
-                    info.setLastUpdateTime(object.getLong("regularMarketTime")*1000);
-                    try {
-                        callback.onResult(info);
-                    } catch (Exception ex){
-                        ex.printStackTrace();
-                    }
+                String token = BuildConfig.FINMIND_API_TOKEN.trim();
+                if (token.isEmpty()) {
+                    throw new Exception("FINMIND_API_TOKEN is empty");
                 }
+                String startDate = getDateStringDaysAgo(10);
+                String endDate = getTodayDateString();
+                String requestUrl = FINMIND_BASE_URL + "?dataset=" + DATASET_TAIWAN_STOCK_PRICE
+                        + "&data_id=" + stock_id + "&start_date=" + startDate + "&end_date=" + endDate;
+                Log.d(TAG, "request url: " + requestUrl);
+                String responseBody = finmindHttpGet(requestUrl, token);
+                JSONObject root = new JSONObject(responseBody);
+                if (root.optInt("status", 0) != 200) {
+                    throw new Exception("FinMind API error: " + root.optString("msg", "unknown"));
+                }
+                JSONArray data = root.optJSONArray("data");
+                if (data == null || data.length() == 0) {
+                    throw new Exception("FinMind API returned no data");
+                }
+                JSONObject latest = data.getJSONObject(data.length() - 1);
+                double prevClose = data.length() >= 2
+                        ? data.getJSONObject(data.length() - 2).optDouble("close", 0)
+                        : latest.optDouble("close", 0);
+                double close = latest.optDouble("close", 0);
+                double spread = latest.optDouble("spread", 0);
+                double changePercent = (prevClose != 0) ? (spread / prevClose) : 0;
+
+                info.setLastPrice(close);
+                info.setLastOpen(latest.optDouble("open", 0));
+                info.setLastHigh(latest.optDouble("max", 0));
+                info.setLastLow(latest.optDouble("min", 0));
+                info.setLastVolume(latest.optDouble("Trading_Volume", 0));
+                info.setPreviosClose(prevClose);
+                info.setLastChange(spread);
+                info.setLastChangePercent(changePercent);
+                String dateStr = latest.optString("date", "");
+                info.setLastUpdateTime(dateStr.isEmpty() ? System.currentTimeMillis() : DateUtil.parseDate(dateStr));
+
+                try { callback.onResult(info); } catch (Exception ex) { ex.printStackTrace(); }
             } catch (Exception e) {
-                Log.e("HttpRequest", e.getMessage());
+                Log.e(TAG, "getRegularStockPrice err: " + e.getMessage());
                 e.printStackTrace();
-//                callback.onException(e);
-                try {
-                    callback.onResult(null);
-                } catch (Exception ex){
-                    ex.printStackTrace();
-                }
-                return;
-            } finally {
-                if (connection != null) {
-                    try {
-                        connection.disconnect();
-                    } catch (Exception ex){}
-                }
+                try { callback.onResult(null); } catch (Exception ex) { ex.printStackTrace(); }
             }
         });
         task.setName("getRegularStockPrice");
         task.start();
     }
 
-    /* 嘗試獲取 JSONArray 目標，失敗傳回 null */
-    private JSONArray getJSONArrayTarget(JSONObject parent, String name) throws JSONException {
-        if ((parent != null) && (!parent.isNull(name))) {
-            return parent.getJSONArray(name);
-        }
-        return null;
-    }
-
-    /* URL: https://query1.finance.yahoo.com/v8/finance/chart/2330.TW?interval=1d&range=1mo
-     * JSON 預設格式 (adjclose 並不一定會有)
-     *
-     * {
-     *   "chart": {
-     *     "result": [
-     *     {
-     *       "meta":{ ... },
-     *       "timestamp":[ ... ],
-     *       "indicators":
-     *       {
-     *         "quote": [
-     *           {
-     *             "high": [ ... ],
-     *             "opne": [ ... ],
-     *             "low":  [ ... ],
-     *             "close": [ ... ],
-     *             "volum": [ ... ],
-     *           }
-     *         ],
-     *         "adjclose":[
-     *           {
-     *             "adjclose": [ ... ]
-     *           }
-     *         ]
-     *       }
-     *     }],
-     *     "error":null
-     *   }
-     * }
-     *
-     */
     @Override
     public void getHistoryStockData(String stock_id, String interval, String range, HistoryCallback callback) {
         Thread task = new Thread(()->{
-            HttpURLConnection connection = null;
-
             try {
+                String token = BuildConfig.FINMIND_API_TOKEN.trim();
+                if (token.isEmpty()) {
+                    throw new Exception("FINMIND_API_TOKEN is empty");
+                }
+                String[] dateRange = rangeToDateEndDate(range);
+                String startDate = dateRange[0];
+                String endDate = dateRange[1];
+                String requestUrl = FINMIND_BASE_URL + "?dataset=" + DATASET_TAIWAN_STOCK_PRICE
+                        + "&data_id=" + stock_id + "&start_date=" + startDate + "&end_date=" + endDate;
+                String responseBody = finmindHttpGet(requestUrl, token);
+                JSONObject root = new JSONObject(responseBody);
+                if (root.optInt("status", 0) != 200) {
+                    throw new Exception("FinMind API error: " + root.optString("msg", "unknown"));
+                }
+                JSONArray dataArray = root.optJSONArray("data");
                 List<StockHistory> data = new ArrayList<>();
-                // TODO implement
-                // https://query1.finance.yahoo.com/v8/finance/chart/2330.TW?interval=1d&range=1mo
-                String httRequestUrl = String.format("https://query1.finance.yahoo.com/v8/finance/chart/"+stock_id+".TW?interval="+interval+"&range="+range);
-                URL url = new URL(httRequestUrl);
-                connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestProperty("User-Agent", "Mozilla/5.0");
-                connection.setRequestMethod("GET");
-                connection.setDoInput(true);
-                int status = connection.getResponseCode();
-                if (status != 200) {
-                    String errMsg = "";
-                    try {
-                        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getErrorStream(), "UTF-8"));
-                        StringBuilder sb = new StringBuilder();
-                        String line = "";
-                        while ((line = in.readLine()) != null) {
-                            sb.append(line + "\n");
-                        }
-                        in.close();
-                        errMsg = sb.toString().trim();
-                    } catch (Exception e){}
-                    throw new Exception("HTTP error fetching URL (status=" + String.valueOf(status)
-                            + ", URL=" + httRequestUrl + ", msg="+errMsg+")");
-                } else {
-                    InputStream inputStream = connection.getInputStream();
-                    // 讀取 JSON RESPONSE --> sb
-                    InputStreamReader reader = new InputStreamReader(inputStream,"UTF-8");
-                    BufferedReader in = new BufferedReader(reader);
-                    StringBuilder sb = new StringBuilder();
-                    String line="";
-                    while ((line = in.readLine()) != null) {
-                        sb.append(line + "\n");
-                    }
-                    in.close();
-                    // JSON: 嘗試取得 result
-                    if ((new JSONObject(sb.toString())).getJSONObject("chart").isNull("result")) {
-                        /* JSON 解析到 result 為 null，則開始嘗試解析 error 。
-                         * PS: 通常 Yahoo Finance API 錯誤在這之前就會拋出 Exception，並不太可能執行到這裡。
-                         */
-                        if ((new JSONObject(sb.toString())).getJSONObject("chart").isNull("error")) {
-                            /* JSON: 無法解析 error */
-                            throw new Exception("Yahoo Finance API ERROR (error=UNKNOWN, URL=" + httRequestUrl + ")");
-                        }
-                        JSONObject error = (new JSONObject(sb.toString())).getJSONObject("chart").getJSONObject("error");
-                        Log.d("HttpRequest", "error=" + error.toString());
-                        throw new Exception("Yahoo Finance API ERROR (error=" + error.toString() + ", URL=" + httRequestUrl + ")");
-                    }
-                    // JSON: 取得 result, indicators, quote
-                    JSONObject result = (new JSONObject(sb.toString())).getJSONObject("chart").getJSONArray("result").getJSONObject(0);
-                    JSONObject indicators = result.getJSONObject("indicators");
-                    JSONObject quote = indicators.getJSONArray("quote").getJSONObject(0);
-                    // JSON: 取得 timestamp
-                    JSONArray timestamp = getJSONArrayTarget(result, "timestamp");
-                    Log.d("HttpRequest", "timestamp=" + timestamp.toString());
-                    // JSON: 取得 open
-                    JSONArray open = getJSONArrayTarget(quote, "open");
-                    Log.d("HttpRequest", "open=" + open.toString());
-                    // JSON: 取得 close
-                    JSONArray close = getJSONArrayTarget(quote, "close");
-                    Log.d("HttpRequest", "close=" + close.toString());
-                    // JSON: 取得 high
-                    JSONArray high = getJSONArrayTarget(quote, "high");
-                    Log.d("HttpRequest", "high=" + high.toString());
-                    // JSON: 取得 low
-                    JSONArray low = getJSONArrayTarget(quote, "low");
-                    Log.d("HttpRequest", "low=" + low.toString());
-                    // JSON: 取得 volume
-                    JSONArray volume = getJSONArrayTarget(quote, "volume");
-                    Log.d("HttpRequest", "volume=" + volume.toString());
-                    // JSON: 嘗試取得 adj_close (調整後的收盤價)
-                    //JSONArray adj_close = getJSONArrayTarget(indicators.getJSONArray("adjclose").getJSONObject(0), "adjclose");
-                    //Log.d("HttpRequest", "adjclose=" + adj_close.toString());
-                    if (timestamp.length() > 0) {
-                        for (int i=0; i<timestamp.length(); i++) {
-                            StockHistory history = new StockHistory();
-                            try {
-                                history.stock_id = stock_id;
-                                history.date_timestamp = ((timestamp == null) ? 0 : timestamp.getLong(i) * 1000);
-                                history.price_open = ((open == null) ? 0 : open.getDouble(i));
-                                history.price_close = ((close == null) ? 0 : close.getDouble(i));
-                                history.price_high = ((high == null) ? 0 : high.getDouble(i));
-                                history.price_low = ((low == null) ? 0 : low.getDouble(i));
-                                history.price_volume = ((volume == null) ? 0 : volume.getDouble(i));
-                                //history.price_adjclose = ((adj_close == null)? 0 : adj_close.getDouble(i));
-                                data.add(history);
-                            } catch (Exception e){
-                                Log.w(TAG, "getHistoryStockData err: " + stock_id + " parse err at time " + DateUtil.toDateTimeString(history.date_timestamp));
-                            }
-                        }
+                if (dataArray != null) {
+                    for (int i = 0; i < dataArray.length(); i++) {
+                        JSONObject row = dataArray.getJSONObject(i);
+                        StockHistory history = new StockHistory();
+                        history.stock_id = stock_id;
+                        String dateStr = row.optString("date", "");
+                        history.date_timestamp = dateStr.isEmpty() ? 0 : DateUtil.parseDate(dateStr);
+                        history.price_open = row.optDouble("open", 0);
+                        history.price_close = row.optDouble("close", 0);
+                        history.price_high = row.optDouble("max", 0);
+                        history.price_low = row.optDouble("min", 0);
+                        history.price_volume = row.optDouble("Trading_Volume", 0);
+                        data.add(history);
                     }
                 }
-                // data.sort((i1, i2) -> (int)(i1.date_timestamp - i2.date_timestamp));
+                data.sort((a, b) -> Long.compare(a.date_timestamp, b.date_timestamp));
                 callback.onResult(data);
-            } catch (Exception e){
+            } catch (Exception e) {
                 Log.e(TAG, "getHistoryStockData err: " + e.getMessage());
                 callback.onException(e);
-            } finally {
-                if (connection != null) {
-                    try {
-                        connection.disconnect();
-                    } catch (Exception ex){}
-                }
             }
         });
         task.setName("getHistoryStockData");

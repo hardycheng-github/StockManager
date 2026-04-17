@@ -2,35 +2,14 @@ package com.msi.stockmanager.data.news;
 
 import static org.junit.Assert.*;
 
-import android.content.Context;
-import android.view.View;
-
-import com.msi.stockmanager.data.ApiUtil;
-import com.msi.stockmanager.data.DateUtil;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runner.manipulation.Ordering;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+
 public class NewsApiTest {
     private INewsApi newsApi;
+
     @Before
     public void setUp() throws Exception {
         this.newsApi = new NewsApi();
@@ -60,43 +39,58 @@ public class NewsApiTest {
     }
      */
 
-    //調用NewsApi各個網站爬蟲的函式，針對SOURCE_INFO的Url各別測試
+    // 驗證 CNYES 來源配置包含公告類別
     @Test
     public void CrawlerNewsUrlTest() throws Exception {
-        Method fackCrawlerWithCNYES = this.newsApi.getClass().getDeclaredMethod("CrawlerWithCNYES", String.class);
-        fackCrawlerWithCNYES.setAccessible(true);
-
-        Method fackCrawlerWithYahoo = this.newsApi.getClass().getDeclaredMethod("CrawlerWithYahoo", String.class);
-        fackCrawlerWithYahoo.setAccessible(true);
-
-        Method fackCrawlerWithChinatimes = this.newsApi.getClass().getDeclaredMethod("CrawlerWithChinatimes", String.class);
-        fackCrawlerWithChinatimes.setAccessible(true);
-
         Field field = this.newsApi.getClass().getDeclaredField("SOURCE_INFO");
         field.setAccessible(true);
-        String[][] fackSourceInfo = (String[][]) field.get(this.newsApi);
+        String[][] sourceInfo = (String[][]) field.get(this.newsApi);
 
-        for(int x=0; x<fackSourceInfo.length; x++) {
-            List<INewsApi.NewsItem> newsItemList = new ArrayList<>();
-            switch (fackSourceInfo[x][0]) {
-                case "CNYES":
-                    newsItemList = (List<INewsApi.NewsItem>) fackCrawlerWithCNYES.invoke(this.newsApi, fackSourceInfo[x][2]);
-                    break;
-                case "YAHOO":
-                    newsItemList = (List<INewsApi.NewsItem>) fackCrawlerWithYahoo.invoke(this.newsApi, fackSourceInfo[x][2]);
-                    break;
-                case "CHINATIMES":
-                    newsItemList = (List<INewsApi.NewsItem>) fackCrawlerWithChinatimes.invoke(this.newsApi, fackSourceInfo[x][2]);
-                    break;
-                default:
-                    fail("Find a source without defined crawler method");
+        boolean hasCnyesBulletin = false;
+        for (int x = 0; x < sourceInfo.length; x++) {
+            if ("CNYES".equals(sourceInfo[x][0])
+                    && String.valueOf(INewsApi.TYPE_BULLETIN).equals(sourceInfo[x][1])
+                    && sourceInfo[x][2].contains("announcement")) {
+                hasCnyesBulletin = true;
+                break;
             }
-            assertTrue("newsItemList size should be greater than one.\n"
-                    + "Source : " + fackSourceInfo[x][0] + "\n"
-                    + "Url : " + fackSourceInfo[x][2] + "\n"
-                    , newsItemList.size() > 0);
         }
-
+        assertTrue("Source config should include CNYES announcement for TYPE_BULLETIN.", hasCnyesBulletin);
     }
 
+    @Test
+    public void classifyMarketauxTypeTest() throws Exception {
+        Method classifyMethod = this.newsApi.getClass().getDeclaredMethod(
+                "classifyMarketauxTypeByEntityAndText",
+                String.class, String.class, String.class, String.class
+        );
+        classifyMethod.setAccessible(true);
+
+        int cryptoType = (int) classifyMethod.invoke(this.newsApi, "cryptocurrency", "BTC jumps", "", "");
+        assertEquals(INewsApi.TYPE_CRYPTO, cryptoType);
+
+        int exchangeType = (int) classifyMethod.invoke(this.newsApi, "currency", "USD weakens", "", "");
+        assertEquals(INewsApi.TYPE_EXCHANGE, exchangeType);
+
+        int stockType = (int) classifyMethod.invoke(this.newsApi, "equity", "AAPL earnings", "", "");
+        assertEquals(INewsApi.TYPE_STOCK, stockType);
+    }
+
+    @Test
+    public void marketauxShouldNotBeIncludedInBulletinTest() throws Exception {
+        Method includeMethod = this.newsApi.getClass().getDeclaredMethod("shouldQueryMarketaux", int.class);
+        includeMethod.setAccessible(true);
+
+        boolean includeBulletin = (boolean) includeMethod.invoke(this.newsApi, INewsApi.TYPE_BULLETIN);
+        boolean includeStock = (boolean) includeMethod.invoke(this.newsApi, INewsApi.TYPE_STOCK);
+        boolean includeExchange = (boolean) includeMethod.invoke(this.newsApi, INewsApi.TYPE_EXCHANGE);
+        boolean includeCrypto = (boolean) includeMethod.invoke(this.newsApi, INewsApi.TYPE_CRYPTO);
+        boolean includeAll = (boolean) includeMethod.invoke(this.newsApi, INewsApi.TYPE_ALL);
+
+        assertFalse(includeBulletin);
+        assertTrue(includeStock);
+        assertTrue(includeExchange);
+        assertTrue(includeCrypto);
+        assertTrue(includeAll);
+    }
 }

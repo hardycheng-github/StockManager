@@ -57,6 +57,10 @@
     <string name="title_activity_settings">帳戶設定</string>
     <string name="setting_fee_discount">手續費優惠</string>
     <string name="setting_fee_minimum">最低手續費</string>
+    <string name="setting_ma_alert_level">平均線關注等級</string>
+    <string name="ma_alert_level_low">保守</string>
+    <string name="ma_alert_level_default">穩健</string>
+    <string name="ma_alert_level_high">積極</string>
     <string name="hint_stock_search">請輸入股票代碼或名稱</string>
     <string name="syncing">同步中</string>
     <string name="title_activity_http_request_demo">HttpRequestDemo</string>
@@ -84,7 +88,7 @@
     <string name="dialog_remove_stock_dividend_reduction_msg">刪除所有【%s】的股利與減資紀錄?</string>
     <string name="confirm">確定</string>
     <string name="cancel">取消</string>
-    <string name="copyright_msg">Copyright © 2022 MSI</string>
+    <string name="copyright_msg">Copyright © YYYY MSI</string>
     <string name="search_stock">股票搜尋</string>
     <string name="filter">過濾器</string>
     <string name="title_activity_list">歷史紀錄</string>
@@ -191,6 +195,10 @@
     </string-array>
     <string name="init_error_title">初始化失敗</string>
     <string name="init_error_message">無法初始化應用，請確認您的網路環境，或重新嘗試同步</string>
+    <string name="launch_init_preparing">正在準備應用設定</string>
+    <string name="launch_init_loading_account">正在載入帳務資料</string>
+    <string name="launch_init_loading_news">正在取得即時新聞</string>
+    <string name="launch_init_done">初始化完成</string>
     <string name="retry">重試</string>
     <string name="exit">離開</string>
     <string name="watching_list">觀察清單</string>
@@ -218,4 +226,22 @@
     <string name="revenue_watching_list_remove_msg">將「${stock_name}」從關注清單中移除?</string>
     <string name="revenue_watching_list_remove_yes">是</string>
     <string name="revenue_watching_list_remove_no">否</string>
+    
+    <!-- Notify -->
+    <string name="notify_title">通知</string>
+    <string name="notify_empty_message">目前無任何通知</string>
+    <string name="notify_mark_all_read">全部已讀</string>
+    
+    <!-- MA Alert Level Arrays -->
+    <string-array name="ma_alert_level_entries">
+        <item>@string/ma_alert_level_low</item>
+        <item>@string/ma_alert_level_default</item>
+        <item>@string/ma_alert_level_high</item>
+    </string-array>
+    <string-array name="ma_alert_level_values">
+        <item>LOW</item>
+        <item>DEFAULT</item>
+        <item>HIGH</item>
+    </string-array>
+    <string name="notify_delete_all">全部刪除</string>
 </resources>

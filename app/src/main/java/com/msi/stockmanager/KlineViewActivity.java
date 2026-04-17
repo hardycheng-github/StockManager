@@ -139,34 +139,22 @@ public class KlineViewActivity extends AppCompatActivity implements View.OnClick
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_deputy:
-                //是否显示副图
-                kLineView.setDeputyPicShow(!kLineView.getVicePicShow());
-                break;
-
-            case R.id.btn_ma:
-                //主图展示MA
-                kLineView.setMainImgType(KLineView.MAIN_IMG_MA);
-                break;
-
-
-            case R.id.btn_macd:
-                //副图展示MACD
-                kLineView.setDeputyImgType(KLineView.DEPUTY_IMG_MACD);
-                break;
-
-            case R.id.btn_kdj:
-                //副图展示KDJ
-                kLineView.setDeputyImgType(KLineView.DEPUTY_IMG_KDJ);
-                break;
-
-            case R.id.btn_rsi:
-                //副图展示RSI
-                kLineView.setDeputyImgType(KLineView.DEPUTY_IMG_RSI);
-                break;
-            default:
-                break;
+        int viewId = v.getId();
+        if (viewId == R.id.btn_deputy) {
+            // 是否显示副图
+            kLineView.setDeputyPicShow(!kLineView.getVicePicShow());
+        } else if (viewId == R.id.btn_ma) {
+            // 主图展示MA
+            kLineView.setMainImgType(KLineView.MAIN_IMG_MA);
+        } else if (viewId == R.id.btn_macd) {
+            // 副图展示MACD
+            kLineView.setDeputyImgType(KLineView.DEPUTY_IMG_MACD);
+        } else if (viewId == R.id.btn_kdj) {
+            // 副图展示KDJ
+            kLineView.setDeputyImgType(KLineView.DEPUTY_IMG_KDJ);
+        } else if (viewId == R.id.btn_rsi) {
+            // 副图展示RSI
+            kLineView.setDeputyImgType(KLineView.DEPUTY_IMG_RSI);
         }
     }
 

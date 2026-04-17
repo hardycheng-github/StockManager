@@ -356,28 +356,32 @@ public class AnalysisActivity extends AppCompatActivity {
                     popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                         @Override
                         public boolean onMenuItemClick(MenuItem item) {
-                            switch(item.getItemId())
-                            {
-                                case R.id.goodinfo:
-                                    toUrl(URL_GOODINFO.replace("{STOCK_ID}", targetStockId));
-                                    return true;
-                                case R.id.wantgoo:
-                                    toUrl(URL_WANTGOO.replace("{STOCK_ID}", targetStockId));
-                                    return true;
-                                case R.id.yahoo:
-                                    toUrl(URL_YAHOO.replace("{STOCK_ID}", targetStockId));
-                                    return true;
-                                case R.id.anue:
-                                    toUrl(URL_ANUE.replace("{STOCK_ID}", targetStockId));
-                                    return true;
-                                case R.id.cmoney_forum:
-                                    toUrl(URL_CMONEY_FORUM.replace("{STOCK_ID}", targetStockId));
-                                    return true;
-                                case R.id.twse:
-                                    toUrl(URL_TWSE.replace("{STOCK_ID}", targetStockId));
-                                    return true;
+                            int itemId = item.getItemId();
+                            if (itemId == R.id.goodinfo) {
+                                toUrl(URL_GOODINFO.replace("{STOCK_ID}", targetStockId));
+                                return true;
                             }
-                            return onMenuItemClick(item);
+                            if (itemId == R.id.wantgoo) {
+                                toUrl(URL_WANTGOO.replace("{STOCK_ID}", targetStockId));
+                                return true;
+                            }
+                            if (itemId == R.id.yahoo) {
+                                toUrl(URL_YAHOO.replace("{STOCK_ID}", targetStockId));
+                                return true;
+                            }
+                            if (itemId == R.id.anue) {
+                                toUrl(URL_ANUE.replace("{STOCK_ID}", targetStockId));
+                                return true;
+                            }
+                            if (itemId == R.id.cmoney_forum) {
+                                toUrl(URL_CMONEY_FORUM.replace("{STOCK_ID}", targetStockId));
+                                return true;
+                            }
+                            if (itemId == R.id.twse) {
+                                toUrl(URL_TWSE.replace("{STOCK_ID}", targetStockId));
+                                return true;
+                            }
+                            return false;
                         }
                     });
                     // Showing the popup menu
@@ -438,8 +442,8 @@ public class AnalysisActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_analysis, menu);
         mSearchItem = mMenu.findItem(R.id.app_bar_search);
         mSearchView = (SearchView) mSearchItem.getActionView();
-        mSearchSrcTextView = mSearchView.findViewById(R.id.search_src_text);
-        mSearchCloseBtn = mSearchView.findViewById(R.id.search_close_btn);
+        mSearchSrcTextView = mSearchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        mSearchCloseBtn = mSearchView.findViewById(androidx.appcompat.R.id.search_close_btn);
         mSearchCloseBtn.setOnClickListener(v -> {
             mSearchView.onActionViewCollapsed();
         });

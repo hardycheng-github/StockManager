@@ -10,12 +10,14 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
 
 import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.notify.MaAlertLevel;
 import com.msi.stockmanager.data.profile.Profile;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -53,6 +55,37 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static class SettingsFragment extends PreferenceFragmentCompat
     {
+        
+        /**
+         * 更新平均線關注等級的 summary 顯示
+         * @param preference ListPreference
+         */
+        private void updateMaAlertLevelSummary(ListPreference preference) {
+            if (preference == null) return;
+            
+            String currentValue = preference.getValue();
+            if (currentValue == null) {
+                currentValue = MaAlertLevel.DEFAULT.toString();
+            }
+            
+            MaAlertLevel level = MaAlertLevel.fromString(currentValue);
+            String summaryText;
+            switch (level) {
+                case LOW:
+                    summaryText = getString(R.string.ma_alert_level_low);
+                    break;
+                case DEFAULT:
+                    summaryText = getString(R.string.ma_alert_level_default);
+                    break;
+                case HIGH:
+                    summaryText = getString(R.string.ma_alert_level_high);
+                    break;
+                default:
+                    summaryText = getString(R.string.ma_alert_level_default);
+                    break;
+            }
+            preference.setSummary(summaryText);
+        }
 
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -88,6 +121,27 @@ public class SettingsActivity extends AppCompatActivity {
                     Log.d(TAG, "profit_color_reverse: " + Profile.profit_color_reverse);
                     return true;
                 } catch (Exception e){}
+                return false;
+            });
+            
+            ListPreference ma_alert_level = findPreference("setting_ma_alert_level");
+            
+            // 設置初始 summary 顯示當前設定值
+            updateMaAlertLevelSummary(ma_alert_level);
+            
+            ma_alert_level.setOnPreferenceChangeListener((preference, newValue) -> {
+                try {
+                    String levelStr = newValue.toString();
+                    Profile.maAlertLevel = MaAlertLevel.fromString(levelStr);
+                    Log.d(TAG, "setting_ma_alert_level: " + Profile.maAlertLevel);
+                    
+                    // 更新 summary 顯示新的設定值
+                    updateMaAlertLevelSummary(ma_alert_level);
+                    
+                    return true;
+                } catch (Exception e){
+                    Log.e(TAG, "Error setting ma_alert_level", e);
+                }
                 return false;
             });
         }

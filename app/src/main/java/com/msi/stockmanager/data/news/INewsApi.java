@@ -15,8 +15,7 @@ public interface INewsApi {
     int TYPE_CRYPTO = 4; //加密貨幣
 
     String SOURCE_CNYES = "鉅亨新聞";
-    String SOURCE_YAHOO = "Yahoo財經";
-    String SOURCE_CHINATIMES = "中時新聞網";
+    String SOURCE_MARKETAUX = "Marketaux";
 
     class NewsItem {
         public int type; //news type, ex: TYPE_STOCK,TYPE_BULLETIN,TYPE_EXCHANGE,TYPE_CRYPTO
@@ -44,6 +43,10 @@ public interface INewsApi {
         void onResult(List<NewsItem> newsItemList);
         void onException(Exception e);
     }
+    interface TaskCallback {
+        void onSuccess();
+        void onException(Exception e);
+    }
 
     /**
      * 取得新聞列表
@@ -52,4 +55,18 @@ public interface INewsApi {
      * @param callback 回調
      */
     void getNewsList(int type, boolean force, ResultCallback callback);
+
+    /**
+     * 預先載入新聞資料（通常於 APP 啟動階段呼叫）
+     * @param force 強制要求刷新
+     * @param callback 回調
+     */
+    void preload(boolean force, TaskCallback callback);
+
+    /**
+     * 是否已有指定分類的快取資料
+     * @param type 新聞類型
+     * @return true 表示快取可用
+     */
+    boolean hasCache(int type);
 }

@@ -7,6 +7,7 @@ import android.widget.DatePicker
 import android.widget.TimePicker
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -54,63 +56,70 @@ fun StockIdSelector(
     var isFocus by remember { mutableStateOf(false)}
 
 
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(0.dp, itemHeight)
+    ) {
         TextTitle(stringResource(id = R.string.trans_stock_selector))
-        AutoCompleteBox(
-            items = list,
-            itemContent = { stock ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = stock.getStockNameWithId(),
-                        style = MaterialTheme.typography.subtitle2
-                    )
-                }
-            },
-        ) {
-            val view = LocalView.current
-
-            filter(value)
-
-            onItemSelected { stock ->
-                value = stock.getStockNameWithId()
-                filter(value)
-                view.clearFocus()
-                state.onValueChangedCallback(stock)
-            }
-
-            TextSearchBar(
-                modifier = Modifier.testTag(AutoCompleteSearchBarTag),
-                value = value,
-                placeholder = stringResource(id = R.string.hint_stock_search),
-                onImeActionClick = {
-                    view.clearFocus()
+        Box(modifier = Modifier.weight(1f)) {
+            AutoCompleteBox(
+                items = list,
+                itemContent = { stock ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = stock.getStockNameWithId(),
+                            style = MaterialTheme.typography.subtitle2
+                        )
+                    }
                 },
-                onClearClick = {
-                    value = ""
-                    filter(value)
-                    view.clearFocus()
-
-                    state.onValueChangedCallback(StockInfo())
-                },
-                onFocusChanged = { focusState ->
-                    isFocus = focusState.isFocused
-                    if(isFocus && value.length >= searchThreshold) isSearching = true;
-                    if(!isFocus && isSearching) isSearching = false
-                },
-                onValueChanged = { query ->
-                    value = query
-                    filter(value)
-                    isSearching = isFocus && value.isNotEmpty()
-                    state.onValueChangedCallback(StockInfo())
-                },
-                enabled = (list != null && list.size > 0),
             ) {
-                state.errorState.value == EasyFormsErrorState.INVALID
+                val view = LocalView.current
+
+                filter(value)
+
+                onItemSelected { stock ->
+                    value = stock.getStockNameWithId()
+                    filter(value)
+                    view.clearFocus()
+                    state.onValueChangedCallback(stock)
+                }
+
+                TextSearchBar(
+                    modifier = Modifier.testTag(AutoCompleteSearchBarTag),
+                    value = value,
+                    placeholder = stringResource(id = R.string.hint_stock_search),
+                    onImeActionClick = {
+                        view.clearFocus()
+                    },
+                    onClearClick = {
+                        value = ""
+                        filter(value)
+                        view.clearFocus()
+
+                        state.onValueChangedCallback(StockInfo())
+                    },
+                    onFocusChanged = { focusState ->
+                        isFocus = focusState.isFocused
+                        if(isFocus && value.length >= searchThreshold) isSearching = true;
+                        if(!isFocus && isSearching) isSearching = false
+                    },
+                    onValueChanged = { query ->
+                        value = query
+                        filter(value)
+                        isSearching = isFocus && value.isNotEmpty()
+                        state.onValueChangedCallback(StockInfo())
+                    },
+                    enabled = (list != null && list.size > 0),
+                ) {
+                    state.errorState.value == EasyFormsErrorState.INVALID
+                }
             }
         }
     }
@@ -137,9 +146,14 @@ fun IntegerSelector(
     val view = LocalView.current
     state.onValueChangedCallback(state.state.value)
 
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)){
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(0.dp, itemHeight)
+    ) {
         TextTitle(title)
-        ConstraintLayout (modifier = Modifier.fillMaxWidth()){
+        ConstraintLayout(modifier = Modifier.weight(1f)) {
             val (sub, text, add) = createRefs()
             if(showButtons) {
                 IconButton(
@@ -193,8 +207,13 @@ fun IntegerSelector(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.constrainAs(text){
-                    start.linkTo(sub.end)
-                    end.linkTo(add.start)
+                    if (showButtons) {
+                        start.linkTo(sub.end)
+                        end.linkTo(add.start)
+                    } else {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     width = Dimension.fillToConstraints
                     height = Dimension.wrapContent
                 },
@@ -295,9 +314,14 @@ fun DoubleSelector(
     val view = LocalView.current
     state.onValueChangedCallback(state.state.value)
 
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)){
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(0.dp, itemHeight)
+    ) {
         TextTitle(title)
-        ConstraintLayout (modifier = Modifier.fillMaxWidth()){
+        ConstraintLayout(modifier = Modifier.weight(1f)) {
             val (sub, text, add) = createRefs()
             if(showButtons) {
                 IconButton(
@@ -350,8 +374,13 @@ fun DoubleSelector(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.constrainAs(text){
-                    start.linkTo(sub.end)
-                    end.linkTo(add.start)
+                    if (showButtons) {
+                        start.linkTo(sub.end)
+                        end.linkTo(add.start)
+                    } else {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     width = Dimension.fillToConstraints
                     height = Dimension.wrapContent
                 },
@@ -463,22 +492,36 @@ fun DatePicker(easyForm: EasyForms, title: String, default: Long = Date().time, 
         }, defaultDate.year+1900, defaultDate.month, defaultDate.date
     )
     state.onValueChangedCallback(state.state.value)
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(0.dp, itemHeight)
+    ) {
         TextTitle(title)
-        OutlinedTextField(
-            value = dateStr,
-            onValueChange = {
-                Log.d(TAG, "date onValueChange: $it")
-            },
-            readOnly = true,
-            singleLine = true,
-            textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
-            modifier = Modifier.clickable { mDatePickerDialog.show() },
-            enabled = false,
-            colors =  TextFieldDefaults.textFieldColors(
-                disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+        Box(modifier = Modifier.weight(1f)) {
+            OutlinedTextField(
+                value = dateStr,
+                onValueChange = { },
+                readOnly = true,
+                singleLine = true,
+                textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center),
+                modifier = Modifier.fillMaxWidth(),
+                // 勿用 enabled=false：Outlined 在停用時會套用灰色底；readOnly 即可鎖定輸入並與其他欄位同色
+                enabled = true,
             )
-        )
+            // TextField 啟用時會攔截觸控，外層 clickable 常失效；覆蓋透明層統一開啟日期對話框
+            val dateFieldInteraction = remember { MutableInteractionSource() }
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .clickable(
+                        interactionSource = dateFieldInteraction,
+                        indication = null,
+                        onClick = { mDatePickerDialog.show() }
+                    )
+            )
+        }
     }
 }
 
@@ -521,24 +564,58 @@ data class DatePickerResult(
 fun TransTypeSelector(easyForm: EasyForms, title: String, items: List<Int>, default: Int = items[0], key:Any,
     state:TransTypeSelectorState = easyForm.addAndGetCustomState(key, TransTypeSelectorState(default))
 ){
-    state.default = default
-    state.onValueChangedCallback(state.state.value)
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.defaultMinSize(0.dp, itemHeight)) {
+    // 勿在組合本體反覆呼叫 onValueChangedCallback：會在每次重組寫入狀態，易造成多餘快照與不穩定
+    SideEffect {
+        state.default = default
+    }
+    val selection = state.state.value
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .defaultMinSize(0.dp, itemHeight)
+    ) {
         TextTitle(title)
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.horizontalScroll(rememberScrollState())){
-            for(type in items){
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                    .clickable { state.onValueChangedCallback(type) }){
-                    RadioButton(
-                        selected = state.state.value == type,
-                        onClick = {},
-                        enabled = false,
-                        colors = RadioButtonDefaults.colors(
-                            disabledColor = MaterialTheme.colors.secondary
-                        ),
-                        modifier = Modifier.padding(8.dp)
+        // 單一橫列、不捲動；以較小字體／間距與均分寬度適應窄螢幕
+        Row(
+            modifier = Modifier.weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            for (type in items) {
+                val interactionSource = remember(type) { MutableInteractionSource() }
+                Box(modifier = Modifier.weight(1f)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        RadioButton(
+                            selected = selection == type,
+                            onClick = {},
+                            enabled = false,
+                            colors = RadioButtonDefaults.colors(
+                                disabledColor = MaterialTheme.colors.secondary
+                            ),
+                            modifier = Modifier.padding(2.dp)
+                        )
+                        Text(
+                            text = FormatUtil.transType(type),
+                            style = MaterialTheme.typography.caption,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.padding(end = 2.dp)
+                        )
+                    }
+                    // 覆蓋整格可點範圍，避免子元件測量區攔截觸控導致外層 clickable 失靈
+                    Box(
+                        Modifier
+                            .matchParentSize()
+                            .clickable(
+                                interactionSource = interactionSource,
+                                indication = null,
+                                onClick = { state.onValueChangedCallback(type) }
+                            )
                     )
-                    Text(text = FormatUtil.transType(type), modifier = Modifier.padding(end=8.dp))
                 }
             }
         }
@@ -578,6 +655,14 @@ data class TransTypeSelectorResult(
 )
 
 @Composable
-fun TextTitle(title:String){
-    Text(text=title, modifier = Modifier.fillMaxWidth(0.3f), style=MaterialTheme.typography.subtitle1)
+fun RowScope.TextTitle(title: String) {
+    Text(
+        text = title,
+        modifier = Modifier
+            .align(Alignment.CenterVertically)
+            .widthIn(min = 96.dp, max = 120.dp),
+        style = MaterialTheme.typography.subtitle1,
+        maxLines = 2,
+        softWrap = true
+    )
 }
