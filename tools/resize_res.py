@@ -43,9 +43,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "target_width",
         nargs="?",
-        default=512,
+        default=720,
         type=int,
-        help="Target max width in pixels (default: 512).",
+        help="Target max width in pixels (default: 720).",
     )
     parser.add_argument(
         "-o",
