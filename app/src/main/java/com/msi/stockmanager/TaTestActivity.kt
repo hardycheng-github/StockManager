@@ -58,6 +58,10 @@ class TaTestActivity : AppCompatActivity() {
                     if (data != null) {
                         data.sortBy { it.date_timestamp }
                         val stockName = getStockInfoOrNull(stockId)?.getStockNameWithId()
+                        Log.i(
+                            TAG,
+                            "stockId\tstockName\tdate\tshortScore\tlongScore\ttotalScore\tshortPct\tlongPct\ttotalPct\tshortLoss\tlongLoss\ttotalLoss"
+                        )
                         var shortValidList = mutableListOf<Int>()
                         var longValidList = mutableListOf<Int>()
                         var totalValidList = mutableListOf<Int>()
@@ -126,7 +130,9 @@ class TaTestActivity : AppCompatActivity() {
                                                 )
                                             Log.i(
                                                 TAG, String.format(
-                                                    "%s\t%s\t%d\t%d\t%d\t%.2f\t%.2f\t%.2f\t%s\t%s\t%s",
+                                                    Locale.US,
+                                                    "%s\t%s\t%s\t%d\t%d\t%d\t%.2f\t%.2f\t%.2f\t%s\t%s\t%s",
+                                                    stockId,
                                                     stockName,
                                                     dateStr,
                                                     shortScore,
@@ -171,6 +177,7 @@ class TaTestActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ApiUtil.init(applicationContext)
         binding = ActivityTaTestBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.submit.setOnClickListener {
