@@ -56,14 +56,11 @@ public class SettingsActivity extends AppCompatActivity {
     public static class SettingsFragment extends PreferenceFragmentCompat
     {
         
-        /**
-         * 更新平均線關注等級的 summary 顯示
-         * @param preference ListPreference
-         */
-        private void updateMaAlertLevelSummary(ListPreference preference) {
+        /** 更新平均線關注等級 summary；listener 內應傳 newValue，因 getValue() 此時仍為舊值。 */
+        private void updateMaAlertLevelSummary(ListPreference preference, String valueOverride) {
             if (preference == null) return;
-            
-            String currentValue = preference.getValue();
+
+            String currentValue = valueOverride != null ? valueOverride : preference.getValue();
             if (currentValue == null) {
                 currentValue = MaAlertLevel.DEFAULT.toString();
             }
@@ -127,7 +124,7 @@ public class SettingsActivity extends AppCompatActivity {
             ListPreference ma_alert_level = findPreference("setting_ma_alert_level");
             
             // 設置初始 summary 顯示當前設定值
-            updateMaAlertLevelSummary(ma_alert_level);
+            updateMaAlertLevelSummary(ma_alert_level, null);
             
             ma_alert_level.setOnPreferenceChangeListener((preference, newValue) -> {
                 try {
@@ -135,8 +132,8 @@ public class SettingsActivity extends AppCompatActivity {
                     Profile.maAlertLevel = MaAlertLevel.fromString(levelStr);
                     Log.d(TAG, "setting_ma_alert_level: " + Profile.maAlertLevel);
                     
-                    // 更新 summary 顯示新的設定值
-                    updateMaAlertLevelSummary(ma_alert_level);
+                    // 更新 summary：listener 回傳前 getValue() 仍為舊值，必須依 newValue 更新
+                    updateMaAlertLevelSummary(ma_alert_level, levelStr);
                     
                     return true;
                 } catch (Exception e){
