@@ -1,6 +1,7 @@
 package com.msi.stockmanager.data.revenue
 
 import android.content.Context
+import java.time.YearMonth
 
 data class RevenueInfo(
     val year: Int, //資料年月-年
@@ -45,6 +46,7 @@ interface IRevenueApi {
     fun hasSync(): Boolean
 
     fun getRevenueInfo(stockId: String, year: Int = -1, month: Int = -1): RevenueInfo?
+    fun getLatestAvailableYearMonth(): YearMonth?
 
     fun inWatchingList(stockId: String): Boolean
 

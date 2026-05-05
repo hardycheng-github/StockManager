@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.data.DateUtil;
+import com.msi.stockmanager.data.ExternalApiPrefs;
+import com.msi.stockmanager.data.FinMindApiDisabledException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -101,6 +103,12 @@ public class StockApi implements IStockApi{
 
     @Override
     public void getRegularStockPrice(String stock_id, ResultCallback callback) {
+        if (!ExternalApiPrefs.isFinMindApiEnabled(parentsContext)) {
+            FinMindApiDisabledException disabled = FinMindApiDisabledException.fromContext(parentsContext);
+            Log.i(TAG, "getRegularStockPrice skipped: " + disabled.getMessage());
+            try { callback.onResult(null); } catch (Exception ex) { ex.printStackTrace(); }
+            return;
+        }
         Thread task = new Thread(()->{
             StockInfo info = StockUtilKt.getStockInfoOrNull(stock_id);
             if (info == null) {
@@ -162,6 +170,12 @@ public class StockApi implements IStockApi{
 
     @Override
     public void getHistoryStockData(String stock_id, String interval, String range, HistoryCallback callback) {
+        if (!ExternalApiPrefs.isFinMindApiEnabled(parentsContext)) {
+            FinMindApiDisabledException disabled = FinMindApiDisabledException.fromContext(parentsContext);
+            Log.i(TAG, "getHistoryStockData skipped: " + disabled.getMessage());
+            callback.onException(disabled);
+            return;
+        }
         Thread task = new Thread(()->{
             try {
                 String token = BuildConfig.FINMIND_API_TOKEN.trim();

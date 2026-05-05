@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.msi.stockmanager.data.ApiUtil;
+import com.msi.stockmanager.data.FinMindApiDisabledException;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.data.stock.IStockApi;
 import com.msi.stockmanager.data.stock.StockHistory;
@@ -113,7 +114,11 @@ public class MaBreakthroughService {
             
             @Override
             public void onException(Exception e) {
-                Log.e(TAG, "Error getting history data for " + stockId, e);
+                if (e instanceof FinMindApiDisabledException) {
+                    Log.i(TAG, "History data skipped (FinMind API disabled): " + stockId);
+                } else {
+                    Log.e(TAG, "Error getting history data for " + stockId, e);
+                }
             }
         });
     }

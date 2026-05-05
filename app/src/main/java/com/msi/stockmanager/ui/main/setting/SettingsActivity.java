@@ -17,6 +17,7 @@ import androidx.preference.SwitchPreference;
 
 import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.ExternalApiPrefs;
 import com.msi.stockmanager.data.notify.MaAlertLevel;
 import com.msi.stockmanager.data.profile.Profile;
 
@@ -120,6 +121,22 @@ public class SettingsActivity extends AppCompatActivity {
                 } catch (Exception e){}
                 return false;
             });
+            SwitchPreference enable_finmind_api = findPreference(ExternalApiPrefs.KEY_ENABLE_FINMIND_API);
+            if (enable_finmind_api != null) {
+                enable_finmind_api.setOnPreferenceChangeListener((preference, newValue) -> {
+                    boolean enabled = Boolean.parseBoolean(newValue.toString());
+                    Log.i(TAG, "enable_finmind_api: " + enabled);
+                    return true;
+                });
+            }
+            SwitchPreference enable_marketaux_api = findPreference(ExternalApiPrefs.KEY_ENABLE_MARKETAUX_API);
+            if (enable_marketaux_api != null) {
+                enable_marketaux_api.setOnPreferenceChangeListener((preference, newValue) -> {
+                    boolean enabled = Boolean.parseBoolean(newValue.toString());
+                    Log.i(TAG, "enable_marketaux_api: " + enabled);
+                    return true;
+                });
+            }
             
             ListPreference ma_alert_level = findPreference("setting_ma_alert_level");
             

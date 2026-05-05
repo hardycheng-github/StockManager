@@ -9,6 +9,7 @@ import com.msi.stockmanager.data.AccountUtil;
 import com.msi.stockmanager.data.ApiUtil;
 import com.msi.stockmanager.data.ColorUtil;
 import com.msi.stockmanager.data.FormatUtil;
+import com.msi.stockmanager.data.MarketAuxApiDisabledException;
 import com.msi.stockmanager.data.news.NewsPreloadService;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.databinding.ActivityLaunchBinding;
@@ -107,9 +108,14 @@ public class LaunchActivity extends AppCompatActivity {
 
                 @Override
                 public void onException(Exception e) {
-                    Log.e(TAG, "news preload failed: " + e.getMessage());
-                    isNewsPreloaded = false;
-                    isError = true;
+                    if (e instanceof MarketAuxApiDisabledException) {
+                        Log.i(TAG, "news preload skipped: " + e.getMessage());
+                        isNewsPreloaded = true;
+                    } else {
+                        Log.e(TAG, "news preload failed: " + e.getMessage());
+                        isNewsPreloaded = false;
+                        isError = true;
+                    }
                     synchronized (initSignal) {
                         initSignal.notifyAll();
                     }

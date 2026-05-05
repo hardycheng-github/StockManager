@@ -30,7 +30,6 @@ import com.msi.stockmanager.ui.main.revenue.tableview.TableViewAdapter
 import com.msi.stockmanager.ui.main.revenue.tableview.TableViewModel
 import com.msi.stockmanager.ui.main.revenue.tableview.model.RowHeader
 import kotlinx.coroutines.*
-import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -44,8 +43,8 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
     lateinit var filterBinding: LayoutRevenueFilterBinding
     lateinit var binding: ActivityRevenueBinding
     lateinit var mMenu: Menu
-    // FinMind 月營收資料常有發布時差，避免顯示最新一個月出現大量 0 值，UI 上限固定往前兩個月。
-    private val maxYearMonth = YearMonth.now().minusMonths(2)
+    // 預設上限先用 now-2，待同步後改成實際可用的最新月份，避免請求不存在月份導致整頁空值。
+    private var maxYearMonth = YearMonth.now().minusMonths(2)
     private val minYearMonth = YearMonth.of(103+1911, 1)
     private var mYearMonth: YearMonth = maxYearMonth
     lateinit var tableViewModel: TableViewModel
@@ -472,7 +471,19 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                 binding.btnTitleYearSub.visibility = if(mYearMonth == minYearMonth) View.INVISIBLE else View.VISIBLE
                 withContext(Dispatchers.IO){
                     if(!ApiUtil.revenueApi.hasSync()) ApiUtil.revenueApi.sync(true)
+                    val latestAvailable = ApiUtil.revenueApi.getLatestAvailableYearMonth()
+                    if (latestAvailable != null) {
+                        maxYearMonth = latestAvailable
+                    }
+                    if (mYearMonth.isAfter(maxYearMonth)) {
+                        mYearMonth = maxYearMonth
+                    }
                     withContext(Dispatchers.Main){
+                        binding.textTitle.text = mYearMonth.format(DateTimeFormatter.ofPattern(getString(R.string.revenue_title_date)))
+                        binding.btnTitleMonthAdd.visibility = if(mYearMonth == maxYearMonth) View.INVISIBLE else View.VISIBLE
+                        binding.btnTitleYearAdd.visibility = if(mYearMonth == maxYearMonth) View.INVISIBLE else View.VISIBLE
+                        binding.btnTitleMonthSub.visibility = if(mYearMonth == minYearMonth) View.INVISIBLE else View.VISIBLE
+                        binding.btnTitleYearSub.visibility = if(mYearMonth == minYearMonth) View.INVISIBLE else View.VISIBLE
                         tableViewAdapter.setAllItems(tableViewModel.columnHeaderList, tableViewModel.rowHeaderList, tableViewModel.getCellList(mYearMonth.year, mYearMonth.monthValue))
                         tableViewAdapter.cornerView?.visibility = View.VISIBLE
                         binding.loading.visibility = View.INVISIBLE

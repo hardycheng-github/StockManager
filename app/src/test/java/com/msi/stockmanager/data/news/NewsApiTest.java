@@ -93,4 +93,22 @@ public class NewsApiTest {
         assertTrue(includeCrypto);
         assertTrue(includeAll);
     }
+
+    @Test
+    public void marketauxSourceShouldMapToReadableName() throws Exception {
+        Method sourceNameMethod = this.newsApi.getClass().getDeclaredMethod(
+                "toReadableMarketauxSource",
+                String.class
+        );
+        sourceNameMethod.setAccessible(true);
+
+        String yahooName = (String) sourceNameMethod.invoke(this.newsApi, "finance.yahoo.com");
+        assertEquals("Yahoo Finance", yahooName);
+
+        String unknownName = (String) sourceNameMethod.invoke(this.newsApi, "www.timesofindia.indiatimes.com");
+        assertEquals("timesofindia.indiatimes", unknownName);
+
+        String unknownSimpleName = (String) sourceNameMethod.invoke(this.newsApi, "inc42.com");
+        assertEquals("Inc42", unknownSimpleName);
+    }
 }

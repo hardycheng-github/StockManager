@@ -1,0 +1,32 @@
+# Marketaux Source Whitelist (Project Conditions)
+# Generated: 2026-05-05
+# Query scope: possible sources under current project query conditions
+# Endpoint: GET /v1/news/all
+# Params:
+#   - language=en
+#   - must_have_entities=true
+#   - filter_entities=true
+#   - limit=3
+#   - entity_types in:
+#       1) equity,index,etf,mutualfund
+#       2) currency
+#       3) cryptocurrency
+#
+# Unified possible sources (17):
+benzinga.com
+dailyhodl.com
+economictimes.indiatimes.com
+finance.yahoo.com
+financefeeds.com
+inc42.com
+investing.com
+livemint.com
+manilatimes.net
+rediff.com
+reinsurancene.ws
+retailnews.asia
+seekingalpha.com
+thestockmarketwatch.com
+thehindubusinessline.com
+timesofindia.indiatimes.com
+zerohedge.com

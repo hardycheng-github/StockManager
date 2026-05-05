@@ -21,6 +21,18 @@
         android:defaultValue="false"
         android:key="profit_color_reverse"
         android:title="@string/profit_color_reverse" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="enable_finmind_api"
+        android:summary="@string/setting_enable_finmind_api_summary"
+        android:title="@string/setting_enable_finmind_api" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="enable_marketaux_api"
+        android:summary="@string/setting_enable_marketaux_api_summary"
+        android:title="@string/setting_enable_marketaux_api" />
     
     <ListPreference
         android:defaultValue="DEFAULT"

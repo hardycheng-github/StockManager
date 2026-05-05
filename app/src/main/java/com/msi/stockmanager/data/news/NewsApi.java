@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import com.msi.stockmanager.data.ExternalApiPrefs;
+
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.lang.reflect.Field;
@@ -15,9 +17,13 @@ import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 import org.json.JSONArray;
@@ -37,6 +43,44 @@ public class NewsApi implements INewsApi {
     private static final String MARKETAUX_COUNTRIES = "us";
     private static final DateTimeFormatter MARKETAUX_TIME_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm").withZone(ZoneOffset.UTC);
+    private static final Set<String> MARKETAUX_SOURCE_WHITELIST = new HashSet<>(Arrays.asList(
+            "benzinga.com",
+            "dailyhodl.com",
+            "economictimes.indiatimes.com",
+            "finance.yahoo.com",
+            "financefeeds.com",
+            "inc42.com",
+            "investing.com",
+            "livemint.com",
+            "manilatimes.net",
+            "rediff.com",
+            "reinsurancene.ws",
+            "retailnews.asia",
+            "seekingalpha.com",
+            "thestockmarketwatch.com",
+            "thehindubusinessline.com",
+            "timesofindia.indiatimes.com",
+            "zerohedge.com"
+    ));
+    private static final Map<String, String> MARKETAUX_SOURCE_NAME_MAP = new HashMap<String, String>() {{
+        put("benzinga.com", "Benzinga");
+        put("dailyhodl.com", "The Daily Hodl");
+        put("economictimes.indiatimes.com", "The Economic Times");
+        put("finance.yahoo.com", "Yahoo Finance");
+        put("financefeeds.com", "FinanceFeeds");
+        put("inc42.com", "Inc42");
+        put("investing.com", "Investing.com");
+        put("livemint.com", "Mint");
+        put("manilatimes.net", "The Manila Times");
+        put("rediff.com", "Rediff");
+        put("reinsurancene.ws", "Reinsurance News");
+        put("retailnews.asia", "Retail News Asia");
+        put("seekingalpha.com", "Seeking Alpha");
+        put("thestockmarketwatch.com", "Stock Market Watch");
+        put("thehindubusinessline.com", "BusinessLine");
+        put("timesofindia.indiatimes.com", "The Times of India");
+        put("zerohedge.com", "ZeroHedge");
+    }};
 
     private Context parentsContext;
     private Map<Integer, List<NewsItem>> newsRecord;
@@ -71,10 +115,10 @@ public class NewsApi implements INewsApi {
                 }
                 newsItemList.sort((a, b) -> (int)(b.timestamp - a.timestamp));
 
-                ((Activity)parentsContext).runOnUiThread(()->callback.onResult(newsItemList));
+                runResultSuccess(callback, newsItemList);
             } catch (Exception e){
                 Log.e(TAG, "getNewsList err: " + e.getMessage());
-                ((Activity)parentsContext).runOnUiThread(()->callback.onException(e));
+                runResultException(callback, e);
             }
         });
         task.setName("getNewsList");
@@ -122,6 +166,28 @@ public class NewsApi implements INewsApi {
         }
     }
 
+    private void runResultSuccess(ResultCallback callback, List<NewsItem> newsItemList) {
+        if (callback == null) {
+            return;
+        }
+        if (parentsContext instanceof Activity) {
+            ((Activity) parentsContext).runOnUiThread(() -> callback.onResult(newsItemList));
+        } else {
+            callback.onResult(newsItemList);
+        }
+    }
+
+    private void runResultException(ResultCallback callback, Exception e) {
+        if (callback == null) {
+            return;
+        }
+        if (parentsContext instanceof Activity) {
+            ((Activity) parentsContext).runOnUiThread(() -> callback.onException(e));
+        } else {
+            callback.onException(e);
+        }
+    }
+
     private void runTaskException(TaskCallback callback, Exception e) {
         if (callback == null) {
             return;
@@ -136,7 +202,7 @@ public class NewsApi implements INewsApi {
     private void ensureNewsCache(int type, boolean force) {
         if (force || newsRecord.get(TYPE_ALL) == null) {
             Log.d(TAG, "NewsApi Info : Fetch all news from network and rebuild cache.");
-            List<NewsItem> allNews = NewsCrawler(TYPE_ALL);
+            List<NewsItem> allNews = newsCrawler(TYPE_ALL);
             rebuildTypeCache(allNews);
             return;
         }
@@ -192,7 +258,7 @@ public class NewsApi implements INewsApi {
      * 取得各分類新聞（CNYES + Marketaux）
      * Marketaux 使用單次 all 抓取後本地分類，Bulletin 僅保留 CNYES。
      */
-    private static List<NewsItem> NewsCrawler(int type){
+    private List<NewsItem> newsCrawler(int type){
 
         List<NewsItem> newsItemList = new ArrayList<>();
         CountDownLatch countDownLatch = new CountDownLatch(SOURCE_INFO.length);
@@ -221,8 +287,10 @@ public class NewsApi implements INewsApi {
             e.printStackTrace();
         }
 
-        if (shouldQueryMarketaux(type)) {
+        if (shouldQueryMarketaux(type) && ExternalApiPrefs.isMarketAuxApiEnabled(parentsContext)) {
             newsItemList.addAll(CrawlerWithMarketauxByType(type));
+        } else if (shouldQueryMarketaux(type)) {
+            Log.i(TAG, "MarketAux fetch skipped: disabled by settings");
         }
 
         return newsItemList;
@@ -404,7 +472,7 @@ public class NewsApi implements INewsApi {
                 item.source = SOURCE_MARKETAUX;
                 String sourceDomain = obj.optString("source", "");
                 if (!sourceDomain.isEmpty()) {
-                    item.source = sourceDomain;
+                    item.source = toReadableMarketauxSource(sourceDomain);
                 }
                 item.title = obj.optString("title", "");
                 item.link = obj.optString("url", "");
@@ -519,6 +587,49 @@ public class NewsApi implements INewsApi {
             }
         }
         return false;
+    }
+
+    private static String toReadableMarketauxSource(String sourceDomain) {
+        String normalized = sourceDomain == null ? "" : sourceDomain.trim().toLowerCase(Locale.ROOT);
+        if (normalized.isEmpty()) {
+            return SOURCE_MARKETAUX;
+        }
+
+        String mappedName = MARKETAUX_SOURCE_NAME_MAP.get(normalized);
+        if (mappedName != null && !mappedName.isEmpty()) {
+            return mappedName;
+        }
+
+        if (!MARKETAUX_SOURCE_WHITELIST.contains(normalized)) {
+            // For non-whitelist domains, fallback to deterministic domain formatting.
+            return fallbackDomainName(normalized);
+        }
+
+        // Whitelist entries without explicit mapping also use deterministic formatting.
+        return fallbackDomainName(normalized);
+    }
+
+    private static String fallbackDomainName(String domain) {
+        String[] parts = domain.split("\\.");
+        List<String> segments = new ArrayList<>();
+        for (String part : parts) {
+            if (part != null && !part.trim().isEmpty()) {
+                segments.add(part.trim());
+            }
+        }
+        if (segments.isEmpty()) {
+            return domain;
+        }
+        if ("www".equalsIgnoreCase(segments.get(0))) {
+            segments.remove(0);
+        }
+        if (segments.size() > 1) {
+            segments.remove(segments.size() - 1);
+        }
+        if (segments.isEmpty()) {
+            return domain;
+        }
+        return String.join(".", segments);
     }
 
     private static String readStream(InputStream in) throws Exception {

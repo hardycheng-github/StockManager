@@ -7,6 +7,8 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.preference.PreferenceManager
 import com.msi.stockmanager.BuildConfig
+import com.msi.stockmanager.data.ExternalApiPrefs
+import com.msi.stockmanager.data.FinMindApiDisabledException
 import com.msi.stockmanager.data.stock.getStockInfoOrNull
 import org.json.JSONArray
 import org.json.JSONObject
@@ -36,10 +38,19 @@ class RevenueApi(val context: Context): IRevenueApi {
 
     init {
         loadWatchingList()
-        sync(false, null)
+        if (ExternalApiPrefs.isFinMindApiEnabled(context)) {
+            sync(false, null)
+        }
     }
 
     override fun sync(blocking: Boolean, cb: IRevenueApi.SyncCallback?): Int {
+        if (!ExternalApiPrefs.isFinMindApiEnabled(context)) {
+            val disabled = FinMindApiDisabledException.fromContext(context)
+            Log.i(TAG, "[sync] skipped: ${disabled.message}")
+            cb?.onFail(disabled.message ?: "External API is disabled")
+            syncStatus = IRevenueApi.SYNC_STATUS_FAIL
+            return syncStatus
+        }
         if(syncStatus == IRevenueApi.SYNC_STATUS_ING){
             if(blocking){
                 runBlocking {
@@ -218,8 +229,8 @@ class RevenueApi(val context: Context): IRevenueApi {
         val rows = mutableListOf<RevenueRow>()
         for (idx in 0 until data.length()) {
             val row = data.optJSONObject(idx) ?: continue
-            val parsed = parseRevenueRow(row) ?: continue
-            rows += parsed
+            val parsed = parseRevenueRow(row)
+            if (parsed != null) rows += parsed
         }
         return rows.sortedWith(compareBy<RevenueRow> { it.year }.thenBy { it.month })
     }
@@ -333,15 +344,25 @@ class RevenueApi(val context: Context): IRevenueApi {
         return syncStatus == IRevenueApi.SYNC_STATUS_SUCCESS
     }
 
+    override fun getLatestAvailableYearMonth(): YearMonth? {
+        val watchingSet = mWatchingList.toSet()
+        return infoList
+            .asSequence()
+            .filter { watchingSet.isEmpty() || watchingSet.contains(it.stockId) }
+            .map { YearMonth.of(it.year, it.month) }
+            .maxOrNull()
+    }
+
     override fun getRevenueInfo(stockId: String, year: Int, month: Int): RevenueInfo? {
         if (year <= 0 || month <= 0) {
             return infoList
                 .filter { it.stockId == stockId }
                 .maxWithOrNull(compareBy<RevenueInfo> { it.year }.thenBy { it.month })
         }
-        return infoList.find {
+        val result = infoList.find {
             it.stockId == stockId && it.year == year && it.month == month
         }
+        return result
     }
 
     private fun loadWatchingList(){

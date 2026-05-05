@@ -75,6 +75,12 @@
     <string name="no_holding_stock">未持有任何股票</string>
     <string name="account_detail">進入帳戶</string>
     <string name="profit_color_reverse">綠漲紅跌</string>
+    <string name="setting_enable_finmind_api">啟用收費金融來源</string>
+    <string name="setting_enable_finmind_api_summary">關閉後會禁止 FinMind API 串接（股價、歷史資料、營收）</string>
+    <string name="setting_enable_marketaux_api">啟用收費新聞來源</string>
+    <string name="setting_enable_marketaux_api_summary">關閉後會禁止 MarketAux API 串接（新聞補充來源）</string>
+    <string name="finmind_api_disabled_message">FinMind API 已在設定中關閉</string>
+    <string name="marketaux_api_disabled_message">MarketAux API 已在設定中關閉</string>
     <string name="holding_amount">庫存股數</string>
     <string name="holding_cost">持股成本</string>
     <string name="holding_calc">持股現值</string>
