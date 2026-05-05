@@ -106,3 +106,4 @@ Thumbs.db
 .cursor*
 .vscode
 tempCodeRunnerFile.sh
+debug-logcat/
