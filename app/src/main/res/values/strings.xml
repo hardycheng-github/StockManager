@@ -77,7 +77,7 @@
     <string name="profit_color_reverse">綠漲紅跌</string>
     <string name="setting_category_demo">開發 / 測試</string>
     <string name="setting_import_simulated_data">導入模擬數據</string>
-    <string name="setting_import_simulated_data_summary">追加寫入預設交易紀錄；成功後將關閉 App，請重新開啟以載入資料</string>
+    <string name="setting_import_simulated_data_summary">快速建立模擬投資紀錄</string>
     <string name="import_simulated_data_confirm_title">導入模擬數據</string>
     <string name="import_simulated_data_confirm_message">將追加寫入模擬交易紀錄，不會刪除既有資料。\n\n導入成功後應用程式會自動關閉，請重新開啟 App，帳戶總覽與庫存才會載入最新資料。\n\n重複執行會重複新增相同紀錄，是否繼續？</string>
     <string name="import_simulated_data_success_dialog_title">導入完成</string>

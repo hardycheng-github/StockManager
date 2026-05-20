@@ -58,6 +58,27 @@ public final class SimulatedTransactionFactory {
                 trans.fee = 0;
                 trans.tax = 0;
                 break;
+            case STOCK_DIVIDEND:
+                trans.stock_amount = Math.abs(record.stockAmount);
+                trans.stock_price = 0;
+                trans.cash_amount = 0;
+                trans.fee = 0;
+                trans.tax = 0;
+                break;
+            case STOCK_REDUCTION:
+                trans.stock_amount = -Math.abs(record.stockAmount);
+                trans.stock_price = 0;
+                trans.cash_amount = 0;
+                trans.fee = 0;
+                trans.tax = 0;
+                break;
+            case CASH_REDUCTION:
+                trans.stock_amount = -Math.abs(record.stockAmount);
+                trans.stock_price = record.stockPrice;
+                trans.cash_amount = Math.abs(record.cashAmount);
+                trans.fee = 0;
+                trans.tax = 0;
+                break;
             default:
                 break;
         }
