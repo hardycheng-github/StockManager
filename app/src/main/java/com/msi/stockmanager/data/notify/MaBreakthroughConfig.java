@@ -8,6 +8,36 @@ import java.util.List;
  * 平均線突破配置管理類
  */
 public class MaBreakthroughConfig {
+
+    /** 同日多均線觸發時的保留優先順序：週期最長者優先 */
+    public static final int[] MA_PRIORITY_ORDER = {30, 10, 5};
+
+    /**
+     * 比較兩條均線的合併優先級，回傳應保留者（30 > 10 > 5）
+     */
+    public static int compareMaPriority(int a, int b) {
+        return maPriority(a) >= maPriority(b) ? a : b;
+    }
+
+    /**
+     * @return true 表示 candidate 優先級高於 current（應取代 current）
+     */
+    public static boolean isHigherMaPriority(int candidate, int current) {
+        return maPriority(candidate) > maPriority(current);
+    }
+
+    private static int maPriority(int days) {
+        switch (days) {
+            case 30:
+                return 3;
+            case 10:
+                return 2;
+            case 5:
+                return 1;
+            default:
+                return 0;
+        }
+    }
     
     /**
      * 根據關注等級返回對應的平均線天數列表
