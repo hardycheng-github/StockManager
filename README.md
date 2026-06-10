@@ -1,6 +1,23 @@
 # MSI Stock Manager
 
-> **2026年更新計畫[請點我](README_2026.md)**
+## 2026年更新計畫
+
+> 詳細計畫內容[請點我](README_2026.md)
+
+- [x] `修正新聞來源失效`
+- [x] `修正營收來源失效`
+- [x] `新增通知頁面`
+- [x] `新增平均線穿透事件`
+- [x] `網路爬蟲的穩定性優化`
+
+### 成果展示
+
+> 影片檔案太大，請點擊下方圖片前往Youtube平台觀看
+
+<a href="https://youtu.be/alUQ0nWWGds" target="_blank" rel="noopener noreferrer">
+<img src="demo2026/2026_final_thumbnail.png" alt="Android股票記帳APP - 2026年更新" />
+</a>
+
 
 一個簡單上手且兼具多功能便利性的股票記帳小幫手
 
