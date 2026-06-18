@@ -1,13 +1,14 @@
 package com.msi.stockmanager.ui.main.setting;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -17,8 +18,13 @@ import androidx.preference.SwitchPreference;
 
 import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.demo.SimulatedDataImporter;
 import com.msi.stockmanager.data.notify.MaAlertLevel;
 import com.msi.stockmanager.data.profile.Profile;
+import com.msi.stockmanager.util.AppExitUtil;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SettingsActivity extends AppCompatActivity {
     private static final String TAG = SettingsActivity.class.getSimpleName();
@@ -27,6 +33,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+        setSupportActionBar(findViewById(R.id.toolbar));
         ((TextView)findViewById(R.id.version))
                 .setText(getString(R.string.version) + " " + BuildConfig.VERSION_NAME);
         if (savedInstanceState == null) {
@@ -144,6 +151,61 @@ public class SettingsActivity extends AppCompatActivity {
                 }
                 return false;
             });
+
+            Preference importSimulated = findPreference("import_simulated_data");
+            if (importSimulated != null) {
+                importSimulated.setOnPreferenceClickListener(preference -> {
+                    new AlertDialog.Builder(requireContext())
+                            .setTitle(R.string.import_simulated_data_confirm_title)
+                            .setMessage(R.string.import_simulated_data_confirm_message)
+                            .setPositiveButton(android.R.string.ok, (dialog, which) -> runImportSimulatedData())
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .show();
+                    return true;
+                });
+            }
+        }
+
+        private final ExecutorService importExecutor = Executors.newSingleThreadExecutor();
+
+        private void runImportSimulatedData() {
+            importExecutor.execute(() -> {
+                SimulatedDataImporter.ImportResult result = new SimulatedDataImporter().importAll();
+                if (!isAdded()) {
+                    return;
+                }
+                requireActivity().runOnUiThread(() -> {
+                    if (result.successCount > 0) {
+                        showImportSuccessExitDialog(result);
+                    } else {
+                        Toast.makeText(
+                                requireContext(),
+                                R.string.import_simulated_data_fail,
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+            });
+        }
+
+        private void showImportSuccessExitDialog(SimulatedDataImporter.ImportResult result) {
+            String message;
+            if (result.failCount == 0) {
+                message = getString(
+                        R.string.import_simulated_data_success_dialog_message,
+                        result.successCount);
+            } else {
+                message = getString(
+                        R.string.import_simulated_data_partial_dialog_message,
+                        result.successCount,
+                        result.failCount);
+            }
+            new AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.import_simulated_data_success_dialog_title)
+                    .setMessage(message)
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) ->
+                            AppExitUtil.exitApp(requireActivity()))
+                    .show();
         }
     }
 }
