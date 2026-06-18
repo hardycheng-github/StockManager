@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name=".StockManagerApplication"
         android:allowBackup="true"
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
@@ -51,7 +52,8 @@
             android:name=".ui.main.setting.SettingsActivity"
             android:exported="false"
             android:label="@string/title_activity_settings"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.StockManager.NoActionBar" />
         <activity
             android:name=".ui.main.form.FormActivity"
             android:exported="true"
