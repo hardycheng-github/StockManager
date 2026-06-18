@@ -108,7 +108,7 @@ public abstract class AnalysisAdapter extends RecyclerView.Adapter<AnalysisAdapt
 
                 @Override
                 public void onError(@NonNull Throwable e) {
-                    Log.e(TAG, info.getStockId() + " initAnalytics err: fail to calc technology analysis");
+                    Log.e(TAG, info.getStockId() + " initAnalytics err: fail to calc technology analysis: " + e.getMessage());
                 }
             });
         } else {
@@ -117,7 +117,10 @@ public abstract class AnalysisAdapter extends RecyclerView.Adapter<AnalysisAdapt
                 @Override
                 public void onResult(List<StockHistory> data) {
                     Log.d(TAG, info.getStockId() + " initAnalytics: calc technology analysis");
-                    ApiUtil.taApi.getAllIndicatorLastScores(stockValue.dataList, new ITaApi.Callback() {
+                    if (stockValue != null) {
+                        stockValue.dataList = data;
+                    }
+                    ApiUtil.taApi.getAllIndicatorLastScores(data, new ITaApi.Callback() {
                         @Override
                         public void onSubscribe(@NonNull Disposable d) {}
 

@@ -53,38 +53,26 @@ class TaApi : ITaApi {
     }
 
     override fun getAllIndicatorLastScores(dataList: List<StockHistory>, callback: ITaApi.Callback) {
-        if(dataList == null || dataList.isEmpty()){
+        if(dataList.isEmpty()){
             callback.onError(Exception("data list is null or empty"))
             return
         }
-        Log.d(TAG, "getAllIndicatorScores: id ${dataList[0].stock_id}, size ${dataList.size}")
+        val snapshot = dataList.toList()
+        Log.d(TAG, "getAllIndicatorScores: id ${snapshot[0].stock_id}, size ${snapshot.size}")
         Single.create<Map<String, Int>> {
             try {
-                val series = getTimeSeries(dataList)
+                val series = getTimeSeries(snapshot)
                 val closes = ClosePriceIndicator(series)
                 val rsi = RSIIndicator(closes, DEFAULT_INDICATOR_COUNT)
                 val ppo = PPOIndicator(closes)
                 val wr = WilliamsRIndicator(series, DEFAULT_INDICATOR_COUNT)
                 val endIdx = series.endIndex
-//                val extRSI = getMinMaxValue(rsi)
-//                val minRSI = getScore(ITaApi.KEY_RSI, extRSI.first)
-//                val maxRSI = getScore(ITaApi.KEY_RSI, extRSI.second)
-//                val extPPO = getMinMaxValue(ppo)
-//                val minPPO = getScore(ITaApi.KEY_PPO, extPPO.first)
-//                val maxPPO = getScore(ITaApi.KEY_PPO, extPPO.second)
-//                val extWR = getMinMaxValue(wr)
-//                val minWR = getScore(ITaApi.KEY_WILLIAMS_R, extWR.first)
-//                val maxWR = getScore(ITaApi.KEY_WILLIAMS_R, extWR.second)
                 val lastRSI = getScore(ITaApi.KEY_RSI, rsi.getValue(endIdx).doubleValue())
                 val lastPPO = getScore(ITaApi.KEY_PPO, ppo.getValue(endIdx).doubleValue())
                 val lastWR = getScore(ITaApi.KEY_WILLIAMS_R, wr.getValue(endIdx).doubleValue())
                 val total = (lastRSI + lastPPO*2 + lastWR) / 4
-                Log.d(TAG, "getAllIndicatorScores result: id ${dataList[0].stock_id}, total $total" +
+                Log.d(TAG, "getAllIndicatorScores result: id ${snapshot[0].stock_id}, total $total" +
                         ", RSI $lastRSI, PPO $lastPPO, WR $lastWR"
-//                        "\nRSI ($lastRSI, $minRSI~$maxRSI)" +
-//                        "\nPPO ($lastPPO, $minPPO~$maxPPO)" +
-//                        "\nWR ($lastWR, $minWR~$maxWR)"
-
                 )
 
                         val map = mutableMapOf<String, Int>()
@@ -94,6 +82,7 @@ class TaApi : ITaApi {
                 map[ITaApi.KEY_TOTAL] = total
                 it.onSuccess(map)
             } catch (e: Exception){
+                Log.e(TAG, "getAllIndicatorScores err: id ${snapshot[0].stock_id}, ${e.message}", e)
                 it.onError(e)
             }
         }
@@ -104,8 +93,12 @@ class TaApi : ITaApi {
 
     private fun getTimeSeries(dataList: List<StockHistory>): BarSeries{
         val series: BarSeries = BaseBarSeriesBuilder().build()
+        var lastTime: ZonedDateTime? = null
         for(data in dataList){
+            if (data.date_timestamp <= 0) continue
             val time = timestampToZonedDateTime(data.date_timestamp)
+            if (lastTime != null && !time.isAfter(lastTime)) continue
+            lastTime = time
             val bar: BaseBar = BaseBar.builder(DecimalNum::valueOf, Number::class.java)
                 .timePeriod(Duration.ofDays(1))
                 .endTime(time)
@@ -116,6 +109,9 @@ class TaApi : ITaApi {
                 .volume(data.price_volume)
                 .build()
             series.addBar(bar)
+        }
+        if (series.isEmpty) {
+            throw IllegalArgumentException("no valid history bars after timestamp filtering")
         }
         return series
     }
