@@ -1,7 +1,6 @@
 package com.msi.stockmanager.ui.main.trans_history;
 
 import com.msi.stockmanager.data.ApiUtil;
-import com.msi.stockmanager.data.DateUtil;
 import com.msi.stockmanager.data.stock.StockInfo;
 import com.msi.stockmanager.data.stock.StockUtilKt;
 import com.msi.stockmanager.data.transaction.Transaction;
@@ -42,14 +41,16 @@ public class TransHistoryUtil {
     }
 
     private static boolean isInTimeRange(long time){
-        String timeStr = DateUtil.toDateString(time);
-        String startStr = DateUtil.toDateString(startTime);
-        String endStr = DateUtil.toDateString(endTime);
-        return timeStr.compareTo(startStr) >= 0 && timeStr.compareTo(endStr) <= 0;
-//        long timeUnit = time / ONE_DAY_MS;
-//        long startUnit = startTime / ONE_DAY_MS;
-//        long endUnit = endTime / ONE_DAY_MS;
-//        return timeUnit >= startUnit && timeUnit <= endUnit;
+        long timeUnit = time / ONE_DAY_MS;
+        if (startTime > 0) {
+            long startUnit = startTime / ONE_DAY_MS;
+            if (timeUnit < startUnit) return false;
+        }
+        if (endTime < Long.MAX_VALUE) {
+            long endUnit = endTime / ONE_DAY_MS;
+            if (timeUnit > endUnit) return false;
+        }
+        return true;
     }
 
     public static boolean isFilterActive(){
