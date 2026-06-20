@@ -10,17 +10,18 @@
         app:showAsAction="always"
         app:actionLayout="@layout/menu_notify_badge"/>
     <item
-        android:id="@+id/menu_revenue"
+        android:id="@+id/menu_analysis"
         android:orderInCategory="1"
+        android:icon="@drawable/ic_baseline_insights_24"
+        android:title="@string/title_activity_analysis"
+        android:iconTint="@color/white"
+        app:showAsAction="always" />
+        <!-- app:actionLayout="@layout/menu_analysis_badge"/> -->
+    <item
+        android:id="@+id/menu_revenue"
+        android:orderInCategory="2"
         android:icon="@drawable/ic_baseline_attach_money_24"
         android:title="@string/title_activity_revenue"
-        android:iconTint="@color/white"
-        app:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/menu_analysis"
-        android:orderInCategory="2"
-        android:icon="@drawable/query_stats"
-        android:title="@string/title_activity_analysis"
         android:iconTint="@color/white"
         app:showAsAction="ifRoom"/>
     <item

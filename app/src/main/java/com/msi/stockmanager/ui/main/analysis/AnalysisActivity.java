@@ -1,5 +1,6 @@
 package com.msi.stockmanager.ui.main.analysis;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
@@ -347,6 +348,16 @@ public class AnalysisActivity extends AppCompatActivity {
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.toolbar);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (!handleBackNavigation()) {
+                            setEnabled(false);
+                            getOnBackPressedDispatcher().onBackPressed();
+                            setEnabled(true);
+                        }
+                    }
+                });
                 View view = binding.getRoot();
                 Context context = view.getContext();
                 RecyclerView recyclerView = view.findViewById(R.id.list);
@@ -515,15 +526,29 @@ public class AnalysisActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed(){
-        if(!mSearchView.isIconified()){
+    /**
+     * @return true 若已處理返回事件；false 則應執行預設返回（離開 Activity）
+     */
+    private boolean handleBackNavigation() {
+        if (mSearchView != null && !mSearchView.isIconified()) {
             mSearchView.onActionViewCollapsed();
-            mSearchItem.collapseActionView();
-            MenuItemCompat.collapseActionView(mSearchItem);
-        } else if (targetStockInfo != null) {
+            if (mSearchItem != null) {
+                mSearchItem.collapseActionView();
+                MenuItemCompat.collapseActionView(mSearchItem);
+            }
+            return true;
+        }
+        if (targetStockInfo != null) {
             onSearchApply("");
-        } else {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Deprecated
+    public void onBackPressed() {
+        if (!handleBackNavigation()) {
             super.onBackPressed();
         }
     }

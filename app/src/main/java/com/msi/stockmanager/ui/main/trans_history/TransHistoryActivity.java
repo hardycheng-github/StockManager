@@ -1,5 +1,6 @@
 package com.msi.stockmanager.ui.main.trans_history;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.GravityCompat;
@@ -121,6 +122,16 @@ public class TransHistoryActivity extends AppCompatActivity {
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.toolbar);
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (!handleBackNavigation()) {
+                            setEnabled(false);
+                            getOnBackPressedDispatcher().onBackPressed();
+                            setEnabled(true);
+                        }
+                    }
+                });
                 findView();
                 initFilter(getIntent());
                 View view = binding.getRoot();
@@ -506,17 +517,33 @@ public class TransHistoryActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed(){
+    /**
+     * @return true 若已處理返回事件；false 則應執行預設返回（離開 Activity）
+     */
+    private boolean handleBackNavigation() {
         if(binding.drawer.isDrawerVisible(GravityCompat.END)){
             binding.drawer.closeDrawer(GravityCompat.END);
-        } else if(!mSearchView.isIconified()){
+            return true;
+        }
+        if(mSearchView != null && !mSearchView.isIconified()){
             mSearchView.onActionViewCollapsed();
-            mSearchItem.collapseActionView();
-            MenuItemCompat.collapseActionView(mSearchItem);
-        } else if(activeSearch && TransHistoryUtil.keyword != null && !TransHistoryUtil.keyword.isEmpty()) {
+            if (mSearchItem != null) {
+                mSearchItem.collapseActionView();
+                MenuItemCompat.collapseActionView(mSearchItem);
+            }
+            return true;
+        }
+        if(activeSearch && TransHistoryUtil.keyword != null && !TransHistoryUtil.keyword.isEmpty()) {
             onSearchApply("");
-        } else {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Deprecated
+    public void onBackPressed() {
+        if (!handleBackNavigation()) {
             super.onBackPressed();
         }
     }

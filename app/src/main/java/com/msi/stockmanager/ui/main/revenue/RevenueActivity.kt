@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ImageView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.SearchView.SearchAutoComplete
@@ -76,6 +77,15 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
                     setContentView(binding.root)
                     setSupportActionBar(binding.toolbar)
                     supportActionBar?.setDisplayHomeAsUpEnabled(true)
+                    onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+                        override fun handleOnBackPressed() {
+                            if (!handleBackNavigation()) {
+                                isEnabled = false
+                                onBackPressedDispatcher.onBackPressed()
+                                isEnabled = true
+                            }
+                        }
+                    })
                     initView()
                     initFilter()
                     initTable()
@@ -557,14 +567,26 @@ class RevenueActivity : AppCompatActivity(), CoroutineScope by MainScope() {
         }
     }
 
-    override fun onBackPressed() {
+    /**
+     * @return true 若已處理返回事件；false 則應執行預設返回（離開 Activity）
+     */
+    private fun handleBackNavigation(): Boolean {
         if (binding.drawer.isDrawerVisible(GravityCompat.END)) {
             binding.drawer.closeDrawer(GravityCompat.END)
-        } else if (!mSearchView.isIconified) {
+            return true
+        }
+        if (::mSearchView.isInitialized && !mSearchView.isIconified) {
             mSearchView.onActionViewCollapsed()
             mSearchItem.collapseActionView()
             MenuItemCompat.collapseActionView(mSearchItem)
-        } else {
+            return true
+        }
+        return false
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (!handleBackNavigation()) {
             super.onBackPressed()
         }
     }

@@ -2,6 +2,7 @@ package com.msi.stockmanager.ui.main.overview;
 
 import android.content.Intent;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.GravityCompat;
@@ -78,6 +79,11 @@ public class OverviewActivity extends AppCompatActivity {
     private TextView badgeCountText;
     /** 快取未讀數，供 menu 晚於 onStart 建立時立即顯示，-1 表示尚未取得 */
     private int lastUnreadCount = -1;
+    private MenuItem analysisMenuItem;
+    private View analysisBadgeView;
+    private TextView analysisBadgeCountText;
+    /** 快取觀察清單數量，供 menu 晚於 onStart 建立時立即顯示，-1 表示尚未取得 */
+    private int lastWatchingCount = -1;
     private CompositeDisposable disposables = new CompositeDisposable();
     private static final String PREF_NOTIFY_TEST_INSERTED = "notify_test_inserted_this_launch";
     private Handler mHandler = new Handler(){
@@ -206,6 +212,16 @@ public class OverviewActivity extends AppCompatActivity {
                 binding = ActivityOverviewBinding.inflate(getLayoutInflater());
                 setContentView(binding.getRoot());
                 setSupportActionBar(binding.overviewToolbar);
+                getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (!handleBackNavigation()) {
+                            setEnabled(false);
+                            getOnBackPressedDispatcher().onBackPressed();
+                            setEnabled(true);
+                        }
+                    }
+                });
 
                 color_balance = getColor(R.color.main_l);
                 color_invest = getColor(R.color.sub_m);
@@ -282,6 +298,7 @@ public class OverviewActivity extends AppCompatActivity {
                 // 載入通知列表和未讀數
                 loadNotifyList();
                 updateUnreadCount();
+                updateWatchingCount();
                 
                 // 檢查平均線突破事件
                 MaBreakthroughService.checkWatchingList(OverviewActivity.this);
@@ -292,6 +309,7 @@ public class OverviewActivity extends AppCompatActivity {
             } else if(event.equals(Lifecycle.Event.ON_RESUME)){
                 // 回到畫面時重新整理未讀數（離開再回來或從其他 Activity 返回）
                 updateUnreadCount();
+                updateWatchingCount();
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 binding.fabOverviewAdd.close(false);
                 binding.fabOverviewAdd.hideMenuButton(false);
@@ -354,16 +372,43 @@ public class OverviewActivity extends AppCompatActivity {
             });
             // Menu 可能晚於 onStart 建立，此時 badge 已就緒，立即套用快取並重新拉取未讀數
             if (lastUnreadCount >= 0) {
-                applyUnreadCountToBadge(badgeCountText, lastUnreadCount);
+                applyBadgeCount(badgeCountText, lastUnreadCount);
             }
             updateUnreadCount();
+        }
+
+        analysisMenuItem = menu.findItem(R.id.menu_analysis);
+        if (analysisMenuItem != null && analysisMenuItem.getActionView() != null) {
+            analysisBadgeView = analysisMenuItem.getActionView();
+            analysisBadgeCountText = analysisBadgeView.findViewById(R.id.badge_count);
+            analysisBadgeView.setOnClickListener(v -> {
+                onOptionsItemSelected(analysisMenuItem);
+                v.setPressed(true);
+                v.postOnAnimation(() -> v.setPressed(false));
+            });
+            analysisBadgeView.setOnTouchListener((v, ev) -> {
+                switch (ev.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        v.setPressed(true);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                    case MotionEvent.ACTION_CANCEL:
+                        v.setPressed(false);
+                        break;
+                }
+                return false;
+            });
+            if (lastWatchingCount >= 0) {
+                applyBadgeCount(analysisBadgeCountText, lastWatchingCount);
+            }
+            updateWatchingCount();
         }
         
         return true;
     }
     
-    /** 將未讀數寫入 badge TextView（可傳入 null 會略過）；顯示上限 99 */
-    private void applyUnreadCountToBadge(TextView badge, int count) {
+    /** 將數字寫入 badge TextView（可傳入 null 會略過）；顯示上限 99，0 則隱藏 */
+    private void applyBadgeCount(TextView badge, int count) {
         if (badge == null) return;
         if (count > 0) {
             badge.setText(String.valueOf(Math.min(count, 99)));
@@ -409,11 +454,21 @@ public class OverviewActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     
-    @Override
-    public void onBackPressed() {
+    /**
+     * @return true 若已處理返回事件；false 則應執行預設返回（離開 Activity）
+     */
+    private boolean handleBackNavigation() {
         if (binding.drawer.isDrawerVisible(GravityCompat.END)) {
             binding.drawer.closeDrawer(GravityCompat.END);
-        } else {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Deprecated
+    public void onBackPressed() {
+        if (!handleBackNavigation()) {
             super.onBackPressed();
         }
     }
@@ -559,11 +614,22 @@ public class OverviewActivity extends AppCompatActivity {
                     if (badge == null && notifyMenuItem != null && notifyMenuItem.getActionView() != null) {
                         badge = notifyMenuItem.getActionView().findViewById(R.id.badge_count);
                     }
-                    applyUnreadCountToBadge(badge, count);
+                    applyBadgeCount(badge, count);
                 },
                 error -> Log.e(TAG, "getUnreadCount error", error)
             );
         disposables.add(d);
+    }
+
+    private void updateWatchingCount() {
+        List<String> watchingList = ApiUtil.revenueApi.getWatchingList();
+        int count = watchingList != null ? watchingList.size() : 0;
+        lastWatchingCount = count;
+        TextView badge = analysisBadgeCountText;
+        if (badge == null && analysisMenuItem != null && analysisMenuItem.getActionView() != null) {
+            badge = analysisMenuItem.getActionView().findViewById(R.id.badge_count);
+        }
+        applyBadgeCount(badge, count);
     }
     
     private void updateEmptyState() {

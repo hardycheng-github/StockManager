@@ -38,11 +38,11 @@ public class MaBreakthroughConfig {
     public static String getMaName(int days) {
         switch (days) {
             case 5:
-                return "五日平均線";
+                return "短期平均線";
             case 10:
-                return "十日平均線";
+                return "中期平均線";
             case 30:
-                return "三十日平均線";
+                return "長期平均線";
             default:
                 return days + "日平均線";
         }

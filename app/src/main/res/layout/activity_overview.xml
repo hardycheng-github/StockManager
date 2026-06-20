@@ -272,6 +272,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
+            app:contentInsetEnd="0dp"
+            app:contentInsetEndWithActions="0dp"
             app:popupTheme="@style/Theme.StockManager.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
