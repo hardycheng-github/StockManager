@@ -1,16 +1,18 @@
 package com.msi.stockmanager.ui.main.notify;
 
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.ColorUtil;
 import com.msi.stockmanager.data.DateUtil;
+import com.msi.stockmanager.data.notify.MacdSignalConfig;
 import com.msi.stockmanager.data.notify.NotifyEntity;
 import com.msi.stockmanager.databinding.ItemNotifyBinding;
 
@@ -92,7 +94,8 @@ public class NotifyAdapter extends RecyclerView.Adapter<NotifyAdapter.ViewHolder
         
         void bind(NotifyEntity item) {
             binding.textTitle.setText(item.getTitle());
-            
+            bindTrendIcon(item.getType());
+
             String body = item.getBody();
             if (body != null && !body.isEmpty()) {
                 binding.textBody.setText(body);
@@ -120,6 +123,20 @@ public class NotifyAdapter extends RecyclerView.Adapter<NotifyAdapter.ViewHolder
                     mListener.onItemClick(item);
                 }
             });
+        }
+
+        private void bindTrendIcon(String type) {
+            if (MacdSignalConfig.isBullishType(type)) {
+                binding.iconTrend.setImageResource(R.drawable.ic_baseline_trending_up_24);
+                binding.iconTrend.setColorFilter(ColorUtil.getProfitEarn(), PorterDuff.Mode.SRC_IN);
+                binding.iconTrend.setVisibility(View.VISIBLE);
+            } else if (MacdSignalConfig.isBearishType(type)) {
+                binding.iconTrend.setImageResource(R.drawable.ic_baseline_trending_down_24);
+                binding.iconTrend.setColorFilter(ColorUtil.getProfitLose(), PorterDuff.Mode.SRC_IN);
+                binding.iconTrend.setVisibility(View.VISIBLE);
+            } else {
+                binding.iconTrend.setVisibility(View.GONE);
+            }
         }
     }
 }

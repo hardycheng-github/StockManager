@@ -135,7 +135,8 @@ public class AnalysisActivity extends AppCompatActivity {
                     binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
                     binding.include.stockProfit.setText(R.string.syncing);
 
-                    WatchingListUiHelper.bindFavorite(binding.include.imgContainer, binding.include.img, this, targetStockId);
+                    WatchingListUiHelper.bindFavorite(binding.include.favoriteContainer, binding.include.favoriteIcon, this, targetStockId);
+                    binding.include.img.setImageDrawable(getDrawable(R.drawable.ic_baseline_read_more_24));
                     initAnalytics(binding.include);
 
                     AccountUtil.StockValue value = AccountUtil.getAccount().stockValueMap.getOrDefault(targetStockId, null);

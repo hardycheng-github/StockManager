@@ -1,12 +1,12 @@
 package com.msi.stockmanager.data.notify;
 
 /**
- * 平均線關注等級
+ * MACD 關注等級（對應不同 MACD 參數）
  */
 public enum MaAlertLevel {
-    LOW,      // 保守：只關注30日平均線
-    DEFAULT,  // 穩健（預設）：關注10日、30日平均線
-    HIGH;     // 積極：關注5日、10日、30日平均線
+    LOW,      // 保守：MACD(24,52,18)
+    DEFAULT,  // 穩健（預設）：MACD(12,26,9)
+    HIGH;     // 積極：MACD(6,13,5)
     
     /**
      * 從字串轉換為枚舉值

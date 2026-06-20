@@ -17,12 +17,24 @@
 
         <TextView
             android:id="@+id/text_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_goneMarginEnd="8dp" />
+
+        <ImageView
+            android:id="@+id/icon_trend"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:contentDescription="@null"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/text_title"
+            app:layout_constraintStart_toEndOf="@id/text_title"
+            app:layout_constraintTop_toTopOf="@id/text_title"
+            app:layout_goneMarginEnd="0dp" />
 
         <TextView
             android:id="@+id/text_body"
@@ -49,12 +61,13 @@
             android:id="@+id/indicator_unread"
             android:layout_width="8dp"
             android:layout_height="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/ic_baseline_circle_24"
             android:backgroundTint="@color/main_m"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/text_title"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icon_trend"
             app:layout_constraintTop_toTopOf="@id/text_title" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

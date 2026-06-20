@@ -20,6 +20,7 @@ import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.demo.SimulatedDataImporter;
 import com.msi.stockmanager.data.notify.MaAlertLevel;
+import com.msi.stockmanager.data.notify.MacdSignalConfig;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.util.AppExitUtil;
 
@@ -64,34 +65,34 @@ public class SettingsActivity extends AppCompatActivity {
     {
         
         /**
-         * 更新平均線關注等級的 summary 顯示
+         * 更新 MACD 關注等級的 summary 顯示
          * @param preference ListPreference
+         * @param newValue 新選定的值；OnPreferenceChangeListener 觸發時 preference 尚未更新，需傳入此參數
          */
-        private void updateMaAlertLevelSummary(ListPreference preference) {
+        private void updateMaAlertLevelSummary(ListPreference preference, String newValue) {
             if (preference == null) return;
-            
-            String currentValue = preference.getValue();
+
+            String currentValue = newValue != null ? newValue : preference.getValue();
             if (currentValue == null) {
                 currentValue = MaAlertLevel.DEFAULT.toString();
             }
-            
+
             MaAlertLevel level = MaAlertLevel.fromString(currentValue);
-            String summaryText;
+            String levelName;
             switch (level) {
                 case LOW:
-                    summaryText = getString(R.string.ma_alert_level_low);
-                    break;
-                case DEFAULT:
-                    summaryText = getString(R.string.ma_alert_level_default);
+                    levelName = getString(R.string.ma_alert_level_low);
                     break;
                 case HIGH:
-                    summaryText = getString(R.string.ma_alert_level_high);
+                    levelName = getString(R.string.ma_alert_level_high);
                     break;
+                case DEFAULT:
                 default:
-                    summaryText = getString(R.string.ma_alert_level_default);
+                    levelName = getString(R.string.ma_alert_level_default);
                     break;
             }
-            preference.setSummary(summaryText);
+            String macdLabel = MacdSignalConfig.getMacdLabel(MacdSignalConfig.getMacdParams(level));
+            preference.setSummary(getString(R.string.ma_alert_level_summary, levelName, macdLabel));
         }
 
         @Override
@@ -134,7 +135,7 @@ public class SettingsActivity extends AppCompatActivity {
             ListPreference ma_alert_level = findPreference("setting_ma_alert_level");
             
             // 設置初始 summary 顯示當前設定值
-            updateMaAlertLevelSummary(ma_alert_level);
+            updateMaAlertLevelSummary(ma_alert_level, null);
             
             ma_alert_level.setOnPreferenceChangeListener((preference, newValue) -> {
                 try {
@@ -142,8 +143,8 @@ public class SettingsActivity extends AppCompatActivity {
                     Profile.maAlertLevel = MaAlertLevel.fromString(levelStr);
                     Log.d(TAG, "setting_ma_alert_level: " + Profile.maAlertLevel);
                     
-                    // 更新 summary 顯示新的設定值
-                    updateMaAlertLevelSummary(ma_alert_level);
+                    // OnPreferenceChangeListener 在 preference 寫入前觸發，需傳入 newValue
+                    updateMaAlertLevelSummary(ma_alert_level, levelStr);
                     
                     return true;
                 } catch (Exception e){
