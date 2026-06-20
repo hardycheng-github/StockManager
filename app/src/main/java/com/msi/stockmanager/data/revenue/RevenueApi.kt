@@ -406,11 +406,14 @@ class RevenueApi(val context: Context): IRevenueApi {
             loadWatchingList()
             return
         }
+        val validIds = defaultStockIds.map { it.trim() }.filter { it.isNotEmpty() }
+        if (validIds.isEmpty()) {
+            return
+        }
         mWatchingList.clear()
-        defaultStockIds.forEach { stockId ->
-            val target = stockId.trim()
-            if (target.isNotEmpty() && !mWatchingList.contains(target)) {
-                mWatchingList += target
+        validIds.forEach { stockId ->
+            if (!mWatchingList.contains(stockId)) {
+                mWatchingList += stockId
             }
         }
         saveWatchingList()

@@ -219,6 +219,7 @@ public class TransApi implements ITransApi{
         long trans_id = db.insert(DBDefine.TB_TransactionRecord.TABLE_NAME, null, values);
         // if insert failed, will return -1
         if(trans_id < 0) return -1;
+        ensureHoldingInWatchingList(trans, null);
         for(TransUpdateListener listener: listenerList){
             listener.onAdd(trans);
         }
@@ -249,6 +250,7 @@ public class TransApi implements ITransApi{
         String selection = DBDefine.TB_TransactionRecord._ID + " = ?";
         String[] selectionArgs = { String.valueOf(trans_id) };
 
+        Transaction oldTrans = getTransaction((int) trans_id);
         int result = db.update(
                         DBDefine.TB_TransactionRecord.TABLE_NAME,
                         values,
@@ -257,6 +259,7 @@ public class TransApi implements ITransApi{
         if (result == 0){
             return false;
         }
+        ensureHoldingInWatchingList(trans, oldTrans);
         for(TransUpdateListener listener: listenerList){
             listener.onEdit(trans_id, trans);
         }
@@ -279,5 +282,26 @@ public class TransApi implements ITransApi{
             listener.onRemove(trans_id);
         }
         return true;
+    }
+
+    private void ensureHoldingInWatchingList(Transaction trans, Transaction replacedTrans) {
+        if (trans.stock_id == null || trans.stock_id.isEmpty()) {
+            return;
+        }
+
+        Map<String, Integer> holdings = getHoldingStockAmount();
+        int currentAmount = holdings.getOrDefault(trans.stock_id, 0);
+        if (currentAmount <= 0) {
+            return;
+        }
+
+        int previousAmount = currentAmount - trans.stock_amount;
+        if (replacedTrans != null && trans.stock_id.equals(replacedTrans.stock_id)) {
+            previousAmount += replacedTrans.stock_amount;
+        }
+
+        if (previousAmount <= 0) {
+            ApiUtil.revenueApi.addWatchingList(trans.stock_id);
+        }
     }
 }
