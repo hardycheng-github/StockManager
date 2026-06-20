@@ -76,27 +76,56 @@
                         app:layout_constraintBaseline_toBaselineOf="@+id/stockPrice"
                         tools:layout_editor_absoluteY="35dp" />
 
-                    <FrameLayout
-                        android:id="@+id/imgContainer"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:layout_margin="@dimen/card_padding"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
+                    <LinearLayout
+                        android:id="@+id/actionContainer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
-                        <ImageView
-                            android:id="@+id/img"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:importantForAccessibility="no"
-                            app:srcCompat="@drawable/ic_baseline_favorite_border_24"
-                            app:tint="@color/black" />
-                    </FrameLayout>
+                        <FrameLayout
+                            android:id="@+id/favoriteContainer"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackgroundBorderless">
+
+                            <ImageView
+                                android:id="@+id/favoriteIcon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:importantForAccessibility="no"
+                                app:srcCompat="@drawable/ic_baseline_favorite_border_24"
+                                app:tint="@color/black" />
+                        </FrameLayout>
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:id="@+id/imgContainer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/ripple">
+
+                            <ImageView
+                                android:id="@+id/img"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/card_padding"
+                                android:background="@drawable/btn_circle_bg_1"
+                                android:padding="@dimen/circle_btn_padding"
+                                android:importantForAccessibility="no"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:srcCompat="@drawable/ic_baseline_arrow_forward_24"
+                                app:tint="@color/black" />
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+                    </LinearLayout>
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

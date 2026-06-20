@@ -67,7 +67,7 @@ public abstract class AnalysisAdapter extends RecyclerView.Adapter<AnalysisAdapt
         StockInfo item = mItems.get(position);
         holder.mValue = item;
         holder.binding.cardView.setOnClickListener(v->onStockSelected(item));
-        WatchingListUiHelper.bindFavorite(holder.binding.imgContainer, holder.binding.img, activity, item.getStockId(), () -> {
+        WatchingListUiHelper.bindFavorite(holder.binding.favoriteContainer, holder.binding.favoriteIcon, activity, item.getStockId(), () -> {
             if (activity instanceof AnalysisActivity) {
                 ((AnalysisActivity) activity).refreshAnalysisList();
             } else {
