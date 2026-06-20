@@ -135,6 +135,7 @@ public class AnalysisActivity extends AppCompatActivity {
                     binding.include.stockProfit.setTextColor(ColorUtil.getProfitNone());
                     binding.include.stockProfit.setText(R.string.syncing);
 
+                    WatchingListUiHelper.bindFavorite(binding.include.imgContainer, binding.include.img, this, targetStockId);
                     initAnalytics(binding.include);
 
                     AccountUtil.StockValue value = AccountUtil.getAccount().stockValueMap.getOrDefault(targetStockId, null);
@@ -153,6 +154,7 @@ public class AnalysisActivity extends AppCompatActivity {
                 }
             } else {
                 targetStockId = "";
+                refreshAnalysisList();
                 getSupportActionBar().setTitle(R.string.title_activity_analysis);
                 if(mAdatper.getItemCount() > 0){
                     binding.dataContainer.setVisibility(View.INVISIBLE);
@@ -166,6 +168,28 @@ public class AnalysisActivity extends AppCompatActivity {
                     binding.noData.setVisibility(View.VISIBLE);
                 }
             }
+        }
+    }
+
+    void refreshAnalysisList() {
+        if (mAdatper == null || binding == null) return;
+        mAdatper.reloadList();
+        mAdatper.notifyDataSetChanged();
+        updateAnalysisListEmptyState();
+    }
+
+    private void updateAnalysisListEmptyState() {
+        if (mAdatper == null || binding == null || targetStockInfo != null) return;
+        if (mAdatper.getItemCount() > 0) {
+            binding.dataContainer.setVisibility(View.INVISIBLE);
+            binding.loading.setVisibility(View.INVISIBLE);
+            binding.list.setVisibility(View.VISIBLE);
+            binding.noData.setVisibility(View.INVISIBLE);
+        } else {
+            binding.dataContainer.setVisibility(View.INVISIBLE);
+            binding.loading.setVisibility(View.INVISIBLE);
+            binding.list.setVisibility(View.INVISIBLE);
+            binding.noData.setVisibility(View.VISIBLE);
         }
     }
 
@@ -361,7 +385,6 @@ public class AnalysisActivity extends AppCompatActivity {
                 View view = binding.getRoot();
                 Context context = view.getContext();
                 RecyclerView recyclerView = view.findViewById(R.id.list);
-                binding.include.img.setImageDrawable(getDrawable(R.drawable.ic_baseline_read_more_24));
                 binding.include.cardView.setOnClickListener(v -> {
                     PopupMenu popupMenu = new PopupMenu(context, v, Gravity.RIGHT);
 
@@ -422,6 +445,10 @@ public class AnalysisActivity extends AppCompatActivity {
                     } else {
                         recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
                     }
+                }
+            } else if(event.equals(Lifecycle.Event.ON_RESUME)){
+                if (targetStockInfo == null) {
+                    refreshAnalysisList();
                 }
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 mSearchView.removeOnLayoutChangeListener(mSearchLayoutChangListener);

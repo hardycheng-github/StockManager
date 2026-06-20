@@ -33,5 +33,6 @@ public class ApiUtil {
         taApi = new TaApi();
         revenueApi = new RevenueApi(context);
         notifyRepository = new NotifyRepository(context);
+        revenueApi.ensureWatchingListInitialized(transApi.getHoldingStockList());
     }
 }

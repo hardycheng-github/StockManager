@@ -76,28 +76,27 @@
                         app:layout_constraintBaseline_toBaselineOf="@+id/stockPrice"
                         tools:layout_editor_absoluteY="35dp" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
+                    <FrameLayout
                         android:id="@+id/imgContainer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@color/ripple"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_margin="@dimen/card_padding"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
                             android:id="@+id/img"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="@dimen/card_padding"
-                            android:background="@drawable/btn_circle_bg_1"
-                            android:padding="@dimen/circle_btn_padding"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/ic_baseline_arrow_forward_24"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center"
+                            android:importantForAccessibility="no"
+                            app:srcCompat="@drawable/ic_baseline_favorite_border_24"
                             app:tint="@color/black" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    </FrameLayout>
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

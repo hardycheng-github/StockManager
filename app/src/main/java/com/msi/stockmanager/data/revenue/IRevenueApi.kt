@@ -58,4 +58,9 @@ interface IRevenueApi {
 
     fun clearWatchingList()
 
+    /**
+     * 首次啟用時以預設股票代號初始化觀察清單；已有儲存資料則不重設。
+     */
+    fun ensureWatchingListInitialized(defaultStockIds: List<String>)
+
 }

@@ -37,9 +37,13 @@ public abstract class AnalysisAdapter extends RecyclerView.Adapter<AnalysisAdapt
     public final List<StockInfo> mItems = new ArrayList<>();
 
     public AnalysisAdapter(){
+        reloadList();
+    }
+
+    public void reloadList(){
         try {
             mItems.clear();
-            for(String stockId: ApiUtil.transApi.getHoldingStockList()){
+            for(String stockId: ApiUtil.revenueApi.getWatchingList()){
                 StockInfo info = StockUtilKt.getStockInfoOrNull(stockId);
                 if(info != null){
                     mItems.add(info);
@@ -63,6 +67,14 @@ public abstract class AnalysisAdapter extends RecyclerView.Adapter<AnalysisAdapt
         StockInfo item = mItems.get(position);
         holder.mValue = item;
         holder.binding.cardView.setOnClickListener(v->onStockSelected(item));
+        WatchingListUiHelper.bindFavorite(holder.binding.imgContainer, holder.binding.img, activity, item.getStockId(), () -> {
+            if (activity instanceof AnalysisActivity) {
+                ((AnalysisActivity) activity).refreshAnalysisList();
+            } else {
+                reloadList();
+                notifyDataSetChanged();
+            }
+        });
         holder.binding.stockName.setText(item.getStockNameWithId());
         holder.binding.stockPrice.setTextColor(ColorUtil.getProfitNone());
         holder.binding.stockPrice.setText(R.string.syncing);

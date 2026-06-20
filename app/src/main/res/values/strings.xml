@@ -211,6 +211,8 @@
     <string name="retry">重試</string>
     <string name="exit">離開</string>
     <string name="watching_list">觀察清單</string>
+    <string name="watching_list_added">已加入觀察清單</string>
+    <string name="watching_list_removed">已從觀察清單移除</string>
     <string name="title_activity_revenue">營收分析</string>
     <string name="revenue_title_date">yyyy年MM月</string>
     <string name="revenue_table_header_row">觀察清單</string>

@@ -400,4 +400,19 @@ class RevenueApi(val context: Context): IRevenueApi {
             saveWatchingList()
         }
     }
+
+    override fun ensureWatchingListInitialized(defaultStockIds: List<String>) {
+        if (sharedPref.contains(PREF_KEY_WATCHING_LIST)) {
+            loadWatchingList()
+            return
+        }
+        mWatchingList.clear()
+        defaultStockIds.forEach { stockId ->
+            val target = stockId.trim()
+            if (target.isNotEmpty() && !mWatchingList.contains(target)) {
+                mWatchingList += target
+            }
+        }
+        saveWatchingList()
+    }
 }
