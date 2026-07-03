@@ -20,15 +20,14 @@ import androidx.preference.SwitchPreference;
 import com.msi.stockmanager.BuildConfig;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.demo.SimulatedDataImporter;
+import com.msi.stockmanager.data.notify.EventSubscriptionConfig;
 import com.msi.stockmanager.data.notify.MaAlertLevel;
 import com.msi.stockmanager.data.notify.MacdSignalConfig;
 import com.msi.stockmanager.data.profile.ChartIndicatorType;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.util.AppExitUtil;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -106,7 +105,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             String currentValue = newValue != null ? newValue : preference.getValue();
             if (currentValue == null) {
-                currentValue = ChartIndicatorType.MA.toString();
+                currentValue = ChartIndicatorType.EMA.toString();
             }
 
             ChartIndicatorType type = ChartIndicatorType.fromString(currentValue);
@@ -131,23 +130,20 @@ public class SettingsActivity extends AppCompatActivity {
 
             Set<String> selected = values != null ? values : preference.getValues();
             if (selected == null) {
-                selected = MacdSignalConfig.defaultSubscribedEvents();
+                selected = EventSubscriptionConfig.defaultSubscribedEvents();
             }
 
-            List<String> labels = new ArrayList<>();
-            if (selected.contains(MacdSignalConfig.EVENT_GOLDEN)) {
-                labels.add(getString(R.string.macd_event_golden));
-            }
-            if (selected.contains(MacdSignalConfig.EVENT_DEATH)) {
-                labels.add(getString(R.string.macd_event_death));
+            int count = 0;
+            for (String key : EventSubscriptionConfig.orderedEventKeys()) {
+                if (selected.contains(key)) {
+                    count++;
+                }
             }
 
-            if (labels.isEmpty()) {
+            if (count == 0) {
                 preference.setSummary(getString(R.string.macd_event_subscription_none));
             } else {
-                preference.setSummary(getString(
-                        R.string.macd_event_subscription_summary,
-                        String.join("、", labels)));
+                preference.setSummary(getString(R.string.macd_event_subscription_summary, count));
             }
         }
 
@@ -225,12 +221,15 @@ public class SettingsActivity extends AppCompatActivity {
             });
 
             MultiSelectListPreference macdEventSubscription = findPreference("setting_macd_event_subscription");
-            updateMacdEventSubscriptionSummary(macdEventSubscription, null);
+            Set<String> mergedEvents = EventSubscriptionConfig.mergeWithDefaults(macdEventSubscription.getValues());
+            macdEventSubscription.setValues(mergedEvents);
+            Profile.subscribedEvents = new HashSet<>(mergedEvents);
+            updateMacdEventSubscriptionSummary(macdEventSubscription, mergedEvents);
             macdEventSubscription.setOnPreferenceChangeListener((preference, newValue) -> {
                 @SuppressWarnings("unchecked")
                 Set<String> values = new HashSet<>((Set<String>) newValue);
-                Profile.macdSubscribedEvents = values;
-                Log.d(TAG, "setting_macd_event_subscription: " + Profile.macdSubscribedEvents);
+                Profile.subscribedEvents = values;
+                Log.d(TAG, "setting_macd_event_subscription: " + Profile.subscribedEvents);
                 updateMacdEventSubscriptionSummary(macdEventSubscription, values);
                 return true;
             });

@@ -65,7 +65,11 @@
     <string name="setting_macd_event_subscription">關注事件</string>
     <string name="macd_event_golden">MACD 突破</string>
     <string name="macd_event_death">MACD 跌落</string>
-    <string name="macd_event_subscription_summary">已選：%1$s</string>
+    <string name="ema_event_breakthrough">EMA 突破</string>
+    <string name="ema_event_breakdown">EMA 跌落</string>
+    <string name="boll_event_breakthrough">突破上行通道</string>
+    <string name="boll_event_breakdown">跌落下行通道</string>
+    <string name="macd_event_subscription_summary">已關注 %1$d 個事件</string>
     <string name="macd_event_subscription_none">未選擇任何事件</string>
     <string name="hint_stock_search">請輸入股票代碼或名稱</string>
     <string name="syncing">同步中</string>
@@ -267,14 +271,26 @@
     <string-array name="macd_event_subscription_entries">
         <item>@string/macd_event_golden</item>
         <item>@string/macd_event_death</item>
+        <item>@string/ema_event_breakthrough</item>
+        <item>@string/ema_event_breakdown</item>
+        <item>@string/boll_event_breakthrough</item>
+        <item>@string/boll_event_breakdown</item>
     </string-array>
     <string-array name="macd_event_subscription_values">
         <item>GOLDEN</item>
         <item>DEATH</item>
+        <item>EMA_BREAKTHROUGH</item>
+        <item>EMA_BREAKDOWN</item>
+        <item>BOLL_BREAKTHROUGH</item>
+        <item>BOLL_BREAKDOWN</item>
     </string-array>
     <string-array name="macd_event_subscription_default_values">
         <item>GOLDEN</item>
         <item>DEATH</item>
+        <item>EMA_BREAKTHROUGH</item>
+        <item>EMA_BREAKDOWN</item>
+        <item>BOLL_BREAKTHROUGH</item>
+        <item>BOLL_BREAKDOWN</item>
     </string-array>
     <string-array name="chart_indicator_entries">
         <item>@string/chart_indicator_ma</item>

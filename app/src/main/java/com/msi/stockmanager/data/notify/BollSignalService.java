@@ -19,15 +19,11 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 /**
- * MACD 金叉/死叉事件檢測服務
+ * 布林通道 BOLL(22,2) 突破/跌落事件檢測服務
  */
-public class MacdSignalService {
-    private static final String TAG = MacdSignalService.class.getSimpleName();
+public class BollSignalService {
+    private static final String TAG = BollSignalService.class.getSimpleName();
 
-    /**
-     * 檢查觀察清單中的所有股票，檢測 MACD 金叉/死叉事件
-     * 取得 1 年歷史資料計算 MACD，僅在最近 31 天內偵測事件
-     */
     public static void checkWatchingList(Context context) {
         if (context == null || ApiUtil.revenueApi == null || ApiUtil.stockApi == null) {
             Log.e(TAG, "Context or API is null");
@@ -40,22 +36,15 @@ public class MacdSignalService {
             return;
         }
 
-        MaAlertLevel alertLevel = Profile.maAlertLevel;
-        if (alertLevel == null) {
-            alertLevel = MaAlertLevel.DEFAULT;
-        }
-
-        MacdSignalConfig.MacdParams params = MacdSignalConfig.getMacdParams(alertLevel);
-        Log.d(TAG, "Checking " + watchingList.size() + " stocks with alert level: "
-                + alertLevel + " " + MacdSignalConfig.getMacdLabel(params));
+        Log.d(TAG, "Checking " + watchingList.size() + " stocks for BOLL(22,2) events");
 
         for (String stockId : watchingList) {
-            checkStock(stockId, params, alertLevel);
+            checkStock(stockId);
         }
     }
 
-    private static void checkStock(String stockId, MacdSignalConfig.MacdParams params, MaAlertLevel alertLevel) {
-        if (stockId == null || stockId.isEmpty() || params == null) {
+    private static void checkStock(String stockId) {
+        if (stockId == null || stockId.isEmpty()) {
             return;
         }
 
@@ -87,8 +76,8 @@ public class MacdSignalService {
                     ));
                 }
 
-                QuotaUtil.initMACD(kDataList, params.fastPeriod, params.slowPeriod, params.signalPeriod, true);
-                detectCross(kDataList, stockId, stockInfo, params, alertLevel);
+                QuotaUtil.initBOLL(kDataList, BollSignalConfig.BOLL_PERIOD, BollSignalConfig.BOLL_K, true);
+                detectBreakthrough(kDataList, stockId, stockInfo);
             }
 
             @Override
@@ -98,14 +87,14 @@ public class MacdSignalService {
         });
     }
 
-    private static void detectCross(List<KData> kDataList, String stockId, StockInfo stockInfo,
-                                    MacdSignalConfig.MacdParams params, MaAlertLevel alertLevel) {
-        int minBars = MacdSignalConfig.getMinWarmupBars(params);
+    private static void detectBreakthrough(List<KData> kDataList, String stockId, StockInfo stockInfo) {
+        int minBars = BollSignalConfig.getMinWarmupBars();
         if (kDataList == null || kDataList.size() < minBars + 1) {
             return;
         }
 
-        long scanCutoff = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(MacdSignalConfig.getEventScanDays());
+        long scanCutoff = System.currentTimeMillis()
+                - TimeUnit.DAYS.toMillis(BollSignalConfig.getEventScanDays());
 
         for (int i = minBars; i < kDataList.size(); i++) {
             KData current = kDataList.get(i);
@@ -115,39 +104,42 @@ public class MacdSignalService {
 
             KData previous = kDataList.get(i - 1);
 
-            double prevDif = previous.getDif();
-            double prevDea = previous.getDea();
-            double currDif = current.getDif();
-            double currDea = current.getDea();
-
-            if (prevDif == 0 && prevDea == 0 && currDif == 0 && currDea == 0) {
+            double prevUp = previous.getBollUp();
+            double prevDn = previous.getBollDn();
+            double currUp = current.getBollUp();
+            double currDn = current.getBollDn();
+            if (prevUp <= 0 || prevDn <= 0 || currUp <= 0 || currDn <= 0) {
                 continue;
             }
 
-            boolean isGoldenCross = prevDif <= prevDea && currDif > currDea;
-            boolean isDeathCross = prevDif >= prevDea && currDif < currDea;
+            double prevClose = previous.getClosePrice();
+            double currClose = current.getClosePrice();
 
-            if (isGoldenCross && !Profile.isEventSubscribed(EventSubscriptionConfig.EVENT_GOLDEN)) {
+            boolean isBreakthrough = prevClose <= prevUp && currClose > currUp;
+            boolean isBreakdown = prevClose >= prevDn && currClose < currDn;
+
+            if (isBreakthrough && !Profile.isEventSubscribed(EventSubscriptionConfig.EVENT_BOLL_BREAKTHROUGH)) {
                 continue;
             }
-            if (isDeathCross && !Profile.isEventSubscribed(EventSubscriptionConfig.EVENT_DEATH)) {
+            if (isBreakdown && !Profile.isEventSubscribed(EventSubscriptionConfig.EVENT_BOLL_BREAKDOWN)) {
                 continue;
             }
 
-            if (isGoldenCross || isDeathCross) {
-                createNotification(stockId, stockInfo, params, alertLevel, isGoldenCross,
-                        current.getClosePrice(), current.getTime());
+            if (isBreakthrough || isBreakdown) {
+                double bandValue = isBreakthrough ? currUp : currDn;
+                createNotification(stockId, stockInfo, isBreakthrough,
+                        currClose, bandValue, current.getTime());
             }
         }
     }
 
     private static void createNotification(String stockId, StockInfo stockInfo,
-                                           MacdSignalConfig.MacdParams params, MaAlertLevel alertLevel,
-                                           boolean isGoldenCross, double price, long eventTimestamp) {
-        String notifyType = MacdSignalConfig.getNotifyType(params, isGoldenCross);
-        String action = MacdSignalConfig.getActionLabel(isGoldenCross);
+                                           boolean isBreakthrough, double price,
+                                           double bandValue, long eventTimestamp) {
+        String notifyType = BollSignalConfig.getNotifyType(isBreakthrough);
+        String action = BollSignalConfig.getActionLabel(isBreakthrough);
         String title = String.format("%s %s - %s", stockId, stockInfo.getStockName(), action);
-        String body = MacdSignalConfig.getNotifyBody(alertLevel, isGoldenCross, price);
+        String body = BollSignalConfig.getNotifyBody(price, bandValue, isBreakthrough);
 
         ApiUtil.notifyRepository.findByTypeAndPayloadAndDate(notifyType, stockId, eventTimestamp)
                 .subscribeOn(Schedulers.io())

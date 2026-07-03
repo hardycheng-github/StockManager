@@ -23,7 +23,7 @@
         android:title="@string/profit_color_reverse" />
 
     <ListPreference
-        android:defaultValue="MA"
+        android:defaultValue="EMA"
         android:entries="@array/chart_indicator_entries"
         android:entryValues="@array/chart_indicator_values"
         android:key="setting_chart_indicator"
