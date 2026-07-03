@@ -6,6 +6,10 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
 import com.msi.stockmanager.data.notify.MaAlertLevel;
+import com.msi.stockmanager.data.notify.MacdSignalConfig;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class Profile {
     public static double fee_discount = 0.6;
@@ -14,7 +18,8 @@ public class Profile {
     public static double tax_rate = 0.003;
     public static boolean profit_color_reverse = false;
     public static MaAlertLevel maAlertLevel = MaAlertLevel.DEFAULT;
-    
+    public static Set<String> macdSubscribedEvents = MacdSignalConfig.defaultSubscribedEvents();
+
     public static void load(Context context){
         try {
             SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -23,6 +28,17 @@ public class Profile {
             profit_color_reverse = preferences.getBoolean("profit_color_reverse", profit_color_reverse);
             String maLevelStr = preferences.getString("setting_ma_alert_level", MaAlertLevel.DEFAULT.toString());
             maAlertLevel = MaAlertLevel.fromString(maLevelStr);
+            Set<String> savedEvents = preferences.getStringSet(
+                    MacdSignalConfig.PREF_KEY_MACD_EVENT_SUBSCRIPTION, null);
+            if (savedEvents != null) {
+                macdSubscribedEvents = new HashSet<>(savedEvents);
+            } else {
+                macdSubscribedEvents = MacdSignalConfig.defaultSubscribedEvents();
+            }
         } catch (Exception e){}
+    }
+
+    public static boolean isMacdEventSubscribed(boolean isGoldenCross) {
+        return MacdSignalConfig.isEventSubscribed(macdSubscribedEvents, isGoldenCross);
     }
 }

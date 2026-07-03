@@ -12,6 +12,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
+import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
@@ -24,6 +25,10 @@ import com.msi.stockmanager.data.notify.MacdSignalConfig;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.util.AppExitUtil;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -95,6 +100,31 @@ public class SettingsActivity extends AppCompatActivity {
             preference.setSummary(getString(R.string.ma_alert_level_summary, levelName, macdLabel));
         }
 
+        private void updateMacdEventSubscriptionSummary(MultiSelectListPreference preference, Set<String> values) {
+            if (preference == null) return;
+
+            Set<String> selected = values != null ? values : preference.getValues();
+            if (selected == null) {
+                selected = MacdSignalConfig.defaultSubscribedEvents();
+            }
+
+            List<String> labels = new ArrayList<>();
+            if (selected.contains(MacdSignalConfig.EVENT_GOLDEN)) {
+                labels.add(getString(R.string.macd_event_golden));
+            }
+            if (selected.contains(MacdSignalConfig.EVENT_DEATH)) {
+                labels.add(getString(R.string.macd_event_death));
+            }
+
+            if (labels.isEmpty()) {
+                preference.setSummary(getString(R.string.macd_event_subscription_none));
+            } else {
+                preference.setSummary(getString(
+                        R.string.macd_event_subscription_summary,
+                        String.join("、", labels)));
+            }
+        }
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.setting_preferences, rootKey);
@@ -151,6 +181,17 @@ public class SettingsActivity extends AppCompatActivity {
                     Log.e(TAG, "Error setting ma_alert_level", e);
                 }
                 return false;
+            });
+
+            MultiSelectListPreference macdEventSubscription = findPreference("setting_macd_event_subscription");
+            updateMacdEventSubscriptionSummary(macdEventSubscription, null);
+            macdEventSubscription.setOnPreferenceChangeListener((preference, newValue) -> {
+                @SuppressWarnings("unchecked")
+                Set<String> values = new HashSet<>((Set<String>) newValue);
+                Profile.macdSubscribedEvents = values;
+                Log.d(TAG, "setting_macd_event_subscription: " + Profile.macdSubscribedEvents);
+                updateMacdEventSubscriptionSummary(macdEventSubscription, values);
+                return true;
             });
 
             Preference importSimulated = findPreference("import_simulated_data");

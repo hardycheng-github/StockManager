@@ -127,6 +127,13 @@ public class MacdSignalService {
             boolean isGoldenCross = prevDif <= prevDea && currDif > currDea;
             boolean isDeathCross = prevDif >= prevDea && currDif < currDea;
 
+            if (isGoldenCross && !Profile.isMacdEventSubscribed(true)) {
+                continue;
+            }
+            if (isDeathCross && !Profile.isMacdEventSubscribed(false)) {
+                continue;
+            }
+
             if (isGoldenCross || isDeathCross) {
                 createNotification(stockId, stockInfo, params, alertLevel, isGoldenCross,
                         current.getClosePrice(), current.getTime());

@@ -1,11 +1,18 @@
 package com.msi.stockmanager.data.notify;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * MACD 事件通知配置管理類
  */
 public class MacdSignalConfig {
 
     public static final int EVENT_SCAN_DAYS = 31;
+
+    public static final String EVENT_GOLDEN = "GOLDEN";
+    public static final String EVENT_DEATH = "DEATH";
+    public static final String PREF_KEY_MACD_EVENT_SUBSCRIPTION = "setting_macd_event_subscription";
 
     public static class MacdParams {
         public final int fastPeriod;
@@ -91,5 +98,19 @@ public class MacdSignalConfig {
 
     public static boolean isBearishType(String type) {
         return type != null && (type.endsWith("_DEATH") || type.endsWith("_BREAKDOWN"));
+    }
+
+    public static Set<String> defaultSubscribedEvents() {
+        Set<String> defaults = new HashSet<>();
+        defaults.add(EVENT_GOLDEN);
+        defaults.add(EVENT_DEATH);
+        return defaults;
+    }
+
+    public static boolean isEventSubscribed(Set<String> subscribed, boolean isGoldenCross) {
+        if (subscribed == null || subscribed.isEmpty()) {
+            return false;
+        }
+        return subscribed.contains(isGoldenCross ? EVENT_GOLDEN : EVENT_DEATH);
     }
 }

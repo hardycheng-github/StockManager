@@ -29,6 +29,13 @@
         android:key="setting_ma_alert_level"
         android:title="@string/setting_ma_alert_level" />
 
+    <MultiSelectListPreference
+        android:defaultValue="@array/macd_event_subscription_default_values"
+        android:entries="@array/macd_event_subscription_entries"
+        android:entryValues="@array/macd_event_subscription_values"
+        android:key="setting_macd_event_subscription"
+        android:title="@string/setting_macd_event_subscription" />
+
     <PreferenceCategory android:title="@string/setting_category_demo">
         <Preference
             android:key="import_simulated_data"
