@@ -23,6 +23,7 @@ class StockInfo(
     var lastOpen = 0.0
     var lastHigh = 0.0
     var lastLow = 0.0
+    /** 最近成交量，單位：張（1 張 = 1,000 股）。 */
     var lastVolume = 0.0
     var lastChange = 0.0
     var lastChangePercent = 0.0

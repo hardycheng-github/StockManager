@@ -23,6 +23,8 @@ public class StockApi implements IStockApi{
     private static final String TAG = StockApi.class.getSimpleName();
     private static final String FINMIND_BASE_URL = "https://api.finmindtrade.com/api/v4/data";
     private static final String DATASET_TAIWAN_STOCK_PRICE = "TaiwanStockPrice";
+    /** FinMind Trading_Volume 為股數；App 內統一以張（1 張 = 1,000 股）儲存與顯示。 */
+    private static final double SHARES_PER_LOT = 1000.0;
     private static final int HTTP_CONNECT_TIMEOUT_MS = 6000;
     private static final int HTTP_READ_TIMEOUT_MS = 6000;
 
@@ -142,7 +144,7 @@ public class StockApi implements IStockApi{
                 info.setLastOpen(latest.optDouble("open", 0));
                 info.setLastHigh(latest.optDouble("max", 0));
                 info.setLastLow(latest.optDouble("min", 0));
-                info.setLastVolume(latest.optDouble("Trading_Volume", 0));
+                info.setLastVolume(latest.optDouble("Trading_Volume", 0) / SHARES_PER_LOT);
                 info.setPreviosClose(prevClose);
                 info.setLastChange(spread);
                 info.setLastChangePercent(changePercent);
@@ -191,7 +193,7 @@ public class StockApi implements IStockApi{
                         history.price_close = row.optDouble("close", 0);
                         history.price_high = row.optDouble("max", 0);
                         history.price_low = row.optDouble("min", 0);
-                        history.price_volume = row.optDouble("Trading_Volume", 0);
+                        history.price_volume = row.optDouble("Trading_Volume", 0) / SHARES_PER_LOT;
                         data.add(history);
                     }
                 }
