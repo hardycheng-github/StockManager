@@ -9,7 +9,7 @@ import io.reactivex.rxjava3.core.Single
 interface NotifyDao {
     
     @Query("SELECT COUNT(*) FROM notify_entity WHERE read = 0 AND deleted = 0")
-    fun getUnreadCount(): Single<Int>
+    fun getUnreadCount(): Flowable<Int>
     
     @Query("SELECT * FROM notify_entity WHERE deleted = 0 ORDER BY createdAt DESC")
     fun getList(): Flowable<List<NotifyEntity>>

@@ -295,9 +295,9 @@ public class OverviewActivity extends AppCompatActivity {
                 // 初始化通知相關 UI（在 ON_START 時確保 binding 已準備好）
                 initNotifyUI();
                 
-                // 載入通知列表和未讀數
+                // 載入通知列表並訂閱未讀數（Room Flowable 會隨 DB 變更自動更新 badge）
                 loadNotifyList();
-                updateUnreadCount();
+                observeUnreadCount();
                 updateWatchingCount();
                 
                 // 檢查 MACD 金叉/死叉事件
@@ -307,8 +307,6 @@ public class OverviewActivity extends AppCompatActivity {
                 // insertTestNotifications(); // 已停用自動插入測試通知功能
 
             } else if(event.equals(Lifecycle.Event.ON_RESUME)){
-                // 回到畫面時重新整理未讀數（離開再回來或從其他 Activity 返回）
-                updateUnreadCount();
                 updateWatchingCount();
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 binding.fabOverviewAdd.close(false);
@@ -374,7 +372,6 @@ public class OverviewActivity extends AppCompatActivity {
             if (lastUnreadCount >= 0) {
                 applyBadgeCount(badgeCountText, lastUnreadCount);
             }
-            updateUnreadCount();
         }
 
         analysisMenuItem = menu.findItem(R.id.menu_analysis);
@@ -502,10 +499,7 @@ public class OverviewActivity extends AppCompatActivity {
                 Disposable d = ApiUtil.notifyRepository.markRead(item.getId())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        count -> {
-                            updateUnreadCount();
-                            loadNotifyList();
-                        },
+                        count -> { /* badge 與列表由 Room Flowable 自動更新 */ },
                         error -> Log.e(TAG, "markRead error", error)
                     );
                 disposables.add(d);
@@ -523,10 +517,7 @@ public class OverviewActivity extends AppCompatActivity {
                 Disposable d = ApiUtil.notifyRepository.markAllRead()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        count -> {
-                            updateUnreadCount();
-                            loadNotifyList();
-                        },
+                        count -> { /* badge 與列表由 Room Flowable 自動更新 */ },
                         error -> Log.e(TAG, "markAllRead error", error)
                     );
                 disposables.add(d);
@@ -539,10 +530,7 @@ public class OverviewActivity extends AppCompatActivity {
                 Disposable d = ApiUtil.notifyRepository.markAllDeleted()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                        count -> {
-                            updateUnreadCount();
-                            loadNotifyList();
-                        },
+                        count -> { /* badge 與列表由 Room Flowable 自動更新 */ },
                         error -> Log.e(TAG, "markAllDeleted error", error)
                     );
                 disposables.add(d);
@@ -573,7 +561,6 @@ public class OverviewActivity extends AppCompatActivity {
                     .subscribe(
                         count -> {
                             notifyAdapter.removeItem(position);
-                            updateUnreadCount();
                             updateEmptyState();
                         },
                         error -> {
@@ -603,20 +590,21 @@ public class OverviewActivity extends AppCompatActivity {
         disposables.add(d);
     }
     
-    private void updateUnreadCount() {
+    /** 訂閱未讀數 Flowable，資料庫變更（已讀、刪除、新增）時自動更新 badge */
+    private void observeUnreadCount() {
         Disposable d = ApiUtil.notifyRepository.getUnreadCount()
+            .distinctUntilChanged()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 count -> {
                     lastUnreadCount = count;
-                    // 非同步回調時 badge 可能尚未建立，嘗試從 MenuItem 解析
                     TextView badge = badgeCountText;
                     if (badge == null && notifyMenuItem != null && notifyMenuItem.getActionView() != null) {
                         badge = notifyMenuItem.getActionView().findViewById(R.id.badge_count);
                     }
                     applyBadgeCount(badge, count);
                 },
-                error -> Log.e(TAG, "getUnreadCount error", error)
+                error -> Log.e(TAG, "observeUnreadCount error", error)
             );
         disposables.add(d);
     }
@@ -699,7 +687,6 @@ public class OverviewActivity extends AppCompatActivity {
                     id -> {
                         // 當所有通知都插入完成後更新 UI
                         if (completedCount.incrementAndGet() == count) {
-                            updateUnreadCount();
                             loadNotifyList();
                         }
                     },
@@ -707,7 +694,6 @@ public class OverviewActivity extends AppCompatActivity {
                         Log.e(TAG, "add test notification error", error);
                         // 即使失敗也計數，避免永遠等待
                         if (completedCount.incrementAndGet() == count) {
-                            updateUnreadCount();
                             loadNotifyList();
                         }
                     }

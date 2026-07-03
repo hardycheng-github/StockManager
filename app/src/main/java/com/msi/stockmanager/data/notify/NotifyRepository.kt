@@ -10,7 +10,7 @@ class NotifyRepository(context: Context) : INotifyRepository {
     
     private val dao: NotifyDao = NotifyDatabase.getDatabase(context).notifyDao()
     
-    override fun getUnreadCount(): Single<Int> {
+    override fun getUnreadCount(): Flowable<Int> {
         return dao.getUnreadCount()
             .subscribeOn(Schedulers.io())
     }

@@ -8,7 +8,7 @@ interface INotifyRepository {
     /**
      * 取得未讀且未刪除的數量（給徽章用）
      */
-    fun getUnreadCount(): Single<Int>
+    fun getUnreadCount(): Flowable<Int>
     
     /**
      * 取得未刪除的列表（依 createdAt 倒序）
