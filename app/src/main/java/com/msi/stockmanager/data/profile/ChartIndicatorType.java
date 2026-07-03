@@ -12,12 +12,12 @@ public enum ChartIndicatorType {
 
     public static ChartIndicatorType fromString(String value) {
         if (value == null) {
-            return MA;
+            return EMA;
         }
         try {
             return valueOf(value.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return MA;
+            return EMA;
         }
     }
 

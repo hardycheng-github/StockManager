@@ -51,6 +51,8 @@ import com.msi.stockmanager.ui.main.news.NewsActivity;
 import com.msi.stockmanager.ui.main.notify.NotifyAdapter;
 import com.msi.stockmanager.ui.main.pager.PagerActivity;
 import com.msi.stockmanager.R;
+import com.msi.stockmanager.data.notify.BollSignalService;
+import com.msi.stockmanager.data.notify.EmaSignalService;
 import com.msi.stockmanager.data.notify.MacdSignalService;
 import com.msi.stockmanager.ui.main.revenue.RevenueActivity;
 import com.msi.stockmanager.ui.main.setting.SettingsActivity;
@@ -300,8 +302,10 @@ public class OverviewActivity extends AppCompatActivity {
                 observeUnreadCount();
                 updateWatchingCount();
                 
-                // 檢查 MACD 金叉/死叉事件
+                // 檢查 MACD / EMA / 布林通道事件
                 MacdSignalService.checkWatchingList(OverviewActivity.this);
+                EmaSignalService.checkWatchingList(OverviewActivity.this);
+                BollSignalService.checkWatchingList(OverviewActivity.this);
 
                 // 測試插入通知（每啟動一次）
                 // insertTestNotifications(); // 已停用自動插入測試通知功能
