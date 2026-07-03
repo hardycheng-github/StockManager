@@ -174,16 +174,33 @@ public class NewsApi implements INewsApi {
     }
 
     /**
-     * 透過URL下載圖片Bitmap
-     * @param imgUrl 圖片連結
-     * @return bitmap or null
+     * Lazy-load 用：於 UI 綁定時才下載縮圖，避免啟動預載阻塞。
      */
-    private static Bitmap getImageFromUrl(String imgUrl){
+    public static Bitmap loadImageFromUrl(String imgUrl) {
+        if (imgUrl == null || imgUrl.isEmpty()) {
+            return null;
+        }
+        HttpURLConnection conn = null;
         try {
-            InputStream in = new URL(imgUrl).openStream();
-            return BitmapFactory.decodeStream(in);
+            URL url = new URL(imgUrl);
+            conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
+            int code = conn.getResponseCode();
+            if (code != 200) {
+                Log.w(TAG, "loadImageFromUrl non-200: " + code);
+                return null;
+            }
+            try (InputStream in = conn.getInputStream()) {
+                return BitmapFactory.decodeStream(in);
+            }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            Log.w(TAG, "loadImageFromUrl error: " + e.getMessage());
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
         return null;
     }
@@ -284,7 +301,7 @@ public class NewsApi implements INewsApi {
                     if (s != null) {
                         String src = s.optString("src", "");
                         if (!src.isEmpty()) {
-                            item.image = getImageFromUrl(src);
+                            item.imageUrl = src;
                         }
                     }
                 }
@@ -416,7 +433,7 @@ public class NewsApi implements INewsApi {
 
                 String imageUrl = obj.optString("image_url", "");
                 if (!imageUrl.isEmpty()) {
-                    item.image = getImageFromUrl(imageUrl);
+                    item.imageUrl = imageUrl;
                 }
 
                 if (!item.title.isEmpty() && !item.link.isEmpty() && item.type != TYPE_BULLETIN) {

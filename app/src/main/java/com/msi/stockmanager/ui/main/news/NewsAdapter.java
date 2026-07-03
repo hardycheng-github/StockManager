@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.snackbar.Snackbar;
 import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.news.INewsApi;
+import com.msi.stockmanager.data.news.NewsApi;
 import com.msi.stockmanager.databinding.FragmentNewsItemBinding;
 
 import java.util.ArrayList;
@@ -64,39 +65,62 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        Context context = holder.binding.getRoot().getContext();
-        Activity activity = (Activity) context;
         INewsApi.NewsItem item = mItems.get(position);
         holder.mValue = item;
-        if(item.image != null){
-//            holder.binding.img.setVisibility(View.VISIBLE);
+        if (item.image != null) {
             holder.binding.img.setImageBitmap(item.image);
             holder.binding.imgText.setVisibility(View.INVISIBLE);
         } else {
-//            holder.binding.img.setVisibility(View.GONE);
-            holder.binding.img.setImageResource(R.drawable.gradient_s);
-            switch (item.type){
-                case INewsApi.TYPE_ALL:
-                    holder.binding.imgText.setText(R.string.news_type_all);
-                    break;
-                case INewsApi.TYPE_STOCK:
-                    holder.binding.imgText.setText(R.string.news_type_stock);
-                    break;
-                case INewsApi.TYPE_BULLETIN:
-                    holder.binding.imgText.setText(R.string.news_type_bulletin);
-                    break;
-                case INewsApi.TYPE_EXCHANGE:
-                    holder.binding.imgText.setText(R.string.news_type_exchange);
-                    break;
-                case INewsApi.TYPE_CRYPTO:
-                    holder.binding.imgText.setText(R.string.news_type_crypto);
-                    break;
+            showTypePlaceholder(holder, item);
+            if (item.imageUrl != null && !item.imageUrl.isEmpty()) {
+                loadImageLazy(holder, item, position);
             }
-            holder.binding.imgText.setVisibility(View.VISIBLE);
         }
         holder.binding.title.setText(item.title);
         holder.binding.cardView.setOnClickListener(v->openUrl(item.link));
         holder.binding.subtitle.setText(item.getSubtitle());
+    }
+
+    private void showTypePlaceholder(ViewHolder holder, INewsApi.NewsItem item) {
+        holder.binding.img.setImageResource(R.drawable.gradient_s);
+        switch (item.type) {
+            case INewsApi.TYPE_ALL:
+                holder.binding.imgText.setText(R.string.news_type_all);
+                break;
+            case INewsApi.TYPE_STOCK:
+                holder.binding.imgText.setText(R.string.news_type_stock);
+                break;
+            case INewsApi.TYPE_BULLETIN:
+                holder.binding.imgText.setText(R.string.news_type_bulletin);
+                break;
+            case INewsApi.TYPE_EXCHANGE:
+                holder.binding.imgText.setText(R.string.news_type_exchange);
+                break;
+            case INewsApi.TYPE_CRYPTO:
+                holder.binding.imgText.setText(R.string.news_type_crypto);
+                break;
+        }
+        holder.binding.imgText.setVisibility(View.VISIBLE);
+    }
+
+    private void loadImageLazy(ViewHolder holder, INewsApi.NewsItem item, int position) {
+        final String imageUrl = item.imageUrl;
+        final Activity activity = (Activity) holder.binding.getRoot().getContext();
+        new Thread(() -> {
+            android.graphics.Bitmap bitmap = NewsApi.loadImageFromUrl(imageUrl);
+            if (bitmap == null) {
+                return;
+            }
+            item.image = bitmap;
+            activity.runOnUiThread(() -> {
+                int currentPosition = holder.getBindingAdapterPosition();
+                if (currentPosition != position || holder.mValue != item) {
+                    return;
+                }
+                holder.binding.img.setImageBitmap(bitmap);
+                holder.binding.imgText.setVisibility(View.INVISIBLE);
+            });
+        }, "newsImg-" + position).start();
     }
 
     @Override

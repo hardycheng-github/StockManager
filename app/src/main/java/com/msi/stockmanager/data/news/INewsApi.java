@@ -20,7 +20,8 @@ public interface INewsApi {
     class NewsItem {
         public int type; //news type, ex: TYPE_STOCK,TYPE_BULLETIN,TYPE_EXCHANGE,TYPE_CRYPTO
         public String source; //source web name, ex: Yahoo財經, 鉅亨新聞
-        public Bitmap image; //image or null
+        public String imageUrl; //image URL for lazy load; null if none
+        public Bitmap image; //cached bitmap after lazy load; null until loaded
         public long timestamp; //news posted date
         public String title; //news title
         public String link; //news link
