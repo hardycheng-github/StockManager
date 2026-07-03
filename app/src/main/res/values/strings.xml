@@ -81,6 +81,10 @@
     <string name="no_holding_stock">未持有任何股票</string>
     <string name="account_detail">進入帳戶</string>
     <string name="profit_color_reverse">綠漲紅跌</string>
+    <string name="setting_chart_indicator">技術線圖指標</string>
+    <string name="chart_indicator_ma">移動平均線（MA）</string>
+    <string name="chart_indicator_ema">指數平滑移動平均線（EMA）</string>
+    <string name="chart_indicator_bband">布林通道（BBand）</string>
     <string name="setting_category_demo">開發 / 測試</string>
     <string name="setting_import_simulated_data">導入模擬數據</string>
     <string name="setting_import_simulated_data_summary">追加寫入預設交易紀錄；成功後將關閉 App，請重新開啟以載入資料</string>
@@ -271,6 +275,16 @@
     <string-array name="macd_event_subscription_default_values">
         <item>GOLDEN</item>
         <item>DEATH</item>
+    </string-array>
+    <string-array name="chart_indicator_entries">
+        <item>@string/chart_indicator_ma</item>
+        <item>@string/chart_indicator_ema</item>
+        <item>@string/chart_indicator_bband</item>
+    </string-array>
+    <string-array name="chart_indicator_values">
+        <item>MA</item>
+        <item>EMA</item>
+        <item>BBAND</item>
     </string-array>
     <string name="notify_delete_all">全部刪除</string>
 </resources>

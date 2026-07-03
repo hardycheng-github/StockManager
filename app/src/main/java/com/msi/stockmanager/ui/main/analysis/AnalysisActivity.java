@@ -100,6 +100,12 @@ public class AnalysisActivity extends AppCompatActivity {
                 );
     }
 
+    private void applyChartIndicatorSetting() {
+        Profile.load(this);
+        binding.kline.setMainImgType(Profile.chartIndicatorType.toKLineMainImgType());
+        binding.kline.setColorChange(Profile.profit_color_reverse);
+    }
+
     private void setKlineData(List<StockHistory> list){
         List<KData> kDataList = new ArrayList<>();
 
@@ -107,16 +113,19 @@ public class AnalysisActivity extends AppCompatActivity {
             kDataList.add(toKData(item));
         }
 
+        Profile.load(this);
+        int mainImgType = Profile.chartIndicatorType.toKLineMainImgType();
         if(!isKlineInit){
             isKlineInit = true;
             binding.kline.initKDataList(kDataList);
+            binding.kline.setMainImgType(mainImgType);
         } else {
+            binding.kline.setMainImgType(mainImgType);
             binding.kline.resetDataList(kDataList);
         }
         binding.kline.setDeputyPicShow(true);
-        binding.kline.setMainImgType(KLineView.MAIN_IMG_MA);
-        binding.kline.setDeputyImgType(KLineView.DEPUTY_IMG_MACD);
         binding.kline.setColorChange(Profile.profit_color_reverse);
+        binding.kline.setDeputyImgType(KLineView.DEPUTY_IMG_MACD);
     }
 
     private void reload(){
@@ -450,6 +459,8 @@ public class AnalysisActivity extends AppCompatActivity {
             } else if(event.equals(Lifecycle.Event.ON_RESUME)){
                 if (targetStockInfo == null) {
                     refreshAnalysisList();
+                } else if (isKlineInit && binding != null) {
+                    applyChartIndicatorSetting();
                 }
             } else if(event.equals(Lifecycle.Event.ON_STOP)){
                 mSearchView.removeOnLayoutChangeListener(mSearchLayoutChangListener);

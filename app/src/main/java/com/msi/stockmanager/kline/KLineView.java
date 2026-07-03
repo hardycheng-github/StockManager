@@ -80,7 +80,14 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
 
     private final String STR_MA5 = "MA5:";
     private final String STR_MA10 = "MA10:";
+    private final String STR_MA20 = "MA20:";
     private final String STR_MA30 = "MA30:";
+    private final String STR_EMA5 = "EMA5:";
+    private final String STR_EMA10 = "EMA10:";
+    private final String STR_EMA20 = "EMA20:";
+    private final String STR_MA22 = "MA22:";
+    private final String STR_BOLL_UP = "上行:";
+    private final String STR_BOLL_DN = "下行:";
     private final String STR_VOL = "VOL:";
     private final String STR_MACD_TITLE = "MACD(12,26,9)";
     private final String STR_MACD = "MACD:";
@@ -666,7 +673,8 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
             crossHairMoveMode = CROSS_HAIR_MOVE_CLOSE;
             drawInstant(canvas);
         } else {
-            drawMainDeputyRect(canvas);
+            drawMainCandleRects(canvas);
+            drawDeputyMacdBars(canvas);
             drawBezierCurve(canvas);
             drawTopPriceMAData(canvas);
             drawBotMAData(canvas);
@@ -1201,6 +1209,45 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         }
     }
 
+    private float chartClipLeft() {
+        return leftStart + dp2px(6);
+    }
+
+    private float chartClipRight() {
+        return rightEnd;
+    }
+
+    private float mainChartClipBottom() {
+        return priceImgBot;
+    }
+
+    private float volumeChartClipTop() {
+        if (isShowDeputy) {
+            return horizontalYList.get(3) + verticalSpace / 2f;
+        }
+        return priceImgBot;
+    }
+
+    private void saveAndClipMainChart(Canvas canvas) {
+        canvas.save();
+        canvas.clipRect(chartClipLeft(), horizontalYList.get(0), chartClipRight(), mainChartClipBottom());
+    }
+
+    private void saveAndClipVolumeChart(Canvas canvas) {
+        canvas.save();
+        if (isShowDeputy) {
+            canvas.clipRect(chartClipLeft(), volumeChartClipTop(), chartClipRight(), deputyTopY);
+        } else {
+            canvas.clipRect(chartClipLeft(), priceImgBot, chartClipRight(), volumeImgBot);
+        }
+    }
+
+    private void saveAndClipDeputyChart(Canvas canvas) {
+        canvas.save();
+        canvas.clipRect(chartClipLeft(), deputyTopY, chartClipRight(),
+                horizontalYList.get(horizontalYList.size() - 1));
+    }
+
     //刻度线
     private void drawTickMark(Canvas canvas) {
         if (verticalXList == null || horizontalYList == null){
@@ -1239,10 +1286,9 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         }
     }
 
-    //主副图蜡烛图
-    private void drawMainDeputyRect(Canvas canvas) {
-        int viewDataSize = viewDataList.size();
-        //drawPriceRectAndLine
+    //主圖 K 線蠟燭
+    private void drawMainCandleRects(Canvas canvas) {
+        saveAndClipMainChart(canvas);
         for (KData viewKData : viewDataList) {
             double openPrice = viewKData.getOpenPrice();
             double closedPrice = viewKData.getClosePrice();
@@ -1281,31 +1327,40 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
                     (float) (viewKData.getCenterX()),
                     (float) (mMaxPriceY + (maxPrice - viewKData.getMinPrice()) * avgHeightPerPrice),
                     textPaint);
+        }
+        canvas.restore();
+    }
 
-            //MACD
-            if (isShowDeputy && deputyImgType == DEPUTY_IMG_MACD) {
-                double macd = viewKData.getMacd();
-                if (macd > 0) {
-                    fillPaint.setColor(macdPositiveCol);
-                    canvas.drawRect((float) (viewKData.getLeftX() + dp2px(0.5f)),
-                            (float) (deputyCenterY - macd * avgHeightMacd),
-                            (float) viewKData.getRightX() - dp2px(0.5f),
-                            deputyCenterY,
-                            fillPaint);
+    //副圖 MACD 柱狀圖
+    private void drawDeputyMacdBars(Canvas canvas) {
+        if (!isShowDeputy || deputyImgType != DEPUTY_IMG_MACD) {
+            return;
+        }
+        saveAndClipDeputyChart(canvas);
+        for (KData viewKData : viewDataList) {
+            double macd = viewKData.getMacd();
+            if (macd > 0) {
+                fillPaint.setColor(macdPositiveCol);
+                canvas.drawRect((float) (viewKData.getLeftX() + dp2px(0.5f)),
+                        (float) (deputyCenterY - macd * avgHeightMacd),
+                        (float) viewKData.getRightX() - dp2px(0.5f),
+                        deputyCenterY,
+                        fillPaint);
 
-                } else {
-                    fillPaint.setColor(macdNegativeCol);
-                    canvas.drawRect((float) (viewKData.getLeftX() + dp2px(0.5f)),
-                            deputyCenterY,
-                            (float) viewKData.getRightX() - dp2px(0.5f),
-                            (float) (deputyCenterY + Math.abs(macd) * avgHeightMacd),
-                            fillPaint);
-                }
+            } else {
+                fillPaint.setColor(macdNegativeCol);
+                canvas.drawRect((float) (viewKData.getLeftX() + dp2px(0.5f)),
+                        deputyCenterY,
+                        (float) viewKData.getRightX() - dp2px(0.5f),
+                        (float) (deputyCenterY + Math.abs(macd) * avgHeightMacd),
+                        fillPaint);
             }
         }
+        canvas.restore();
     }
 
     private void drawVolume(Canvas canvas){
+        saveAndClipVolumeChart(canvas);
         for (KData kData : viewDataList) {
             //volumeRect
             if (!isShowInstant){
@@ -1325,6 +1380,7 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
                     volumeImgBot,
                     fillPaint);
         }
+        canvas.restore();
     }
 
     //贝塞尔曲线
@@ -1381,10 +1437,10 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
                     }
 
                     Pointer priceMa30Point = new Pointer();
-                    if (kData.getPriceMa30() > 0) {
+                    if (kData.getPriceMa20() > 0) {
                         priceMa30Point.setX((float) (kData.getLeftX() + avgPriceRectWidth / 2));
                         priceMa30Point.setY((float) (mMaxPriceY
-                                + (maxPrice - kData.getPriceMa30()) * avgHeightPerPrice));
+                                + (maxPrice - kData.getPriceMa20()) * avgHeightPerPrice));
                         mainMa30PointList.add(priceMa30Point);
                     }
                     break;
@@ -1408,10 +1464,10 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
                     }
 
                     Pointer ema30Point = new Pointer();
-                    if (kData.getEma30() > 0) {
+                    if (kData.getEma20() > 0) {
                         ema30Point.setX((float) (kData.getLeftX() + avgPriceRectWidth / 2));
                         ema30Point.setY((float) (mMaxPriceY
-                                + (maxPrice - kData.getEma30()) * avgHeightPerPrice));
+                                + (maxPrice - kData.getEma20()) * avgHeightPerPrice));
                         mainMa30PointList.add(ema30Point);
                     }
                     break;
@@ -1520,6 +1576,7 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
 
     //主图 MA曲线
     private void drawMainBezierCurve(@NonNull Canvas canvas) {
+        saveAndClipMainChart(canvas);
         QuotaUtil.setBezierPath(mainMa5PointList, curvePath);
         resetPathPaint(priceMa5Col, 0);
         canvas.drawPath(curvePath, pathPaint);
@@ -1531,10 +1588,12 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         QuotaUtil.setBezierPath(mainMa30PointList, curvePath);
         resetPathPaint(priceMa30Col, 0);
         canvas.drawPath(curvePath, pathPaint);
+        canvas.restore();
     }
 
     //volume MA曲线
     private void drawVolumeBezierCurve(@NonNull Canvas canvas) {
+        saveAndClipVolumeChart(canvas);
         QuotaUtil.setBezierPath(volumeMa5PointList, curvePath);
         resetPathPaint(priceMa5Col, 0);
         canvas.drawPath(curvePath, pathPaint);
@@ -1542,10 +1601,15 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         QuotaUtil.setBezierPath(volumeMa10PointList, curvePath);
         resetPathPaint(priceMa10Col, 0);
         canvas.drawPath(curvePath, pathPaint);
+        canvas.restore();
     }
 
     //副图 曲线
     private void drawDeputyCurve(@NonNull Canvas canvas) {
+        if (!isShowDeputy) {
+            return;
+        }
+        saveAndClipDeputyChart(canvas);
         QuotaUtil.setLinePath(deputyMa5PointList, curvePath);
         resetPathPaint(priceMa5Col, 0);
         canvas.drawPath(curvePath, pathPaint);
@@ -1557,6 +1621,7 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         QuotaUtil.setLinePath(deputyMa30PointList, curvePath);
         resetPathPaint(priceMa30Col, 0);
         canvas.drawPath(curvePath, pathPaint);
+        canvas.restore();
     }
 
     //获取单击位置的数据
@@ -1689,6 +1754,7 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
 
     //最高价、最低价标签
     private void drawMaxMinPriceLabel(Canvas canvas) {
+        saveAndClipMainChart(canvas);
         //maxPrice
         Rect maxPriceRect = new Rect();
         String maxPriceStr = setPrecision(maxPrice, 2);
@@ -1782,6 +1848,7 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
                 minPriceTextX,
                 (float) mMinPriceY + minPriceRect.height() / 2f,
                 textPaint);
+        canvas.restore();
     }
 
     private void drawDetailData(Canvas canvas) {
@@ -1919,34 +1986,53 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         }
     }
 
-    //顶部价格MA
+    //主圖指標數值（繪於走勢圖與成交量區之間，不參與價格區間計算）
     private void drawTopPriceMAData(Canvas canvas) {
         if (lastKData == null) {
             return;
         }
-        String ma5Str = STR_MA5 + setPrecision(lastKData.getPriceMa5(), 2);
-        String ma10Str = STR_MA10 + setPrecision(lastKData.getPriceMa10(), 2);
-        String ma30Str = STR_MA30 + setPrecision(lastKData.getPriceMa30(), 2);
+        String line1Str;
+        String line2Str;
+        String line3Str;
+        switch (mainImgType) {
+            case MAIN_IMG_EMA:
+                line1Str = STR_EMA5 + setPrecision(lastKData.getEma5(), 2);
+                line2Str = STR_EMA10 + setPrecision(lastKData.getEma10(), 2);
+                line3Str = STR_EMA20 + setPrecision(lastKData.getEma20(), 2);
+                break;
+            case MAIN_IMG_BOLL:
+                line1Str = STR_MA22 + setPrecision(lastKData.getBollMb(), 2);
+                line2Str = STR_BOLL_UP + setPrecision(lastKData.getBollUp(), 2);
+                line3Str = STR_BOLL_DN + setPrecision(lastKData.getBollDn(), 2);
+                break;
+            case MAIN_IMG_MA:
+            default:
+                line1Str = STR_MA5 + setPrecision(lastKData.getPriceMa5(), 2);
+                line2Str = STR_MA10 + setPrecision(lastKData.getPriceMa10(), 2);
+                line3Str = STR_MA20 + setPrecision(lastKData.getPriceMa20(), 2);
+                break;
+        }
 
         resetTextPaint(priceMa5Col, topMaTextSize);
-        textPaint.getTextBounds(ma5Str, 0, ma5Str.length(), topMa5Rect);
-        canvas.drawText(ma5Str,
+        textPaint.getTextBounds(line1Str, 0, line1Str.length(), topMa5Rect);
+        float labelBaseline = priceImgBot + topMa5Rect.height() + dp2px(4);
+        canvas.drawText(line1Str,
                 leftStart + dp2px(6),
-                topStart + topMa5Rect.height() + dp2px(6),
+                labelBaseline,
                 textPaint);
 
         resetTextPaint(priceMa10Col, topMaTextSize);
-        textPaint.getTextBounds(ma10Str, 0, ma10Str.length(), topMa10Rect);
-        canvas.drawText(ma10Str,
+        textPaint.getTextBounds(line2Str, 0, line2Str.length(), topMa10Rect);
+        canvas.drawText(line2Str,
                 leftStart + dp2px(6) + topMa5Rect.width() + dp2px(10),
-                topStart + topMa5Rect.height() + dp2px(6),
+                labelBaseline,
                 textPaint);
 
         resetTextPaint(priceMa30Col, topMaTextSize);
-        textPaint.getTextBounds(ma30Str, 0, ma30Str.length(), topMa30Rect);
-        canvas.drawText(ma30Str,
+        textPaint.getTextBounds(line3Str, 0, line3Str.length(), topMa30Rect);
+        canvas.drawText(line3Str,
                 leftStart + dp2px(6) + topMa5Rect.width() + topMa10Rect.width() + dp2px(10) * 2,
-                topStart + topMa5Rect.height() + dp2px(6),
+                labelBaseline,
                 textPaint);
     }
 
@@ -1961,9 +2047,12 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         Rect volRect = new Rect();
         resetTextPaint(volumeTextCol, volumeTextSize);
         textPaint.getTextBounds(volStr, 0, volStr.length(), volRect);
+        float volLabelBaseline = isShowDeputy
+                ? volumeChartClipTop() + volRect.height() + dp2px(2)
+                : priceImgBot + volRect.height() + dp2px(2);
         canvas.drawText(volStr,
                 verticalXList.get(0),
-                priceImgBot + volRect.height() + dp2px(2),
+                volLabelBaseline,
                 textPaint);
 
 //        String ma5Str = STR_MA5 + setPrecision(lastKData.getVolumeMa5(), 2);
@@ -1973,7 +2062,7 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         textPaint.getTextBounds(ma5Str, 0, ma5Str.length(), volMa5Rect);
         canvas.drawText(ma5Str,
                 verticalXList.get(0) + volRect.width() + dp2px(10),
-                priceImgBot + volRect.height() + dp2px(2),
+                volLabelBaseline,
                 textPaint);
 
 //        String ma10Str = STR_MA10 + setPrecision(lastKData.getVolumeMa10(), 2);
@@ -1981,7 +2070,7 @@ public class KLineView extends View implements View.OnTouchListener, Handler.Cal
         resetTextPaint(priceMa10Col, volumeTextSize);
         canvas.drawText(ma10Str,
                 verticalXList.get(0) + volMa5Rect.width() + volRect.width() + dp2px(10) * 2,
-                priceImgBot + volRect.height() + dp2px(2),
+                volLabelBaseline,
                 textPaint);
 
         String titleStr = "";

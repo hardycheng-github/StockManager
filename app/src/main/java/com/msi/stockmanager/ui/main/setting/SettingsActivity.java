@@ -22,6 +22,7 @@ import com.msi.stockmanager.R;
 import com.msi.stockmanager.data.demo.SimulatedDataImporter;
 import com.msi.stockmanager.data.notify.MaAlertLevel;
 import com.msi.stockmanager.data.notify.MacdSignalConfig;
+import com.msi.stockmanager.data.profile.ChartIndicatorType;
 import com.msi.stockmanager.data.profile.Profile;
 import com.msi.stockmanager.util.AppExitUtil;
 
@@ -100,6 +101,31 @@ public class SettingsActivity extends AppCompatActivity {
             preference.setSummary(getString(R.string.ma_alert_level_summary, levelName, macdLabel));
         }
 
+        private void updateChartIndicatorSummary(ListPreference preference, String newValue) {
+            if (preference == null) return;
+
+            String currentValue = newValue != null ? newValue : preference.getValue();
+            if (currentValue == null) {
+                currentValue = ChartIndicatorType.MA.toString();
+            }
+
+            ChartIndicatorType type = ChartIndicatorType.fromString(currentValue);
+            String label;
+            switch (type) {
+                case EMA:
+                    label = getString(R.string.chart_indicator_ema);
+                    break;
+                case BBAND:
+                    label = getString(R.string.chart_indicator_bband);
+                    break;
+                case MA:
+                default:
+                    label = getString(R.string.chart_indicator_ma);
+                    break;
+            }
+            preference.setSummary(label);
+        }
+
         private void updateMacdEventSubscriptionSummary(MultiSelectListPreference preference, Set<String> values) {
             if (preference == null) return;
 
@@ -162,6 +188,21 @@ public class SettingsActivity extends AppCompatActivity {
                 return false;
             });
             
+            ListPreference chartIndicator = findPreference("setting_chart_indicator");
+            updateChartIndicatorSummary(chartIndicator, null);
+            chartIndicator.setOnPreferenceChangeListener((preference, newValue) -> {
+                try {
+                    String typeStr = newValue.toString();
+                    Profile.chartIndicatorType = ChartIndicatorType.fromString(typeStr);
+                    Log.d(TAG, "setting_chart_indicator: " + Profile.chartIndicatorType);
+                    updateChartIndicatorSummary(chartIndicator, typeStr);
+                    return true;
+                } catch (Exception e) {
+                    Log.e(TAG, "Error setting chart_indicator", e);
+                }
+                return false;
+            });
+
             ListPreference ma_alert_level = findPreference("setting_ma_alert_level");
             
             // 設置初始 summary 顯示當前設定值

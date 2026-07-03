@@ -14,12 +14,13 @@ public class QuotaUtil {
 
     private static final int QUOTA_DAY5 = 5;
     private static final int QUOTA_DAY10 = 10;
+    private static final int QUOTA_DAY20 = 20;
     private static final int QUOTA_DAY30 = 30;
     private static final float BEZIER_RATIO = 0.16f;
     private static List<KData> cacheList = new ArrayList<>();
 
     /**
-     * 初始化 MA5，MA10, MA30
+     * 初始化 MA5，MA10, MA20, MA30
      *
      * @param isEndData 是否是添加到list末尾的数据
      */
@@ -42,6 +43,9 @@ public class QuotaUtil {
                 dataList.get(i + QUOTA_DAY10 - 1).setPriceMa10(getPriceMa(cacheList.subList(i, i + QUOTA_DAY10)));
                 //volumeMa10
                 dataList.get(i + QUOTA_DAY10 - 1).setVolumeMa10(getVolumeMa(cacheList.subList(i, i + QUOTA_DAY10)));
+            }
+            if (i + QUOTA_DAY20 <= size) {
+                dataList.get(i + QUOTA_DAY20 - 1).setPriceMa20(getPriceMa(cacheList.subList(i, i + QUOTA_DAY20)));
             }
             if (i + QUOTA_DAY30 <= size) {
                 //priceMa30
@@ -78,7 +82,7 @@ public class QuotaUtil {
     }
 
     /**
-     * 初始化 EMA5, EMA10, EMA30
+     * 初始化 EMA5, EMA10, EMA20, EMA30
      */
     public static void initEma(List<KData> dataList, boolean isEndData) {
         if (dataList == null || dataList.isEmpty()) {
@@ -86,9 +90,11 @@ public class QuotaUtil {
         }
         double lastEma5 = dataList.get(0).getClosePrice();
         double lastEma10 = dataList.get(0).getClosePrice();
+        double lastEma20 = dataList.get(0).getClosePrice();
         double lastEma30 = dataList.get(0).getClosePrice();
         dataList.get(0).setEma5(lastEma5);
         dataList.get(0).setEma10(lastEma10);
+        dataList.get(0).setEma20(lastEma20);
         dataList.get(0).setEma30(lastEma30);
 
         int size = dataList.size();
@@ -98,14 +104,17 @@ public class QuotaUtil {
             }
             double currentEma5 = 2 * (dataList.get(i).getClosePrice() - lastEma5) / (QUOTA_DAY5 + 1) + lastEma5;
             double currentEma10 = 2 * (dataList.get(i).getClosePrice() - lastEma10) / (QUOTA_DAY10 + 1) + lastEma10;
+            double currentEma20 = 2 * (dataList.get(i).getClosePrice() - lastEma20) / (QUOTA_DAY20 + 1) + lastEma20;
             double currentEma30 = 2 * (dataList.get(i).getClosePrice() - lastEma30) / (QUOTA_DAY30 + 1) + lastEma30;
 
             dataList.get(i).setEma5(currentEma5);
             dataList.get(i).setEma10(currentEma10);
+            dataList.get(i).setEma20(currentEma20);
             dataList.get(i).setEma30(currentEma30);
 
             lastEma5 = currentEma5;
             lastEma10 = currentEma10;
+            lastEma20 = currentEma20;
             lastEma30 = currentEma30;
         }
     }
@@ -178,7 +187,7 @@ public class QuotaUtil {
     }
 
     public static void initBoll(List<KData> dataList, boolean isEndData) {
-        initBOLL(dataList, 26, 2, isEndData);
+        initBOLL(dataList, 22, 2, isEndData);
     }
 
     /**

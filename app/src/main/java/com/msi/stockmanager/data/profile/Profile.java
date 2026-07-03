@@ -18,6 +18,7 @@ public class Profile {
     public static double tax_rate = 0.003;
     public static boolean profit_color_reverse = false;
     public static MaAlertLevel maAlertLevel = MaAlertLevel.DEFAULT;
+    public static ChartIndicatorType chartIndicatorType = ChartIndicatorType.MA;
     public static Set<String> macdSubscribedEvents = MacdSignalConfig.defaultSubscribedEvents();
 
     public static void load(Context context){
@@ -28,6 +29,8 @@ public class Profile {
             profit_color_reverse = preferences.getBoolean("profit_color_reverse", profit_color_reverse);
             String maLevelStr = preferences.getString("setting_ma_alert_level", MaAlertLevel.DEFAULT.toString());
             maAlertLevel = MaAlertLevel.fromString(maLevelStr);
+            String chartIndicatorStr = preferences.getString("setting_chart_indicator", ChartIndicatorType.MA.toString());
+            chartIndicatorType = ChartIndicatorType.fromString(chartIndicatorStr);
             Set<String> savedEvents = preferences.getStringSet(
                     MacdSignalConfig.PREF_KEY_MACD_EVENT_SUBSCRIPTION, null);
             if (savedEvents != null) {

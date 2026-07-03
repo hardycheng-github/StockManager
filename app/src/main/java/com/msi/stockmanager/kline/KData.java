@@ -17,9 +17,11 @@ public class KData {
     private double upDnRate;//涨跌幅
     private double priceMa5;
     private double priceMa10;
+    private double priceMa20;
     private double priceMa30;
     private double ema5;
     private double ema10;
+    private double ema20;
     private double ema30;
     private double ema;
     private double volumeMa5;
@@ -159,6 +161,14 @@ public class KData {
         this.priceMa10 = priceMa10;
     }
 
+    public double getPriceMa20() {
+        return priceMa20;
+    }
+
+    public void setPriceMa20(double priceMa20) {
+        this.priceMa20 = priceMa20;
+    }
+
     public double getPriceMa30() {
         return priceMa30;
     }
@@ -197,6 +207,14 @@ public class KData {
 
     public void setEma10(double ema10) {
         this.ema10 = ema10;
+    }
+
+    public double getEma20() {
+        return ema20;
+    }
+
+    public void setEma20(double ema20) {
+        this.ema20 = ema20;
     }
 
     public double getEma30() {
@@ -356,9 +374,11 @@ public class KData {
                 ", upDnRate=" + upDnRate +
                 ", priceMa5=" + priceMa5 +
                 ", priceMa10=" + priceMa10 +
+                ", priceMa20=" + priceMa20 +
                 ", priceMa30=" + priceMa30 +
                 ", ema5=" + ema5 +
                 ", ema10=" + ema10 +
+                ", ema20=" + ema20 +
                 ", ema30=" + ema30 +
                 ", ema=" + ema +
                 ", volumeMa5=" + volumeMa5 +
