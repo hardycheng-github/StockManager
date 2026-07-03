@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.lang.reflect.Field;
@@ -30,6 +31,8 @@ public class NewsApi implements INewsApi {
     private static final String MARKETAUX_API_URL = "https://api.marketaux.com/v1/news/all";
     // Free plan currently allows up to 3 articles per request.
     private static final int MARKETAUX_API_LIMIT = 3;
+    private static final int MARKETAUX_HTTP_TIMEOUT_MS = 6000;
+    private static final int MARKETAUX_MAX_ATTEMPTS = 2;
     private static final long MARKETAUX_LOOKBACK_HOURS = 12L;
     private static final String MARKETAUX_ENTITY_TYPES_STOCK = "equity,index,etf,mutualfund";
     private static final String MARKETAUX_ENTITY_TYPES_EXCHANGE = "currency";
@@ -391,19 +394,40 @@ public class NewsApi implements INewsApi {
 
         Log.d(TAG, "Marketaux API URL: " + apiUrl);
 
+        Exception lastError = null;
+        for (int attempt = 1; attempt <= MARKETAUX_MAX_ATTEMPTS; attempt++) {
+            try {
+                List<NewsItem> items = fetchMarketauxResponse(apiUrl, fallbackType);
+                if (attempt > 1) {
+                    Log.d(TAG, "Marketaux succeeded on attempt " + attempt + " entityTypes=" + entityTypes);
+                }
+                return items;
+            } catch (Exception e) {
+                lastError = e;
+                Log.w(TAG, "Marketaux attempt " + attempt + "/" + MARKETAUX_MAX_ATTEMPTS
+                        + " failed (" + entityTypes + "): " + e.getMessage());
+            }
+        }
+
+        Log.e(TAG, "Marketaux failed after " + MARKETAUX_MAX_ATTEMPTS + " attempts ("
+                + entityTypes + "): " + (lastError != null ? lastError.getMessage() : "unknown"));
+        return newsItemList;
+    }
+
+    private static List<NewsItem> fetchMarketauxResponse(String apiUrl, int fallbackType) throws Exception {
+        List<NewsItem> newsItemList = new ArrayList<>();
         HttpURLConnection conn = null;
         try {
             URL url = new URL(apiUrl);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-            conn.setConnectTimeout(15000);
-            conn.setReadTimeout(15000);
+            conn.setConnectTimeout(MARKETAUX_HTTP_TIMEOUT_MS);
+            conn.setReadTimeout(MARKETAUX_HTTP_TIMEOUT_MS);
 
             int code = conn.getResponseCode();
             if (code != 200) {
-                Log.w(TAG, "Marketaux API non-200: " + code);
-                return newsItemList;
+                throw new IOException("Marketaux API non-200: " + code);
             }
 
             String response = readStream(conn.getInputStream());
@@ -440,11 +464,10 @@ public class NewsApi implements INewsApi {
                     newsItemList.add(item);
                 }
             }
-        } catch (Exception e) {
-            Log.e(TAG, "CrawlerWithMarketauxAll error: " + e.getMessage());
-            e.printStackTrace();
         } finally {
-            if (conn != null) conn.disconnect();
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
         return newsItemList;
     }
