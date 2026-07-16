@@ -3,12 +3,14 @@ package com.msi.stockmanager
 import android.app.Activity
 import android.app.Application
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatDelegate
 import com.msi.stockmanager.util.SystemBarUtils
 
 class StockManagerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         registerActivityLifecycleCallbacks(SystemBarLifecycleCallbacks())
     }
 
